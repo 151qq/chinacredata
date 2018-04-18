@@ -269,7 +269,7 @@
             line-height: 36px;
             margin-bottom: 10px;
             font-weight: bold;
-        },
+        }
         .mess-content {
             padding-top: 10px;
             box-sizing: border-box;
