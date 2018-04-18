@@ -12,6 +12,7 @@
       <router-link :to="{ name: 'source',query:{enterpriseCode: userInfo.enterpriseCode}}">
         素材库
       </router-link>
+      <!--
       <router-link  v-if="isProduct || isRoot"
                     :to="{ name: 'product',query:{
                       enterpriseCode: userInfo.enterpriseCode,
@@ -28,6 +29,7 @@
                     }}">
         礼品中心
       </router-link>
+      -->
       <!-- <router-link :to="{ name: 'survey',query:{enterpriseCode: userInfo.enterpriseCode}}">
         调研发布
       </router-link>
@@ -38,9 +40,14 @@
                     :to="{ name: 'member'}">
         会员管理
       </router-link> -->
+      <!--
       <router-link  v-if="isConfig || isRoot"
                     :to="{ name: 'callcenter',query:{enterpriseCode: userInfo.enterpriseCode}}">
         营销配置
+      </router-link> -->
+      <router-link  v-if="isConfig || isRoot"
+                    :to="{ name: 'propertyAssets',query:{enterpriseCode: userInfo.enterpriseCode}}">
+        物业资产
       </router-link>
       <router-link  v-if="isRep || isRoot"
                     :to="{ name: 'enterprise'}">
@@ -65,6 +72,19 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+
+    <div class="select-city-box">
+      <span>
+        {{selectCity.name}}
+        &nbsp;<i class="el-icon-caret-bottom"></i>
+      </span>
+      <div class="city-drop-box">
+        <span :class="selectCity.name == item ? 'nowColor' : ''"
+              @click="setCity(item)"
+              v-for="(item, index) in cityList">{{item.name}}</span>
+      </div>
+    </div>
+
   </section>
 </template>
 <script>
@@ -78,11 +98,20 @@ export default {
     }
   },
   created () {
+    // 当前定位城市
+    var myCity = new BMap.LocalCity()
+    myCity.get((res) => {
+      this.setSelectCity({name:res.name,code:''})
+    })
+
     this.getUserInfo()
+    this.haveCitys()
   },
   computed: {
       ...mapGetters({
-        userInfo: 'getUserInfo'
+        userInfo: 'getUserInfo',
+        selectCity: 'getSelectCity',
+        cityList:'getCityList'
       }),
       isRoot () {
         return this.roleCodes.indexOf('platform_root') > -1
@@ -102,8 +131,43 @@ export default {
   },
   methods: {
     ...mapActions([
-      'setUserInfo'
+      'setUserInfo',
+      'setSelectCity',
+      'setCityList'
     ]),
+    setCity (city) {
+      this.setSelectCity(city)
+    },
+    haveCitys(){     // 当前已有的城市
+           util.request({
+                method: 'post',
+                interface: 'haveCity',
+                data: {}
+            }).then(res => {
+                if (res.result.success == '1') {
+                    
+                    var list = []
+                    res.result.result.forEach((item) => {
+                      var jsonObj = {
+                        name:item.cityCname,
+                        code:item.cityCode
+                      }
+                      list.push(jsonObj)
+                      if(this.selectCity.name == item.cityCname){
+                        console.log(item.cityCode)
+                        this.setSelectCity({
+                          name:item.cityCname,
+                          code:item.cityCode
+                          })
+                      }
+                       
+                    })
+                    this.setCityList(list)
+                } else {
+                    this.$message.error(res.result.message)
+                }
+            })
+    },
     getUserInfo () {
       util.request({
         method: 'get',
@@ -211,6 +275,43 @@ export default {
 
       .router-link-active {
         color: #ffffff;
+      }
+    }
+
+    .select-city-box {
+      float: right;
+      margin-left: 20px;
+      font-size: 14px;
+      line-height: 50px;
+      color: #4db3ff;
+      cursor: pointer;
+
+      .city-drop-box {
+        display: none;
+        max-width: 300px;
+        position: fixed;
+        top: 50px;
+        right: 0;
+        background: #ffffff;
+        padding: 15px;
+        box-shadow: 0 2px 4px rgba(0,0,0,.12), 0 0 6px rgba(0,0,0,.12);
+
+        span {
+          cursor: pointer;
+          color: #000000;
+          line-height: 24px;
+          margin-right: 10px;
+        }
+
+        .nowColor {
+          color: #4db3ff;
+        }
+      }
+
+      &:hover {
+        .city-drop-box {
+          display: block;
+        }
       }
     }
 

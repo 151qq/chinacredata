@@ -166,6 +166,20 @@ export default {
         */
         articleEchart: '/static/api/article/articleEchart.json',
 
-        getCitys: '/static/api/common/city.json'
+        /**
+        * 物资资产
+        * 
+        */
+        getCitys: '/static/api/common/city.json',
+
+        saveCity: platform + 'city/save.json',
+
+        haveCity: platform + 'city/list.json',
+
+        saveCityzone: platform +'cityzone/save.json',
+
+        findDictionaryByType: platform +'enterprise/findDictionaryByType',
+
+        cityZoneList: platform + '/cityzone/list'
     }
 }

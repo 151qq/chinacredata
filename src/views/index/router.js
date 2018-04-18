@@ -158,6 +158,32 @@ const routers = [
           title: '素材库'
         }
       },
+  {
+    // 物业资产 - 商圈列表
+    path: 'propertyAssets',
+    name: 'propertyAssets',
+    component (resolve) {
+      require.ensure(['./propertyAssets/propertyAssets.vue'], () => {
+        resolve(require('./propertyAssets/propertyAssets.vue'))
+      })
+    },
+    meta: {
+      title: '物业资产'
+    }
+  },
+  {
+    // 物业资产-商圈明细tab
+    path: 'propertyAssetsSource',
+    name: 'propertyAssetsSource',
+    component (resolve) {
+      require.ensure(['./propertyAssets/source.vue'], () => {
+        resolve(require('./propertyAssets/source.vue'))
+      })
+    },
+    meta: {
+      title: '物业资产'
+    }
+  },
       {
         // 企业信息
         path: 'enterprise',

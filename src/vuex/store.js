@@ -23,21 +23,45 @@ const userStore = new Vuex.Store({
           roleDesc: '会员管理'
         }
       ]
-    }
+    },
+    selectCity: {
+      name:'',
+      code:''
+    },
+    cityList: []
+    
   },
   getters: {
     getUserInfo (state) {
       return state.userInfo
+    },
+    getSelectCity (state) {
+      return state.selectCity
+    },
+    getCityList (state) {
+      return state.cityList
     }
   },
   mutations: {
     setUserInfo (state, userInfo) {
       state.userInfo = userInfo
+    },
+    setSelectCity (state, selectCity) {
+      state.selectCity = selectCity
+    },
+    setCityList (state,cityList) {
+      return state.cityList = cityList
     }
   },
   actions: {
     setUserInfo ({ commit }, userInfo) {
       commit('setUserInfo', userInfo)
+    },
+    setSelectCity ({ commit }, selectCity) {
+      commit('setSelectCity', selectCity)
+    },
+    setCityList ({ commit },cityList) {
+      commit('setCityList', cityList)
     }
   }
 })
