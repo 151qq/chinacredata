@@ -79,7 +79,7 @@
         &nbsp;<i class="el-icon-caret-bottom"></i>
       </span>
       <div class="city-drop-box">
-        <span :class="selectCity.name == item ? 'nowColor' : ''"
+        <span :class="selectCity.name == item.name ? 'nowColor' : ''"
               @click="setCity(item)"
               v-for="(item, index) in cityList">{{item.name}}</span>
       </div>
@@ -154,7 +154,6 @@ export default {
                       }
                       list.push(jsonObj)
                       if(this.selectCity.name == item.cityCname){
-                        console.log(item.cityCode)
                         this.setSelectCity({
                           name:item.cityCname,
                           code:item.cityCode
@@ -288,7 +287,8 @@ export default {
 
       .city-drop-box {
         display: none;
-        max-width: 300px;
+        // max-width: 300px;
+        width: 300px;
         position: fixed;
         top: 50px;
         right: 0;

@@ -28,12 +28,16 @@
                                     enterpriseCode: item.enterpriseCode
                                 }
                              }">
-                    <img class="cover-img" src="/static/images/folder.jpg">
+                        <img class="cover-img" :src="item.zoneCover">
                 </router-link>
                     <div class="title-box">
-                        <div class="title" v-text="item.docTitle"></div>
-                        <div class="title" v-text="item.docTitle"></div>
-                     
+                        <div class="title" v-text="item.zoneName"></div>
+                        <div class="title" v-text="item.zoneTypeName"></div>
+                        <div class="zone-box">
+                     <img  @click="editTradingArea(item)" src="../../../assets/images/pen-icon.png" title="编辑商圈">
+                     &nbsp;&nbsp;
+                     <img  @click="delTradingArea(item.zoneCode)" src="../../../assets/images/del-icon.png" title="商圈删除">
+                        </div>
                     </div>
                 </section>
             </section>
@@ -56,7 +60,7 @@
 
         <!-- 新增城市-->
         <el-dialog title="新增城市" :visible.sync="isAddCity">
-          <el-form :label-position="'left'" :model="addItemForm" label-width="80px">
+          <el-form :label-position="'left'" label-width="80px">
               <el-form-item label="省份">
                 <el-select v-model="base.provinceName"
                                     class="input-box"
@@ -109,7 +113,7 @@
         </el-dialog>
 
          <el-dialog :title="zoneTitle" :visible.sync="isEditTradingArea">
-          <el-form :label-position="'left'" :model="addItemForm" label-width="80px">
+          <el-form :label-position="'left'" label-width="80px">
               
               
            
@@ -146,11 +150,11 @@
                     v-model="zone.zoneDesc">
                 </el-input>
             </el-form-item>
-            <el-form-item v-if="!isNotImg" label="商圈图片">
+            <el-form-item label="商圈图片">
                     <upload-file :path="zone.zoneCover"
                             :is-operate="isEdit"
                             :bg-path="false"
-                            :id-name="'itemCover' + fileType"
+                            :id-name="zone.zoneCover"
                             @changeImg="changeImg"></upload-file>
             </el-form-item>
             
@@ -158,7 +162,7 @@
           </el-form>
           <div slot="footer" class="dialog-footer">
                 <el-button @click="isEditTradingArea = false">取 消</el-button>
-                <el-button type="primary" @click="saveTradingArea">保 存</el-button>
+                <el-button type="primary" @click="saveZone">保 存</el-button>
           </div>
         </el-dialog>
 
@@ -169,37 +173,17 @@
 </template>
 <script>
 import $ from 'Jquery'
-import sortable from 'sortablejs'
 import uploadFile from '../../../components/common/uploadFile.vue'
-import uploadMedia from '../../../components/common/uploadMedia.vue'
-import swiperImg from '../../../components/common/swiper-img.vue'
 import util from '../../../assets/common/util'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
-    props: ['fileType'],
     data() {
         return {
-            dirDatas: [],
-            sourceDatas: [],
-            isCheck: false,
-            showType: '1',
-            isAddDir: false,
-            addDirForm: {
-                docType: '1',
-                docTitle: '',
-                docCover: '',
-                docDesc: '',
-                fileCode: '',
-                docFolder: ''
-            },
-            isNotImg: false,
-            isAddItem: false,
             isAddCity:false,
             isEditTradingArea:false,
             cityData: [],
             cityList: [],
-            postList: [],
             base:{
                 cityCname:'',
                 provinceName:'',
@@ -210,7 +194,9 @@ export default {
                 zoneType:'',
                 zoneDesc:'',
                 zoneCover:'',
-                cityCname:''
+                cityCname:'',
+                zoneCode:'',
+                cityCode:''
             },
             zoneTitle:'',
             zoneList:[],
@@ -218,62 +204,18 @@ export default {
             zonePageNumber: 1,
             zonePageSize: 15,
             zoneTotal: 0,
-            items:[],
-            fileName: '',
-            addItemForm: {
-                docType: '',
-                docTitle: '',
-                fileCode: '',
-                docDesc: '',
-                docCover: '',
-                docFolder: ''
-            },
-            sourseTypes: [
-                {
-                    label: '图片',
-                    value: '2'
-                },
-                {
-                    label: '媒体',
-                    value: '3'
-                }
-            ],
-            checkedLabels: [],
-            isselectVisible: false,
-            nowDir: {},
-            // 选中的图片
-            selectDirList: [],
-            selectItemList: [],
-            bigImgs: [],
-            dirPageNumber: 1,
-            dirPageSize: 15,
-            dirTotal: 0,
-            itemPageNumber: 1,
-            itemPageSize: 15,
-            itemTotal: 0,
-            isShow: {
-              value: false
-            },
-            index: 0
         }
     },
     mounted () {
-        if (this.$route.query.docCode) {
-            this.showType = '2'
-            this.getItems(this.$route.query.docCode)
-        }
-
-        this.getDirs()
         this.getCitys ()
         this.tradingAreaType()
-        // this.getZoneList()
+        this.getZoneList()
         
     },
     computed: {
         ...mapGetters({
             userInfo: 'getUserInfo',
-            selectCity: 'getSelectCity',
-            haveCityList:'getCityList'
+            selectCity: 'getSelectCity'
         }),
         isEdit () {
           return this.userInfo.roleCodes.indexOf('platform_root') > -1 || this.userInfo.roleCodes.indexOf('platform_material_admin') > -1
@@ -281,46 +223,14 @@ export default {
     },
     watch: {
        selectCity () {
-        //    this.getZoneList()
+           this.getZoneList()
        } 
     },
     methods: {
         ...mapActions([
             'setCityList'
        ]),
-        setCheck () {
-            this.isCheck = !this.isCheck
-            this.selectDirList = []
-            this.selectItemList = []
-        },
-        addDir () {
-            this.addDirForm = {
-                docType: '1',
-                docTitle: '',
-                docCover: '',
-                docDesc: '',
-                fileCode: '',
-                docFolder: this.fileType
-            }
-
-            this.isAddDir = true
-        },
-        addItem () {
-            this.isNotImg = false
-            this.addItemForm = {
-                docType: '',
-                docTitle: '',
-                fileCode: '',
-                docDesc: '',
-                docCover: '',
-                docFolder: this.nowDir.docCode
-            }
-
-            this.isAddItem = true
-        },
         addCity(){
-            this.isNotImg = false
-           
             this.isAddCity= true
             this.base.cityCname = ''
             this.base.provinceName = ''
@@ -342,7 +252,6 @@ export default {
         provinceChange () {
             if (!this.base.provinceName) {
                 this.cityList = []
-                this.postList = []
                 return false
             }
 
@@ -352,7 +261,6 @@ export default {
             for (var i = 0, len = this.cityData.length; i < len; i++) {
                 if (this.cityData[i].province == this.base.provinceName) {
                     this.cityList = this.cityData[i].citys
-                    this.postList = this.cityData[i].posts
                     break
                 }
             }
@@ -381,6 +289,28 @@ export default {
             })
     },
         saveCity(){          // 新增城市
+            if (!this.base.provinceName) {
+                this.$message({
+                    message: '请选择省份！',
+                    type: 'warning'
+                })
+                return false
+            }
+            if (!this.base.cityCname) {
+                this.$message({
+                    message: '请选择城市名称！',
+                    type: 'warning'
+                })
+                return false
+            }
+            if (!this.base.cityEname) {
+                this.$message({
+                    message: '请输入城市拼音简称！',
+                    type: 'warning'
+                })
+                return false
+            }
+
             util.request({
                 method: 'post',
                 interface: 'saveCity',
@@ -400,17 +330,59 @@ export default {
         },
         addTradingArea(){   // 新增商圈
         this.zoneTitle = '新增商圈'
+        this.zone = {
+                zoneName:'',
+                zoneType:'',
+                zoneDesc:'',
+                zoneCover:'',
+                cityCname:'',
+                zoneCode:'',
+                cityCode:''
+            }
         this.isEditTradingArea = true
          
         },
-        editTradingArea(){      // 商圈编辑
+        editTradingArea(item){      // 商圈编辑
            this.zoneTitle = '编辑商圈'
+        this.zone.zoneName = item.zoneName
+        this.zone.zoneType = item.zoneType
+        this.zone.zoneDesc = item.zoneDesc
+        this.zone.zoneCover = item.zoneCover
+        this.zone.zoneCode = item.zoneCode
+        this.zone.cityCode = item.cityCode
            this.isEditTradingArea = true
+
         },
         saveTradingArea(){      // 商圈保存
-           
            this.zone.cityCode = this.selectCity.code
-           console.log(this.selectCity.code)
+           if (!this.zone.cityCode) {
+                this.$message({
+                    message: '城市编码为空！',
+                    type: 'warning'
+                })
+                return false
+            }
+            if (!this.zone.zoneName) {
+                this.$message({
+                    message: '请输入商圈名称！',
+                    type: 'warning'
+                })
+                return false
+            }
+            if (!this.zone.zoneType) {
+                this.$message({
+                    message: '请选择商圈类型！',
+                    type: 'warning'
+                })
+                return false
+            }
+            if (!this.zone.zoneCover) {
+                this.$message({
+                    message: '请上传商圈图片！',
+                    type: 'warning'
+                })
+                return false
+            }
            util.request({
                 method: 'post',
                 interface: 'saveCityzone',
@@ -421,11 +393,86 @@ export default {
                         message: '恭喜你，保存成功！',
                         type: 'success'
                     })
+                    this.getZoneList()
                 } else {
                     this.$message.error(res.result.message)
                 }
             }) 
            this.isEditTradingArea = false
+        },
+        delTradingArea(zoneCode){    // 商圈删除
+          util.request({
+                method: 'get',
+                interface: 'cityZoneDel',
+                data: {
+                    zoneCode:zoneCode
+                }
+            }).then(res => {
+                if (res.result.success == '1') {
+                   this.$message({
+                        message: '恭喜你，删除成功！',
+                        type: 'success'
+                    })
+                     this.getZoneList()
+                } else {
+                    this.$message.error(res.result.message)
+                }
+            })
+        },
+        upTradingArea(){       // 商圈编辑
+        if (!this.zone.cityCode) {
+                this.$message({
+                    message: '城市编码为空！',
+                    type: 'warning'
+                })
+                return false
+            }
+            if (!this.zone.zoneName) {
+                this.$message({
+                    message: '请输入商圈名称！',
+                    type: 'warning'
+                })
+                return false
+            }
+            if (!this.zone.zoneType) {
+                this.$message({
+                    message: '请选择商圈类型！',
+                    type: 'warning'
+                })
+                return false
+            }
+            if (!this.zone.zoneCover) {
+                this.$message({
+                    message: '请上传商圈图片！',
+                    type: 'warning'
+                })
+                return false
+            }
+         util.request({
+                method: 'get',
+                interface: 'cityZoneUp',
+                data: this.zone
+            }).then(res => {
+                if (res.result.success == '1') {
+                   this.$message({
+                        message: '恭喜你，更新成功！',
+                        type: 'success'
+                    })
+                    this.getZoneList()
+                } else {
+                    this.$message.error(res.result.message)
+                }
+                this.isEditTradingArea = false
+            })
+        },
+        saveZone(){
+          if(this.zoneTitle == '新增商圈'){
+              console.log('ko')
+            this.saveTradingArea()
+          }else if(this.zoneTitle == '编辑商圈'){
+              console.log('ko2')
+             this.upTradingArea()
+          }
         },
         tradingAreaType(){          // 获取商圈类型
             util.request({
@@ -447,9 +494,8 @@ export default {
             this.getZoneList()
         },
         getZoneList(){     // 获取商圈列表
-          
           util.request({
-                method: 'post',
+                method: 'get',
                 interface: 'cityZoneList',
                 data: {
                     cityCode:this.selectCity.code,
@@ -464,403 +510,12 @@ export default {
                 }
             }) 
         },
-        editDir (item) {
-            this.addDirForm = Object.assign({}, item)
-            this.isAddDir = true
-        },
-        editItem (item) {
-            this.isNotImg = true
-            this.addItemForm = Object.assign({}, item)
-            this.isAddItem = true
-        },
-        changeDirImg (data) {
-            this.addDirForm.docCover = data.url
-        },
-        changeImg (data) {
-            this.addItemForm.fileCode = data.url
-        },
         changeImg(data){
             this.zone.zoneCover = data.url
         },
-        coverChange (data) {
-            this.addItemForm.docCover = data.url
-        },
-        confirmDir () {
-            if (!this.addDirForm.docTitle) {
-                this.$message({
-                    message: '请填写目录名称！',
-                    type: 'warning'
-                })
-                return false
-            }
-
-            // if (!this.addDirForm.docCover) {
-            //     this.$message({
-            //         message: '请添加目录封面！',
-            //         type: 'warning'
-            //     })
-            //     return false
-            // }
-            if (this.fileType == 'e2_4') {
-                this.addDirForm.remark = '1'
-            }
-
-            this.addDirForm.enterpriseCode = this.$route.query.enterpriseCode
-
-            if (this.addDirForm.docCode) {
-                this.updateDir()
-            } else {
-                this.insterDir()
-            }
-        },
-        confirmItem () {
-            if (!this.addItemForm.docTitle) {
-                this.$message({
-                    message: '请填写图片标题！',
-                    type: 'warning'
-                })
-                return false
-            }
-
-            if (!this.addItemForm.fileCode) {
-                this.$message({
-                    message: '请添加图片封面！',
-                    type: 'warning'
-                })
-                return false
-            }
-
-            if (this.fileType == 'e2_4') {
-                this.addItemForm.remark = '1'
-            }
-
-            this.addItemForm.enterpriseCode = this.$route.query.enterpriseCode
-
-            if (this.addItemForm.docCode) {
-                this.updateItem()
-            } else {
-                this.insterItem()
-            }
-        },
-        selectDir (item) {
-            var index = this.selectDirList.indexOf(item.docCode)
-            if (index > -1) {
-                this.selectDirList.splice(index, 1)
-            } else {
-                this.selectDirList.push(item.docCode)
-            }
-        },
-        selectItem (item) {
-            var index = this.selectItemList.indexOf(item.docCode)
-            if (index > -1) {
-                this.selectItemList.splice(index, 1)
-            } else {
-                this.selectItemList.push(item.docCode)
-            }
-        },
-        showBigImg (item, index) {
-            if (this.isCheck) {
-                this.selectItem(item)
-                return false
-            }
-
-            this.index = index
-            this.isShow.value = true
-        },
-        showMedia (item) {
-            if (this.isCheck) {
-                this.selectItem(item)
-            } else {
-                window.open (item.fileCode, '_blank')
-            }
-        },
-        showItems (item) {
-            if (this.isCheck) {
-                this.selectDir(item)
-                return false
-            }
-
-            this.isCheck = false
-            this.showType = '2'
-            this.nowDir = item
-            this.getItems()
-        },
-        showDir () {
-            this.isCheck = false
-            this.showType = '1'
-        },
-        itemPageChange (size) {
-            this.itemPageNumber = size
-            this.getItems()
-        },
-        getItems (docCode) {
-            util.request({
-                method: 'get',
-                interface: 'listPage',
-                data: {
-                    enterpriseCode: this.$route.query.enterpriseCode,
-                    docFolder: docCode ? docCode : this.nowDir.docCode,
-                    pageNumber: this.itemPageNumber,
-                    pageSize: this.itemPageSize
-                }
-            }).then(res => {
-                if (res.result.success == '1') {
-                    this.bigImgs = []
-                    var arrs = []
-                    this.itemTotal = Number(res.result.total)
-                    res.result.result.forEach((item) => {
-                        item.docCreateTime = item.docCreateTime.split(' ')[0]
-                        arrs.push(item.fileCode)
-                    })
-
-                    this.bigImgs = arrs
-
-                    this.sourceDatas = res.result.result
-                } else {
-                    this.$message.error(res.result.message)
-                }
-            })       
-        },
-        insterItem () {
-            util.request({
-                method: 'post',
-                interface: 'materialFolderInsert',
-                data: this.addItemForm
-            }).then(res => {
-                if (res.result.success == '1') {
-                    this.itemPageNumber = 1
-                    this.getItems()
-                    this.isAddItem = false
-                } else {
-                    this.$message.error(res.result.message)
-                }
-            })       
-        },
-        updateItem () {
-            util.request({
-                method: 'post',
-                interface: 'materialFolderUpdate',
-                data: this.addItemForm
-            }).then(res => {
-                if (res.result.success == '1') {
-                    this.getItems()
-                    this.isAddItem = false
-                } else {
-                    this.$message.error(res.result.message)
-                }
-            })       
-        },
-        deleteItems () {
-            util.request({
-                method: 'post',
-                interface: 'materialFolderDelete',
-                data: {
-                    docType: '2',
-                    docCodes: this.selectItemList
-                }
-            }).then(res => {
-                if (res.result.success == '1') {
-                    this.getItems()
-                    this.isCheck = false
-                } else {
-                    this.$message.error(res.result.message)
-                }
-            })
-        },
-        deleteItem (code) {
-            util.request({
-                method: 'post',
-                interface: 'materialFolderDelete',
-                data: {
-                    docType: '2',
-                    docCodes: [code]
-                }
-            }).then(res => {
-                if (res.result.success == '1') {
-                    this.getItems()
-                    this.isCheck = false
-                } else {
-                    this.$message.error(res.result.message)
-                }
-            })
-        },
-        zonePageChange (size) {
-            this.dirPageNumber = size
-            this.getDirs()
-        },
-        getDirs () {
-            util.request({
-                method: 'get',
-                interface: 'listPage',
-                data: {
-                    enterpriseCode: this.$route.query.enterpriseCode,
-                    docFolder: this.fileType,
-                    pageNumber: this.dirPageNumber,
-                    pageSize: this.dirPageSize
-                }
-            }).then(res => {
-                if (res.result.success == '1') {
-                    this.dirTotal = Number(res.result.total)
-
-                    res.result.result.forEach((item) => {
-                        item.docCreateTime = item.docCreateTime.split(' ')[0]
-                    })
-
-                    this.dirDatas = res.result.result
-                } else {
-                    this.$message.error(res.result.message)
-                }
-            })       
-        },
-        insterDir () {
-            util.request({
-                method: 'post',
-                interface: 'materialFolderInsert',
-                data: this.addDirForm
-            }).then(res => {
-                if (res.result.success == '1') {
-                    this.dirPageNumber = 1
-                    this.getDirs()
-                    this.isAddDir = false
-                } else {
-                    this.$message.error(res.result.message)
-                }
-            })       
-        },
-        updateDir () {
-            util.request({
-                method: 'post',
-                interface: 'materialFolderUpdate',
-                data: this.addDirForm
-            }).then(res => {
-                if (res.result.success == '1') {
-                    this.getDirs()
-                    this.isAddDir = false
-                } else {
-                    this.$message.error(res.result.message)
-                }
-            })       
-        },
-        deleteDirs () {
-            util.request({
-                method: 'post',
-                interface: 'materialFolderDelete',
-                data: {
-                    docType: '1',
-                    docCodes: this.selectDirList
-                }
-            }).then(res => {
-                if (res.result.success == '1') {
-                    if (res.result.result.length) {
-                        this.$message({
-                            message: '部分目录下有文件存在，未能删除！',
-                            type: 'warning'
-                        })
-                    }
-                    this.getDirs()
-                    this.isCheck = false
-                } else {
-                    this.$message.error(res.result.message)
-                }
-            })       
-        },
-        deleteDir (code) {
-            util.request({
-                method: 'post',
-                interface: 'materialFolderDelete',
-                data: {
-                    docType: '1',
-                    docCodes: [code]
-                }
-            }).then(res => {
-                if (res.result.success == '1') {
-                    if (res.result.result.length) {
-                        this.$message({
-                            message: '该目录下有文件存在，未能删除！',
-                            type: 'warning'
-                        })
-                    }
-                    this.getDirs()
-                    this.isCheck = false
-                } else {
-                    this.$message.error(res.result.message)
-                }
-            })       
-        },
-        deleteOpt () {
-            if (!this.isCheck) {
-                return false
-            }
-
-            this.$confirm('确定执行该删除操作?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then(() => {
-                if (this.showType == '1') {
-                    this.deleteDirs()
-                } else {
-                    this.deleteItems()
-                }
-                
-            }).catch(() => {
-                this.$message({
-                    type: 'info',
-                    message: '已取消删除'
-                })     
-            })
-        },
-        setImport () {
-            if (!this.isCheck || this.showType == '1') {
-                return false
-            }
-            this.checkedLabels = []
-            this.isselectVisible = true
-        },
-        selectConfirm () {
-            this.removeItem()
-        },
-        removeItem () {
-            util.request({
-                method: 'post',
-                interface: 'materialMove',
-                data: {
-                    files: this.selectItemList,
-                    dirs: this.checkedLabels
-                }
-            }).then(res => {
-                if (res.result.success == '1') {
-                    this.getItems()
-                    this.isselectVisible = false
-                    this.isCheck = false
-                } else {
-                    this.$message.error(res.result.message)
-                }
-            })       
-        },
-        copyItem () {
-            util.request({
-                method: 'post',
-                interface: 'materialCopy',
-                data: {
-                    files: this.selectItemList,
-                    dirs: this.checkedLabels
-                }
-            }).then(res => {
-                if (res.result.success == '1') {
-                    this.getItems()
-                    this.isselectVisible = false
-                    this.isCheck = false
-                } else {
-                    this.$message.error(res.result.message)
-                }
-            })       
-        }
     },
     components: {
-        uploadFile,
-        uploadMedia,
-        swiperImg
+        uploadFile
     }
 }
 </script>
@@ -949,6 +604,19 @@ export default {
             }
         }
 
+        .zone-box {
+            position: relative;
+            height: 27px;
+
+            img {
+                display:block;
+                width: 14px;
+                height: 14px;
+                margin: 13px auto;
+                padding: 0;
+            }
+        }
+
         .disable {
             opacity: 0.5;
             cursor: no-drop;
@@ -997,19 +665,6 @@ export default {
         font-size: 20px;
         color: #999999;
     }
-}
-ol{
-            
-            white-space: nowrap;
-        }
-        ol li{
-            padding: 10px 20px;
-            display: inline-block;
-            background:pink;
-            white-space:nowrap;
-        }
-.el-tabs__content {
-    overflow: visible;
 }
 
 .image-su-box {
@@ -1091,7 +746,7 @@ ol{
         .title-box {
             padding: 5px 10px;
             border-top: 1px solid #D3DCE6;
-            height: 50px;
+            height: 70px;
             box-sizing: border-box;
             
             .title {

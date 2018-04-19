@@ -180,6 +180,10 @@ export default {
 
         findDictionaryByType: platform +'enterprise/findDictionaryByType',
 
-        cityZoneList: platform + '/cityzone/list'
+        cityZoneList: platform + 'cityzone/list',
+
+        cityZoneDel: platform + 'cityzone/delete',
+
+        cityZoneUp: platform + 'cityzone/update'
     }
 }
