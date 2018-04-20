@@ -33,10 +33,14 @@
                     <div class="title-box">
                         <div class="title" v-text="item.zoneName"></div>
                         <div class="title" v-text="item.zoneTypeName"></div>
-                        <div class="zone-box">
-                     <img  @click="editTradingArea(item)" src="../../../assets/images/pen-icon.png" title="编辑商圈">
-                     &nbsp;&nbsp;
-                     <img  @click="delTradingArea(item.zoneCode)" src="../../../assets/images/del-icon.png" title="商圈删除">
+                        <div class="time">
+                            <span class="btn-box">
+                                <i @click.stop="editTradingArea(item)" class="el-icon-document"></i>
+                            </span>
+
+                            <span class="btn-box">
+                                <i @click.stop="delTradingArea(item.zoneCode)" class="el-icon-delete2"></i>
+                            </span>
                         </div>
                     </div>
                 </section>
@@ -601,19 +605,6 @@ export default {
                 width: 100%;
                 height: 27px;
                 opacity: 0.01;
-            }
-        }
-
-        .zone-box {
-            position: relative;
-            height: 27px;
-
-            img {
-                display:block;
-                width: 14px;
-                height: 14px;
-                margin: 13px auto;
-                padding: 0;
             }
         }
 
