@@ -1,90 +1,115 @@
 <template>
-  <section class="header-web">
-    <router-link class="logo-box" :to="{name: 'market'}"><img src="../../assets/images/logo.png"></router-link>
+  <section>
+    <section class="header-web">
+      <router-link class="logo-box" :to="{name: 'market'}"><img src="../../assets/images/logo.png"></router-link>
 
-    <div class="nav-box">
-      <router-link :to="{ name: 'article'}">
-        推广文章
-      </router-link>
-      <router-link :to="{ name: 'market',query:{enterpriseCode: userInfo.enterpriseCode}}">
-        营销方案
-      </router-link>
-      <router-link :to="{ name: 'source',query:{enterpriseCode: userInfo.enterpriseCode}}">
-        素材库
-      </router-link>
-      <!--
-      <router-link  v-if="isProduct || isRoot"
-                    :to="{ name: 'product',query:{
-                      enterpriseCode: userInfo.enterpriseCode,
-                      catalogCode: 'e2',
-                      catalogLevel: 1
-                    }}">
-        产品中心
-      </router-link>
-      <router-link  v-if="isProduct || isRoot"
-                    :to="{ name: 'gift',query:{
-                      enterpriseCode: userInfo.enterpriseCode,
-                      catalogCode: 'e2',
-                      catalogLevel: 1
-                    }}">
-        礼品中心
-      </router-link>
-      -->
-      <!-- <router-link :to="{ name: 'survey',query:{enterpriseCode: userInfo.enterpriseCode}}">
-        调研发布
-      </router-link>
-      <router-link :to="{ name: 'cultivate',query:{enterpriseCode: userInfo.enterpriseCode}}">
-        营销培训
-      </router-link> -->
-      <!-- <router-link  v-if="isMember || isRoot"
-                    :to="{ name: 'member'}">
-        会员管理
-      </router-link> -->
-      <!--
-      <router-link  v-if="isConfig || isRoot"
-                    :to="{ name: 'callcenter',query:{enterpriseCode: userInfo.enterpriseCode}}">
-        营销配置
-      </router-link> -->
-      <router-link  v-if="isConfig || isRoot"
-                    :to="{ name: 'propertyAssets',query:{enterpriseCode: userInfo.enterpriseCode}}">
-        物业资产
-      </router-link>
-      <router-link  v-if="isRep || isRoot"
-                    :to="{ name: 'enterprise'}">
-        企业信息
-      </router-link>
-    </div>
-
-    <div class="member-box">
-      <el-dropdown>
-        <span class="el-dropdown-link">
-          您好
-          <span>{{userInfo.userCnName}}</span>
-          <i class="el-icon-caret-bottom el-icon--right"></i>
-        </span>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item>
-            <div @click="logout">
-              <img src="../../assets/images/logout.png">
-              退出登录
-            </div>
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-    </div>
-
-    <div class="select-city-box">
-      <span>
-        {{selectCity.name}}
-        &nbsp;<i class="el-icon-caret-bottom"></i>
-      </span>
-      <div class="city-drop-box">
-        <span :class="selectCity.name == item.name ? 'nowColor' : ''"
-              @click="setCity(item)"
-              v-for="(item, index) in cityList">{{item.name}}</span>
+      <div class="nav-box">
+        <router-link  :to="{
+                        name: 'zone-list',
+                        query:{
+                          enterpriseCode: userInfo.enterpriseCode
+                        }
+                      }">
+          物业资产
+        </router-link>
+        <router-link :to="{ name: 'enterprise'}">
+          企业信息
+        </router-link>
       </div>
-    </div>
 
+      <div class="member-box">
+        <el-dropdown>
+          <span class="el-dropdown-link">
+            您好
+            <span>{{userInfo.userCnName}}</span>
+            <i class="el-icon-caret-bottom el-icon--right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item>
+              <div @click="logout">
+                <img src="../../assets/images/logout.png">
+                退出登录
+              </div>
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </div>
+
+      <div class="select-city-box"
+            v-if="selectCity.cityName">
+        <span @click="addCity">
+          {{selectCity.cityName}}
+          &nbsp;<i class="el-icon-caret-bottom"></i>
+        </span>
+        <div class="city-drop-box">
+          <span :class="selectCity.cityName == item.cityCname ? 'nowColor' : ''"
+                @click="setCity(item)"
+                v-for="(item, index) in cityList">
+            {{item.cityCname}}
+          </span>
+
+          <div class="clear"></div>
+          <el-pagination
+              v-if="total"
+              class="page-box"
+              @current-change="pageChange"
+              layout="prev, pager, next"
+              :page-size="pageSize"
+              :total="total">
+          </el-pagination>
+        </div>
+      </div>
+    </section>
+
+    <el-dialog title="新增城市" :visible.sync="isAddCity">
+      <el-form :label-position="'left'" label-width="80px">
+          <el-form-item label="省份">
+            <el-select v-model="cityBase.provinceName"
+                        class="input-box"
+                        @change="provinceChange"
+                        filterable
+                        placeholder="请选择">
+                <el-option
+                        :label="'无'"
+                        :value="''">
+                </el-option>
+                <el-option
+                  v-for="(item, index) in cityData"
+                  :key="index"
+                  :label="item.province"
+                  :value="item.province">
+                </el-option>
+            </el-select>         
+        </el-form-item>
+          <el-form-item label="城市">
+            <el-select v-model="cityBase.cityCname"
+                        class="input-box"
+                        filterable
+                        placeholder="请选择">
+                <el-option
+                        :label="'无'"
+                        :value="''">
+                </el-option>
+                <el-option
+                  v-for="(item, index) in citys"
+                  :key="index"
+                  :label="item"
+                  :value="item">
+                </el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="拼音简称">
+            <el-input
+                type="text"
+                v-model="cityBase.cityEname">
+            </el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+            <el-button @click="isAddCity = false">取 消</el-button>
+            <el-button type="primary" @click="saveCity">保 存</el-button>
+      </div>
+    </el-dialog>
   </section>
 </template>
 <script>
@@ -94,40 +119,40 @@ import { mapGetters, mapActions } from 'vuex'
 export default {
   data () {
     return {
-      roleCodes: []
+      roleCodes: [],
+      isAddCity:false,
+      cityData: [],
+      citys: [],
+      cityBase: {
+          cityCname:'',
+          provinceName:'',
+          cityEname:''
+      },
+      pageNumber: 1,
+      pageSize: 20,
+      total: 0
     }
   },
   created () {
     // 当前定位城市
     var myCity = new BMap.LocalCity()
     myCity.get((res) => {
-      this.setSelectCity({name:res.name,code:''})
+      this.setSelectCity({
+        cityName: res.name,
+        cityCode: ''
+      })
     })
 
     this.getUserInfo()
     this.haveCitys()
+    this.getCitys()
   },
   computed: {
       ...mapGetters({
         userInfo: 'getUserInfo',
         selectCity: 'getSelectCity',
         cityList:'getCityList'
-      }),
-      isRoot () {
-        return this.roleCodes.indexOf('platform_root') > -1
-      },
-      isRep () {
-        return this.roleCodes.indexOf('platform_enterprise_rep') > -1
-      },
-      isProduct () {
-        return this.roleCodes.indexOf('product_admin') > -1
-      },
-      isMember () {
-        return this.roleCodes.indexOf('platform_customer_admin') > -1
-      },
-      isConfig () {
-        return this.roleCodes.indexOf('enterprise_config_admin') > -1
-      }
+      })
   },
   methods: {
     ...mapActions([
@@ -136,36 +161,125 @@ export default {
       'setCityList'
     ]),
     setCity (city) {
-      this.setSelectCity(city)
+      this.setSelectCity({
+        cityName: city.cityCname,
+        cityCode: city.cityCode
+      })
     },
-    haveCitys(){     // 当前已有的城市
-           util.request({
-                method: 'post',
-                interface: 'haveCity',
-                data: {}
-            }).then(res => {
-                if (res.result.success == '1') {
-                    
-                    var list = []
-                    res.result.result.forEach((item) => {
-                      var jsonObj = {
-                        name:item.cityCname,
-                        code:item.cityCode
-                      }
-                      list.push(jsonObj)
-                      if(this.selectCity.name == item.cityCname){
-                        this.setSelectCity({
-                          name:item.cityCname,
-                          code:item.cityCode
-                          })
-                      }
-                       
-                    })
-                    this.setCityList(list)
-                } else {
-                    this.$message.error(res.result.message)
-                }
+    pageChange (size) {
+        this.itemPageNumber = size
+        this.haveCitys()
+    },
+    // 当前已有的城市
+    haveCitys(){
+      util.request({
+          method: 'post',
+          interface: 'haveCity',
+          data: {
+            pageNumber: this.pageNumber,
+            pageSize: this.pageSize
+          }
+      }).then(res => {
+          if (res.result.success == '1') {
+            var datas = res.result.result
+            this.total = Number(res.result.total)
+
+            if (datas.length) {
+              for (var i = 0, len = datas.length; i < len; i++) {
+                  if (datas[i].cityCname.indexOf(this.selectCity.cityName) > -1) {
+                      this.setSelectCity({
+                        cityName: datas[i].cityCname,
+                        cityCode: datas[i].cityCode
+                      })
+                      break
+                  }
+              }
+            }
+
+            this.setCityList(datas.length ? datas : [])
+          } else {
+            this.$message.error(res.result.message)
+          }
+      })
+    },
+    addCity () {
+      this.cityBase = {
+          cityCname:'',
+          provinceName:'',
+          cityEname:''
+      }
+
+      this.isAddCity= true
+    },
+    getCitys () {
+      util.request({
+          method: 'get',
+          interface: 'getCitys',
+          data: {}
+      }).then(res => {
+          if (res.result.success == '1') {
+              this.cityData = res.result.results
+          } else {
+              this.$message.error(res.result.message)
+          }
+      })
+    },
+    provinceChange () {
+        if (!this.cityBase.provinceName) {
+            this.cityList = []
+            return false
+        }
+
+        // 省份切换，城市变空
+        this.cityBase.cityCname = ''
+
+        for (var i = 0, len = this.cityData.length; i < len; i++) {
+            if (this.cityData[i].province == this.cityBase.provinceName) {
+                this.citys = this.cityData[i].citys
+                break
+            }
+        }
+    },
+    // 新增城市
+    saveCity () {
+        if (!this.cityBase.provinceName) {
+            this.$message({
+                message: '请选择省份！',
+                type: 'warning'
             })
+            return false
+        }
+        if (!this.cityBase.cityCname) {
+            this.$message({
+                message: '请选择城市名称！',
+                type: 'warning'
+            })
+            return false
+        }
+        if (!this.cityBase.cityEname) {
+            this.$message({
+                message: '请输入城市拼音简称！',
+                type: 'warning'
+            })
+            return false
+        }
+
+        util.request({
+            method: 'post',
+            interface: 'saveCity',
+            data: this.cityBase
+        }).then(res => {
+            if (res.result.success == '1') {
+                this.$message({
+                    message: '恭喜你，保存成功！',
+                    type: 'success'
+                })
+                this.isAddCity = false
+                this.haveCitys()
+            } else {
+                this.$message.error(res.result.message)
+            }
+        })    
     },
     getUserInfo () {
       util.request({
@@ -281,25 +395,24 @@ export default {
       float: right;
       margin-left: 20px;
       font-size: 14px;
-      line-height: 50px;
       color: #4db3ff;
       cursor: pointer;
 
       .city-drop-box {
         display: none;
-        // max-width: 300px;
-        width: 300px;
+        max-width: 600px;
         position: fixed;
         top: 50px;
         right: 0;
         background: #ffffff;
-        padding: 15px;
+        padding: 15px 15px 0;
         box-shadow: 0 2px 4px rgba(0,0,0,.12), 0 0 6px rgba(0,0,0,.12);
 
         span {
+          float: left;
           cursor: pointer;
           color: #000000;
-          line-height: 24px;
+          line-height: 30px;
           margin-right: 10px;
         }
 

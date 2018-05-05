@@ -216,7 +216,7 @@
 
                         if (this.userLoginAccount != 'E2PlatformIniter') {
                             pathUrl = {
-                                name: 'market',
+                                name: 'zone-list',
                                 query: {
                                     enterpriseCode: res.result.result.enterpriseCode
                                 }

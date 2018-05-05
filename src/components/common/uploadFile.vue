@@ -73,7 +73,7 @@ export default {
 
   .img-big {
     display: block;
-    width: 100%;
+    width: 240px;
     height: auto;
     cursor: pointer;
 

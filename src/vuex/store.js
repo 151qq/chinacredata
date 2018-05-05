@@ -25,8 +25,8 @@ const userStore = new Vuex.Store({
       ]
     },
     selectCity: {
-      name:'',
-      code:''
+      cityName:'',
+      cityCode:''
     },
     cityList: []
     

@@ -1,15 +1,14 @@
 <template>
   <div class="input-out" @click.stop="showModel">
-    <el-input 
-      placeholder="请输入需查询的楼盘地址"
-      v-model="keyValue"
-      style="width: 544px;"
-      @change="getMess"
-      >
-    </el-input>
-    <el-button class="search-btn" type="primary" icon="search" @click.stop="goMap(messDate[0])">
-      搜索
-    </el-button>
+    <div class="title-input-box">
+      <el-input 
+        placeholder="请输入内容"
+        v-model="keyValue"
+        class="title-input"
+        @change="getMess"
+        >
+      </el-input>
+    </div>
     <div class="mess-box" v-show="messDate.length !== 0 && isShow">
       <a v-for="item in messDate" class="nav-r" @click.stop="goMap(item)">{{ item.title }}</a>
     </div>
@@ -51,10 +50,10 @@ export default {
       this.isShow = true
       var options = {
         onSearchComplete (results) {
-          console.log(results)
           // 更新调用记录
           _self.count++
-          _self.messDate = results.zr
+          console.log(results)
+          _self.messDate = results.Br
         }
       }
       
@@ -85,13 +84,27 @@ export default {
 <style lang="scss">
   .input-out {
     position: relative;
+    width: 100%;
     display: inline-block;
+
+    .title-input-box {
+      display: flex;
+
+      .title-input {
+        width: 100%;
+
+        input {
+            width: 100%;
+            height: 36px;
+        }
+      }
+    }
 
     .mess-box {
       position: absolute;
       left: 0;
-      top: 35px;
-      width: 534px;
+      top: 36px;
+      width: 100%;
       box-sizing: border-box;
       padding: 15px 0;
       border: 1px solid #C0CCDA;
