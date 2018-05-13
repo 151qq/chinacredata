@@ -5,7 +5,7 @@
                 <office-list></office-list>
             </el-tab-pane>
             <el-tab-pane :label="'购物中心'" :name="'mall'">
-                <!-- <mall-list></mall-list> -->
+                <mall-list></mall-list>
             </el-tab-pane>
             <!-- <el-tab-pane :label="'长租公寓'" :name="'apartment'">
                 <item-list :file-type="'apartment'"></item-list>

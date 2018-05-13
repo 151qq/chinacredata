@@ -77,12 +77,28 @@
                                 v-model="item.managementCost"></el-input-number>
           </section>
           <section class="formBox">
-              <span>其他成本</span>
+              <span>能源成本</span>
               <el-input-number  class="input-box"
                                 size="small"
                                 :min="0"
                                 :step="1"
-                                v-model="item.otherCost"></el-input-number>
+                                v-model="item.energyCost"></el-input-number>
+          </section>
+          <section class="formBox">
+              <span>营销成本</span>
+              <el-input-number  class="input-box"
+                                size="small"
+                                :min="0"
+                                :step="1"
+                                v-model="item.adCost"></el-input-number>
+          </section>
+          <section class="formBox">
+              <span>商业管理成本</span>
+              <el-input-number  class="input-box"
+                                size="small"
+                                :min="0"
+                                :step="1"
+                                v-model="item.businessManagementCost"></el-input-number>
           </section>
           <section class="formBox">
               <span>税费</span>
@@ -91,6 +107,14 @@
                                 :min="0"
                                 :step="1"
                                 v-model="item.tax"></el-input-number>
+          </section>
+          <section class="formBox">
+              <span>其他成本</span>
+              <el-input-number  class="input-box"
+                                size="small"
+                                :min="0"
+                                :step="1"
+                                v-model="item.otherCost"></el-input-number>
           </section>
           <section class="formBox">
               <span>总成本</span>
@@ -147,7 +171,7 @@
             @click="deleteBase(item, index)">删除</el-button>
 
         <el-button v-if="isEdit" class="save-btn" type="info" :plain="true" size="small" icon="document"
-            @click="saveBase(item, index)">保存</el-button>
+            @click="saveBase(item)">保存</el-button>
         <div class="clear"></div>
       </section>
 
@@ -252,10 +276,10 @@ export default {
     },
     methods: {
         checkHandle (item) {
-          return !(item.maintainCost && item.hrCost && item.managementCost && item.tax && totalCost)
+          return !(item.maintainCost && item.hrCost && item.managementCost && item.energyCost && item.adCost && item.businessManagementCost && item.tax && totalCost)
         },
         checkMessage (item) {
-          var total = Number(item.maintainCost) + Number(item.hrCost) + Number(item.managementCost) + Number(item.tax) + Number(item.otherCost)
+          var total = Number(item.maintainCost) + Number(item.hrCost) + Number(item.managementCost) + Number(item.energyCost) + Number(item.adCost) + Number(item.businessManagementCost) + Number(item.tax) + Number(item.otherCost)
 
           if (Number(item.totalCost) !== total) {
             this.$message({
@@ -272,14 +296,20 @@ export default {
         getList () {
           util.request({
               method: 'get',
-              interface: 'officeCostList',
+              interface: 'mallCostList',
               data: {
-                officeCode: this.$route.query.officeCode,
+                mallCode: this.$route.query.mallCode,
                 pageNumber: this.pageNumber,
                 pageSize: this.pageSize
               }
           }).then(res => {
               if (res.result.success == '1') {
+                if (res.result.result.length) {
+                  res.result.result.forEach((item) => {
+                    item.rangeDate = [item.beginDate, item.endDate]
+                  })
+                }
+
                 this.total = Number(res.result.total)
                 this.barrieList = res.result.result
               } else {
@@ -293,13 +323,16 @@ export default {
         },
         addBarrier () {
           this.barrieList.unshift({
-            officeCode: this.$route.query.officeCode,
+            mallCode: this.$route.query.mallCode,
             dateType: '1',
             dateYear: '',
             dateOther: '',
             maintainCost: '',
             hrCost: '',
             managementCost: '',
+            energyCost: '',
+            adCost: '',
+            businessManagementCost: '',
             otherCost: '',
             otherCostDesc: '',
             tax: '',
@@ -314,7 +347,7 @@ export default {
           } else {
             util.request({
                 method: 'get',
-                interface: 'officeCostDelete',
+                interface: 'mallCostDelete',
                 data: {
                   id: barrieData.id
                 }
@@ -327,7 +360,7 @@ export default {
             })
           }
         },
-        saveBase (barrieData, index) {
+        saveBase (barrieData) {
             if (!barrieData.rangeDate.length) {
                 this.$message({
                     message: '请选择时间范围！',
@@ -339,10 +372,10 @@ export default {
             barrieData.beginDate = new Date(barrieData.rangeDate[0])
             barrieData.endDate = new Date(barrieData.rangeDate[1])
 
-            var interfaceName = 'officeCostSave'
+            var interfaceName = 'mallCostSave'
 
             if (barrieData.id) {
-              interfaceName = 'officeCostUpdate'
+              interfaceName = 'mallCostUpdate'
             }
             
             util.request({
@@ -358,7 +391,6 @@ export default {
 
                     this.getList()
                 } else {
-                    this.barrieList.splice(index, 1)
                     this.$message.error(res.result.message)
                 }
             })

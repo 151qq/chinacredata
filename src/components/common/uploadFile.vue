@@ -1,7 +1,7 @@
 <template>
   <div>
     <section class="upload-box">
-      <label class="img-big" :for="idFor">
+      <label class="img-big" :style="{width:imgWidth}" :for="idFor">
         <img v-if="!curPath && !bgPath"
             src="../../assets/images/img-default.jpg">
         <img v-if="!curPath && bgPath"
@@ -17,7 +17,7 @@ import $ from 'Jquery'
 import util from '../../assets/common/util'
 
 export default {
-    props: ['path', 'bgPath', 'idName', 'isOperate'],
+    props: ['path', 'bgPath', 'idName', 'isOperate', 'imgWidth'],
     data() {
       return {
         curPath: '',

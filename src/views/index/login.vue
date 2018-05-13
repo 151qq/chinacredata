@@ -218,12 +218,13 @@
                             pathUrl = {
                                 name: 'zone-list',
                                 query: {
-                                    enterpriseCode: res.result.result.enterpriseCode
+                                    enterpriseCode: res.result.result.enterpriseCode,
+                                    platform: 'platform'
                                 }
                             }
                         } else {
                             pathUrl = {
-                                name: 'platform-detail'
+                                name: 'enterprise-detail'
                             }
                         }
 

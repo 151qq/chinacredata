@@ -1,9 +1,6 @@
 <template>
     <section class="form-small-box">
       <div class="add-btn">
-        <span>
-          率(%)&nbsp;&nbsp;费用(元)
-        </span>
         <el-button type="primary" icon="plus" size="small"
                 @click="addBarrier"
                 v-if="isEdit">增加</el-button>
@@ -12,107 +9,132 @@
       <section class="inForm" v-for="(item, index) in barrieList" :key="index">
         <div class="formDiscount">
           <section class="formBox">
-              <span>时间</span>
-              <el-date-picker class="input-box"
-                              v-model="item.evaluationDate"
-                              type="date"
-                              placeholder="选择租期">
-              </el-date-picker>
+              <span>名称</span>
+              <el-input
+                class="input-box"
+                placeholder="请输入内容， 最多16个字"
+                :maxlength="16"
+                v-model="item.fundLevelName">
+              </el-input>
           </section>
           <section class="formBox">
-              <span>总收入</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="1"
-                                v-model="item.totalIncome"></el-input-number>
-          </section>
-          <section class="formBox">
-              <span>总成本</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="1"
-                                v-model="item.totalCost"></el-input-number>
-          </section>
-          <section class="formBox">
-              <span>息税前利润</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="1"
-                                v-model="item.totalProfit"></el-input-number>
-          </section>
-          <section class="formBox">
-              <span>折旧与摊销</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="1"
-                                v-model="item.depreciationAmortization"></el-input-number>
-          </section>
-          <section class="formBox">
-              <span>财务支出</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="1"
-                                v-model="item.financeCost"></el-input-number>
-          </section>
-          <section class="formBox bigF">
-            <span>财务支出说明</span>
-            <el-input
-              type="textarea"
-              :rows="4"
-              placeholder="请输入内容,最140个字"
-              :maxlength="140"
-              v-model="item.financeCostDesc">
-            </el-input>
-            <div class="limit-box">剩余<a>{{140 - item.financeCostDesc.length}}</a>字</div>
-          </section>
-          <section class="formBox">
-              <span>所得税</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="1"
-                                v-model="item.incomeTax"></el-input-number>
-          </section>
-          <section class="formBox">
-              <span>净利润</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="1"
-                                v-model="item.netProfit"></el-input-number>
-          </section>
-          <section class="formBox">
-              <span>资本化率</span>
+              <span>比例(%)</span>
               <el-input-number  class="input-box"
                                 size="small"
                                 :min="0"
                                 :max="100"
                                 :step="1"
-                                v-model="item.capitalizaitonRate"></el-input-number>
+                                v-model="item.fundLevelRatio"></el-input-number>
           </section>
           <section class="formBox">
-              <span>估值</span>
+              <span>编码</span>
+              <el-input
+                class="input-box"
+                placeholder="请输入内容"
+                v-model="item.fundLevelStockId">
+              </el-input>
+          </section>
+          <section class="formBox">
+              <span>发行规模(万元)</span>
               <el-input-number  class="input-box"
                                 size="small"
                                 :min="0"
                                 :step="1"
-                                v-model="item.propertyValue"></el-input-number>
+                                v-model="item.fundLevelMoney"></el-input-number>
+          </section>
+          <section class="formBox">
+              <span>最低利率</span>
+              <el-input-number  class="input-box"
+                                size="small"
+                                :min="0"
+                                :max="100"
+                                :step="1"
+                                v-model="item.fundLevelInterestMinRate"></el-input-number>
+          </section>
+          <section class="formBox">
+              <span>最高利率</span>
+              <el-input-number  class="input-box"
+                                size="small"
+                                :min="0"
+                                :max="100"
+                                :step="1"
+                                v-model="item.fundLevelInterestMaxRate"></el-input-number>
+          </section>
+          <section class="formBox">
+              <span>类型</span>
+              <el-select
+                class="input-box"
+                v-model="item.fundLevelType"
+                filterable
+                placeholder="请选择">
+                <el-option
+                        :label="'无'"
+                        :value="''">
+                </el-option>
+                <el-option
+                  v-for="(item, index) in dictionary.fund_level_type"
+                  :key="index"
+                  :label="item.typeName"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+          </section>
+          <section class="formBox">
+              <span>还本方式</span>
+              <el-select
+                class="input-box"
+                v-model="item.fundLevelRepaymentType"
+                filterable
+                placeholder="请选择">
+                <el-option
+                        :label="'无'"
+                        :value="''">
+                </el-option>
+                <el-option
+                  v-for="(item, index) in dictionary.fund_level_repayment_type"
+                  :key="index"
+                  :label="item.typeName"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+          </section>
+          <section class="formBox">
+              <span>期限</span>
+              <el-input-number  class="input-box"
+                                size="small"
+                                :min="0"
+                                :step="1"
+                                v-model="item.fundLevelRepaymentDuration"></el-input-number>
+          </section>
+          <section class="formBox">
+              <span>评级</span>
+              <el-select
+                class="input-box"
+                v-model="item.fundLevelRating"
+                filterable
+                placeholder="请选择">
+                <el-option
+                        :label="'无'"
+                        :value="''">
+                </el-option>
+                <el-option
+                  v-for="(item, index) in dictionary.fund_level_rating"
+                  :key="index"
+                  :label="item.typeName"
+                  :value="item.id">
+                </el-option>
+              </el-select>
           </section>
           <section class="formBox bigF">
-            <span>估值说明</span>
+            <span>备注</span>
             <el-input
               type="textarea"
               :rows="4"
               placeholder="请输入内容,最140个字"
-              :maxlength="500"
-              v-model="item.propertyEvaluationDesc">
+              :maxlength="140"
+              v-model="item.fundLevelDesc">
             </el-input>
-            <div class="limit-box">剩余<a>{{500 - item.propertyEvaluationDesc.length}}</a>字</div>
+            <div class="limit-box">剩余<a>{{140 - item.fundLevelDesc.length}}</a>字</div>
           </section> 
         </div>
         <el-button v-if="isEdit" class="save-btn" type="danger" :plain="true" size="small" icon="delete2"
@@ -134,7 +156,7 @@
       </el-pagination>
 
       <div v-if="!barrieList.length" class="null-page">
-            暂无估值
+            暂无分层
       </div>
     </section>
 </template>
@@ -142,7 +164,7 @@
 import util from '../../../../assets/common/util'
 import { mapGetters } from 'vuex'
 export default {
-    props: ['base', 'propertyCode', 'propertyType'],
+    props: ['base', 'dictionary'],
     data () {
         return {
             barrieList: [],
@@ -166,16 +188,16 @@ export default {
         getList () {
           util.request({
               method: 'get',
-              interface: 'propertyValueList',
+              interface: 'assetManagementProductLevelList',
               data: {
-                propertyCode: this.propertyCode,
+                assetManagementProductCode: this.$route.query.assetManagementProductCode,
                 pageNumber: this.pageNumber,
                 pageSize: this.pageSize
               }
           }).then(res => {
               if (res.result.success == '1') {
                 this.total = Number(res.result.total)
-                this.barrieList = res.result.result.length ? res.result.result : []
+                this.barrieList = res.result.result
               } else {
                 this.$message.error(res.result.message)
               }
@@ -187,35 +209,34 @@ export default {
         },
         addBarrier () {
           this.barrieList.unshift({
-            propertyCode: this.propertyCode,
-            propertyType: this.propertyType,
-            evaluationDate: '',
-            totalIncome: '',
-            totalCost: '',
-            totalProfit: '',
-            depreciationAmortization: '',
-            financeCost: '',
-            financeCostDesc: '',
-            incomeTax: '',
-            netProfit: '',
-            capitalizaitonRate: '',
-            propertyValue: '',
-            propertyEvaluationDesc: ''
+            assetManagementProductCode: this.$route.query.assetManagementProductCode,
+            fundLevelName: '',
+            fundLevelRatio: '',
+            fundLevelStockId: '',
+            fundLevelMoney: '',
+            fundLevelInterestMinRate: '',
+            fundLevelInterestMaxRate: '',
+            fundLevelType: '',
+            fundLevelRepaymentType: '',
+            fundLevelRepaymentDuration: '',
+            fundLevelRating: '',
+            fundLevelDesc: ''
           })
         },
         deleteBase (barrieData, index) {
-          if (!barrieData.id) {
+          if (!barrieData.fundLevelCode) {
             this.barrieList.splice(index, 1)
           } else {
             util.request({
                 method: 'get',
-                interface: 'propertyValueDelete',
+                interface: 'assetManagementProductLevelDelete',
                 data: {
-                  id: barrieData.id
+                  fundLevelCode: barrieData.fundLevelCode
                 }
             }).then(res => {
                 if (res.result.success == '1') {
                     this.getList()
+                    this.$emit('incomeChange')
                 } else {
                     this.$message.error(res.result.message)
                 }
@@ -223,20 +244,26 @@ export default {
           }
         },
         saveBase (barrieData) {
-            if (!barrieData.evaluationDate) {
+            if (barrieData.fundLevelName.trim() === '') {
                 this.$message({
-                    message: '请选择评估时间！',
+                    message: '请填写分层名称！',
                     type: 'warning'
                 })
                 return false
             }
 
-            barrieData.evaluationDate = new Date(barrieData.evaluationDate)
+            if (!barrieData.fundLevelRatio) {
+                this.$message({
+                    message: '请填写分层比例！',
+                    type: 'warning'
+                })
+                return false
+            }
 
-            var interfaceName = 'propertyValueSave'
+            var interfaceName = 'assetManagementProductLevelSave'
 
-            if (barrieData.id) {
-              interfaceName = 'propertyValueUpdate'
+            if (barrieData.fundLevelCode) {
+              interfaceName = 'assetManagementProductLevelUpdate'
             }
             
             util.request({
@@ -251,6 +278,7 @@ export default {
                     })
 
                     this.getList()
+                    this.$emit('incomeChange')
                 } else {
                     this.$message.error(res.result.message)
                 }

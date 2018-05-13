@@ -173,9 +173,10 @@
     .formDiscount {
         width: 1020px;
         overflow: hidden;
+        display: flex;
+        flex-wrap: wrap;
 
         .formBox {
-            float: left;
             margin: 0 20px 20px 0;
 
             .font-b {
@@ -220,6 +221,10 @@
 
                   .el-select {
                       width: 160px;
+                  }
+
+                  .el-autocomplete {
+                    width: 160px;
                   }
 
                   input {
@@ -398,6 +403,10 @@
 // 弹窗重置
 .el-dialog--small {
   .el-select {
+    width: 100%;
+  }
+
+  .el-autocomplete {
     width: 100%;
   }
 
@@ -1138,6 +1147,22 @@
         margin-top: 10px;
     }
 
+    .btn-input-box {
+        position: absolute;
+        right: 0;
+        top: -50px;
+        display: block;
+        height: 30px;
+        margin: 0 auto 30px;
+
+        .add-new-btn {
+            float: right;
+            height: 30px;
+            line-height: 30px;
+            padding: 0 10px;
+        }
+    }
+
     .go-back {
         height: 30px;
         position: fixed;
@@ -1233,12 +1258,17 @@
 
             .btn-box {
                float: right;
-               font-size: 14px;
+               font-size: 12px;
                color: #333333;
                margin-left: 5px;
+               cursor: pointer;
 
                i, label {
                     cursor: pointer;
+               }
+
+               &:hover {
+                color: #20A0FF;
                }
             }
         }
@@ -1255,15 +1285,45 @@
 
   .inForm {
     padding: 20px 0;
-    border-bottom: 1px solid #99A9BF;
-
-    &:last-child {
-      border: none;
-      padding-bottom: 0;
-    }
+    border-top: 1px solid #99A9BF;
 
     &:nth-child(2) {
       padding-top: 0;
+      border: none;
+    }
+
+    .item-title {
+      width: 100%;
+      font-size: 16px;
+      color: #1F2D3D;
+      line-height: 36px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+  }
+
+  .inTwoForm {
+
+    .formBox {
+        margin-bottom: 20px;
+        margin-right: 50px;
+
+        &>span {
+            float: left;
+            width: 200px;
+            font-size: 14px;
+            color: #1F2D3D;
+            line-height: 30px;
+        }
+
+        .input-box {
+            float: left;
+            width: 220px;
+
+            input {
+                height: 30px;
+            }
+        }
     }
   }
 }

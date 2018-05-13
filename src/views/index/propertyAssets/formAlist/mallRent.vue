@@ -20,105 +20,37 @@
               </el-date-picker>
           </section>
           <section class="formBox">
-              <span>高区租金</span>
+              <span>楼层</span>
               <el-input-number  class="input-box"
                                 size="small"
                                 :min="0"
                                 :step="1"
-                                v-model="item.maintainCost"></el-input-number>
+                                v-model="item.floorLevel"></el-input-number>
           </section>
           <section class="formBox">
-              <span>中区租金</span>
+              <span>楼层位置</span>
+              <el-input
+                class="input-box"
+                placeholder="请输入内容"
+                v-model="item.floorZone">
+              </el-input>
+          </section>
+          <section class="formBox">
+              <span>平均租金</span>
               <el-input-number  class="input-box"
                                 size="small"
                                 :min="0"
                                 :step="1"
-                                v-model="item.hrCost"></el-input-number>
+                                v-model="item.rentAve"></el-input-number>
           </section>
           <section class="formBox">
-              <span>低区租金</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="1"
-                                v-model="item.managementCost"></el-input-number>
-          </section>
-          <section class="formBox">
-              <span>地下租金</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="1"
-                                v-model="item.otherCost"></el-input-number>
-          </section>
-          <section class="formBox">
-              <span>地上商业租金</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="1"
-                                v-model="item.rentBusiness"></el-input-number>
-          </section>
-          <section class="formBox">
-              <span>地下商业租金</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="1"
-                                v-model="item.tax"></el-input-number>
-          </section>
-          <section class="formBox">
-              <span>高区空置率</span>
+              <span>空置率</span>
               <el-input-number  class="input-box"
                                 size="small"
                                 :min="0"
                                 :max="100"
                                 :step="1"
-                                v-model="item.vacancyHighLevel"></el-input-number>
-          </section>
-          <section class="formBox">
-              <span>中区空置率</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :max="100"
-                                :step="1"
-                                v-model="item.vacancyMiddleLevel"></el-input-number>
-          </section>
-          <section class="formBox">
-              <span>低区空置率</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :max="100"
-                                :step="1"
-                                v-model="item.vacancyLowLevel"></el-input-number>
-          </section>
-          <section class="formBox">
-              <span>地下商业空置率</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :max="100"
-                                :step="1"
-                                v-model="item.vacancyUndergroundBusiness"></el-input-number>
-          </section>
-          <section class="formBox">
-              <span>地上商业空置率</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :max="100"
-                                :step="1"
-                                v-model="item.vacancyBusiness"></el-input-number>
-          </section>
-          <section class="formBox">
-              <span>平均空置率</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="1"
-                                v-model="item.averageVacancy"></el-input-number>
+                                v-model="item.vacancyAve"></el-input-number>
           </section>
           <section class="formBox">
               <span>时租停车费</span>
@@ -207,9 +139,9 @@ export default {
         getList () {
           util.request({
               method: 'get',
-              interface: 'officeRentHistoryList',
+              interface: 'mallRentHistoryList',
               data: {
-                officeCode: this.$route.query.officeCode,
+                mallCode: this.$route.query.mallCode,
                 pageNumber: this.pageNumber,
                 pageSize: this.pageSize
               }
@@ -234,22 +166,14 @@ export default {
         },
         addBarrier () {
           this.barrieList.unshift({
-            officeCode: this.$route.query.officeCode,
+            mallCode: this.$route.query.mallCode,
             rangeDate: [],
             beginDate: '',
             endDate: '',
-            maintainCost: '',
-            hrCost: '',
-            managementCost: '',
-            otherCost: '',
-            rentBusiness: '',
-            tax: '',
-            vacancyHighLevel: '',
-            vacancyMiddleLevel: '',
-            vacancyLowLevel: '',
-            vacancyUndergroundBusiness: '',
-            vacancyBusiness: '',
-            averageVacancy: '',
+            floorLevel: '',
+            floorZone: '',
+            rentAve: '',
+            vacancyAve: '',
             parkingHourFee: '',
             parkingMonthFee: '',
             parkingFeeDesc: ''
@@ -261,7 +185,7 @@ export default {
           } else {
             util.request({
                 method: 'get',
-                interface: 'officeRentHistoryDelete',
+                interface: 'mallRentHistoryDelete',
                 data: {
                   id: barrieData.id
                 }
@@ -286,10 +210,10 @@ export default {
             barrieData.beginDate = new Date(barrieData.rangeDate[0])
             barrieData.endDate = new Date(barrieData.rangeDate[1])
 
-            var interfaceName = 'officeRentHistorySave'
+            var interfaceName = 'mallRentHistorySave'
 
             if (barrieData.id) {
-              interfaceName = 'officeRentHistoryUpdate'
+              interfaceName = 'mallRentHistoryUpdate'
             }
             
             util.request({

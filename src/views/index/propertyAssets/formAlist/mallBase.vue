@@ -7,10 +7,10 @@
       </div>
       <div class="formDiscount">
           <section class="formBox">
-              <span>写字楼类型</span>
+              <span>购物中心类型</span>
               <el-select
                 class="input-box"
-                v-model="base.officeType"
+                v-model="base.mallType"
                 filterable
                 placeholder="请选择">
                 <el-option
@@ -18,7 +18,7 @@
                         :value="''">
                 </el-option>
                 <el-option
-                  v-for="(item, index) in dictionary.office_type"
+                  v-for="(item, index) in dictionary.mall_type"
                   :key="index"
                   :label="item.typeName"
                   :value="item.id">
@@ -29,57 +29,60 @@
               <span>地上建筑面积</span>
               <el-input-number  class="input-box"
                                 size="small"
+                                @change="computAreaUp"
                                 :min="0"
                                 :step="0.01"
                                 v-model="base.groundBuiltupArea"></el-input-number>
           </section>
           <section class="formBox">
-              <span>套内面积</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="0.01"
-                                v-model="base.innerArea"></el-input-number>
-          </section>
-          <section class="formBox">
-              <span>地上层数</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="1"
-                                v-model="base.floorOvergroundLayer"></el-input-number>
-          </section>
-          <section class="formBox">
               <span>地下建筑面积</span>
               <el-input-number  class="input-box"
                                 size="small"
+                                @change="computAreaUn"
                                 :min="0"
                                 :step="0.01"
-                                v-model="base.undergroundBuiltupArea"></el-input-number>
-          </section>
-          <section class="formBox">
-              <span>地下商业面积</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="0.01"
-                                v-model="base.undergroundBusinessArea"></el-input-number>
-          </section>
-          <section class="formBox">
-              <span>地下层数</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="1"
-                                v-model="base.floorUndergroundLayer"></el-input-number>
+                                v-model="base.undergroundBuildupArea"></el-input-number>
           </section>
           <section class="formBox">
               <span>总建筑面积</span>
               <el-input-number  class="input-box"
                                 size="small"
+                                :disabled="true"
                                 :min="0"
                                 :step="0.01"
-                                v-model="base.totalBuiltupArea"></el-input-number>
+                                v-model="totalArea"></el-input-number>
+          </section>
+          <section class="formBox">
+              <span>地上经营面积</span>
+              <el-input-number  class="input-box"
+                                size="small"
+                                :min="0"
+                                :step="0.01"
+                                v-model="base.groundOperationAera"></el-input-number>
+          </section>
+          <section class="formBox">
+              <span>地下经营面积</span>
+              <el-input-number  class="input-box"
+                                size="small"
+                                :min="0"
+                                :step="0.01"
+                                v-model="base.undergroundOperationArea"></el-input-number>
+          </section>
+          <section class="formBox">
+              <span>地上可租面积</span>
+              <el-input-number  class="input-box"
+                                size="small"
+                                :min="0"
+                                :step="0.01"
+                                v-model="base.groundRentArea"></el-input-number>
+          </section>
+          <section class="formBox">
+              <span>地下可租面积</span>
+              <el-input-number  class="input-box"
+                                size="small"
+                                :min="0"
+                                :step="0.01"
+                                v-model="base.undergroundRentArea"></el-input-number>
           </section>
           <section class="formBox">
               <span>层高</span>
@@ -95,7 +98,16 @@
                                 size="small"
                                 :min="0"
                                 :step="0.01"
-                                v-model="base.netHeight"></el-input-number>
+                                v-model="base.floorNetHeight"></el-input-number>
+          </section>
+          <section class="formBox">
+              <span>容积率</span>
+              <el-input-number  class="input-box"
+                                size="small"
+                                :min="0"
+                                :max="100"
+                                :step="1"
+                                v-model="base.plotRation"></el-input-number>
           </section>
           <section class="formBox">
               <span>车位数量</span>
@@ -104,6 +116,22 @@
                                 :min="0"
                                 :step="1"
                                 v-model="base.parkingNumber"></el-input-number>
+          </section>
+          <section class="formBox">
+              <span>地上层数</span>
+              <el-input-number  class="input-box"
+                                size="small"
+                                :min="0"
+                                :step="1"
+                                v-model="base.floorOvergroundLayer"></el-input-number>
+          </section>
+          <section class="formBox">
+              <span>地下层数</span>
+              <el-input-number  class="input-box"
+                                size="small"
+                                :min="0"
+                                :step="1"
+                                v-model="base.floorUndergroundLayer"></el-input-number>
           </section>
           <section class="formBox">
               <span>电梯数量</span>
@@ -152,33 +180,6 @@
               </el-select>
           </section>
           <section class="formBox">
-              <span>物业官网</span>
-              <el-input
-                class="input-box"
-                placeholder="请输入内容"
-                v-model="base.officeWeb">
-              </el-input>
-          </section>
-          <section class="formBox">
-              <span>物业持有</span>
-              <el-select
-                class="input-box"
-                v-model="base.propertySaleModel"
-                filterable
-                placeholder="请选择">
-                <el-option
-                        :label="'无'"
-                        :value="''">
-                </el-option>
-                <el-option
-                  v-for="(item, index) in dictionary.property_sale_model"
-                  :key="index"
-                  :label="item.typeName"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-          </section>
-          <section class="formBox">
               <span>设计单位</span>
               <search-input class="input-box"
                               :search-data="base"
@@ -207,6 +208,43 @@
                               :m-name="'propertyManagementUnitName'"
                               :s-code="'enterpriseCode'"
                               :s-name="'enterpriseNameReg'"></search-input>
+          </section>
+          <section class="formBox">
+              <span>商业运营单位</span>
+              <search-input class="input-box"
+                              :search-data="base"
+                              :fetch-suggestions="getEnterpriseList"
+                              :m-code="'mallBusinessOperator'"
+                              :m-name="'mallBusinessOperatorName'"
+                              :s-code="'enterpriseCode'"
+                              :s-name="'enterpriseNameReg'"></search-input>
+          </section>
+          <section class="formBox">
+              <span>购物中心官网</span>
+              <el-input
+                class="input-box"
+                placeholder="请输入内容"
+                v-model="base.mallWeb">
+              </el-input>
+          </section>
+          <section class="formBox">
+              <span>物业持有</span>
+              <el-select
+                class="input-box"
+                v-model="base.propertySaleModel"
+                filterable
+                placeholder="请选择">
+                <el-option
+                        :label="'无'"
+                        :value="''">
+                </el-option>
+                <el-option
+                  v-for="(item, index) in dictionary.property_sale_model"
+                  :key="index"
+                  :label="item.typeName"
+                  :value="item.id">
+                </el-option>
+              </el-select>
           </section>
           <section class="formBox">
               <span>地类(用途)</span>
@@ -272,15 +310,6 @@
                                 :step="1"
                                 v-model="base.landLifeLeft"></el-input-number>
           </section>
-          <section class="formBox">
-              <span>容积率</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :max="100"
-                                :step="1"
-                                v-model="base.plotRation"></el-input-number>
-          </section>
           <section class="formBox bigF">
               <span>土地使用说明</span>
               <el-input
@@ -295,7 +324,7 @@
           <section class="formBox">
               <span>投入使用时间</span>
               <el-date-picker class="input-box"
-                              v-model="base.officeOpenDate"
+                              v-model="base.mallOpenDate"
                               type="date"
                               placeholder="选择日期">
               </el-date-picker>
@@ -309,7 +338,7 @@
               </el-input>
           </section>
           <section class="formBox bigF">
-              <span>写字楼介绍</span>
+              <span>购物中心介绍</span>
               <el-input
                 type="textarea"
                 :rows="4"
@@ -330,8 +359,8 @@
 </template>
 <script>
 import util from '../../../../assets/common/util'
-import searchBox from '../../../../components/common/search-box.vue'
 import searchInput from '../../../../components/common/search-input'
+import searchBox from '../../../../components/common/search-box.vue'
 import mapShow from '../../../../components/common/map-show.vue'
 import { mapGetters } from 'vuex'
 export default {
@@ -339,21 +368,22 @@ export default {
     data () {
         return {
             base: {
-              officeCode: '',
-              officeAddr: '',
-              officeName: '',
-              officeGps: '',
+              mallCode: '',
+              mallAddr: '',
+              mallName: '',
+              mallGps: '',
               zoneCode: '',
-              officeType: '',
-              officeCover: '',
+              mallType: '',
+              mallCover: '',
               groundBuiltupArea: '',
-              undergroundBuiltupArea: '',
-              undergroundBusinessArea: '',
-              totalBuiltupArea: '',
-              innerArea: '',
+              undergroundBuildupArea: '',
+              groundOperationAera: '',
+              undergroundOperationArea: '',
+              groundRentArea: '',
+              undergroundRentArea: '',
               plotRation: '',
               floorHeight: '',
-              netHeight: '',
+              floorNetHeight: '',
               floorOvergroundLayer: '',
               floorUndergroundLayer: '',
               parkingNumber: '',
@@ -363,14 +393,15 @@ export default {
               designerUnit: '',
               builderUnit: '',
               propertyManagementUnit: '',
-              officeWeb: '',
+              mallBusinessOperator: '',
+              mallWeb: '',
               propertySaleModel: '',
               landType: '',
               landUsageRightType: '',
               landUsageUnit: '',
               landGetDate: '',
               landLifeLeft: '',
-              officeOpenDate: '',
+              mallOpenDate: '',
               landOtherMemo: '',
               propertyManager: '',
               propertyDesc: '',
@@ -423,27 +454,27 @@ export default {
               }
           })       
         },
-        // computAreaUp (value) {
-        //   this.totalArea = Number(value) + Number(this.base.undergroundBuiltupArea)
-        // },
-        // computAreaUn (value) {
-        //   this.totalArea = Number(this.base.groundBuiltupArea) + Number(value)
-        // },
+        computAreaUp (value) {
+          this.totalArea = Number(value) + Number(this.base.undergroundBuildupArea)
+        },
+        computAreaUn (value) {
+          this.totalArea = Number(this.base.groundBuiltupArea) + Number(value)
+        },
         mapChange (mapInfo) {
-          this.base.officeAddr = mapInfo.title
-          this.base.officeGps = mapInfo.point.lng + ',' + mapInfo.point.lat
+          this.base.mallAddr = mapInfo.title
+          this.base.mallGps = mapInfo.point.lng + ',' + mapInfo.point.lat
         },
         getBase () {
           util.request({
               method: 'get',
-              interface: 'officeInfo',
+              interface: 'mallInfo',
               data: {
-                officeCode: this.$route.query.officeCode
+                mallCode: this.$route.query.mallCode
               }
           }).then(res => {
               if (res.result.success == '1') {
                 this.base = res.result.result
-                // this.totalArea = res.result.result.totalBuiltupArea
+                this.totalArea = Number(this.base.groundBuiltupArea) + Number(this.base.undergroundBuildupArea)
                 this.$emit('change', res.result.result)
               } else {
                 this.$message.error(res.result.message)
@@ -451,17 +482,17 @@ export default {
           })
         },
         saveBase () {
-          if (!this.base.officeName) {
+          if (!this.base.mallName) {
               this.$message({
-                  message: '请填写写字楼名称！',
+                  message: '请填写购物中心名称！',
                   type: 'warning'
               })
               return false
           }
 
-          if (!this.base.officeAddr) {
+          if (!this.base.mallAddr) {
             this.$message({
-                  message: '请填写写字楼地址！',
+                  message: '请填写购物中心地址！',
                   type: 'warning'
               })
               return false
@@ -471,13 +502,13 @@ export default {
             this.base.landGetDate = new Date(this.base.landGetDate)
           }
 
-          if (this.base.officeOpenDate) {
-            this.base.officeOpenDate = new Date(this.base.officeOpenDate)
+          if (this.base.mallOpenDate) {
+            this.base.mallOpenDate = new Date(this.base.mallOpenDate)
           }
 
           util.request({
               method: 'post',
-              interface: 'officeUpdate',
+              interface: 'mallInfoUpdate',
               data: this.base
           }).then(res => {
               if (res.result.success == '1') {

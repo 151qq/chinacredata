@@ -32,7 +32,10 @@
           <div class="line-bold"></div>
 
           <el-collapse-item class="float-form-box" title="基本信息" name="1">
-            <office-base @change="baseChange" ref="baseForm"></office-base>
+            <office-base @change="baseChange"
+                        :dictionary="dictionary"
+                        :enterprise-list="enterpriseList"
+                        ref="baseForm"></office-base>
           </el-collapse-item>
           <div class="line-bold"></div>
 
@@ -61,6 +64,7 @@
           <el-collapse-item class="float-form-box" title="交易历史" name="4">
             <trade-list :enterprise-list="enterpriseList"
                         :base="baseData"
+                        :dictionary="dictionary"
                         :property-code="$route.query.officeCode"
                         :property-type="'property_type_1'"></trade-list>
           </el-collapse-item>
@@ -68,7 +72,9 @@
 
           <!-- 租户信息 -->
           <el-collapse-item class="float-form-box" title="租户信息" name="5">
-            <office-tenant :enterprise-list="enterpriseList" :base="baseData"></office-tenant>
+            <office-tenant :enterprise-list="enterpriseList"
+                            :base="baseData"
+                            :dictionary="dictionary"></office-tenant>
           </el-collapse-item>
           <div class="line-bold"></div>
 
@@ -96,6 +102,12 @@
           <el-collapse-item class="float-form-box" title="租金和空置率" name="9">
             <office-rent :base="baseData"></office-rent>
           </el-collapse-item>
+          <div class="line-bold"></div>
+
+          <!-- 资产证券化 -->
+          <el-collapse-item class="float-form-box" title="资产证券化" name="10">
+            <property-assets :property-code="$route.query.officeCode"></property-assets>
+          </el-collapse-item>
         </el-collapse>
 
         <el-dialog title="写字楼地址" :visible.sync="isShowMap">
@@ -118,6 +130,7 @@ import officeTenant from './formAlist/officeTenant'
 import officeCost from './formAlist/officeCost'
 import officeIncome from './formAlist/officeIncome'
 import valueList from './formAlist/valueList'
+import propertyAssets from './formAlist/propertyAssets'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -132,7 +145,33 @@ export default {
             },
             imgList: [],
             sourceData: [],
-            enterpriseList: []
+            enterpriseList: [],
+            dictionaryTypes: [
+              'enterprise_type',
+              'floor_type',
+              'airconditioner_type',
+              'property_sale_model',
+              'land_type',
+              'land_usage_right_type',
+              'mall_type',
+              'office_type',
+              'trade_type',
+              'tenant_type',
+              'lease_type'
+            ],
+            dictionary: {
+              enterprise_type: [],
+              floor_type: [],
+              airconditioner_type: [],
+              property_sale_model: [],
+              land_type: [],
+              land_usage_right_type: [],
+              mall_type: [],
+              office_type: [],
+              trade_type: [],
+              tenant_type: [],
+              lease_type: []
+            }
         }
     },
     mounted () {
@@ -142,6 +181,7 @@ export default {
         }
 
         this.getEnterprises()
+        this.getDictionaryTypes()
     },
     computed: {
         ...mapGetters({
@@ -176,6 +216,21 @@ export default {
                 this.$message.error(res.result.message)
             }
         })       
+      },
+      getDictionaryTypes () {
+        util.request({
+            method: 'post',
+            interface: 'disOfEnterpriseInfo',
+            data: {
+              types: this.dictionaryTypes.join(',')
+            }
+        }).then(res => {
+            if (res.result.success == '1') {
+              this.dictionary = res.result.result
+            } else {
+              this.$message.error(res.result.message)
+            }
+        })
       },
       getItems (docCode) {
           util.request({
@@ -272,7 +327,8 @@ export default {
         officeTenant,
         officeCost,
         officeIncome,
-        valueList
+        valueList,
+        propertyAssets
     }
 }
 </script>

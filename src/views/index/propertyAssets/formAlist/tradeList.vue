@@ -21,25 +21,17 @@
           </section>
           <section class="formBox">
               <span>交易甲方</span>
-              <el-select
-                class="input-box"
-                v-model="item.firstParty"
-                @change="firstPartyChange(item.firstParty, index)"
-                filterable
-                placeholder="请选择">
-                <el-option
-                        :label="'无'"
-                        :value="''">
-                </el-option>
-                <el-option
-                  v-for="(item, index) in enterpriseList"
-                  :key="index"
-                  :label="item.enterpriseNameReg"
-                  :value="item.enterpriseCode">
-                </el-option>
-              </el-select>
+              <search-input   :class="'input-box'"
+                              :search-data="item"
+                              :fetch-suggestions="getEnterpriseList"
+                              :m-code="'firstParty'"
+                              :m-name="'firstPartyName'"
+                              :m-type="'firstPartyType'"
+                              :s-code="'enterpriseCode'"
+                              :s-name="'enterpriseNameReg'"
+                              :s-type="'enterpriseType'"></search-input>
           </section>
-          <section class="formBox">
+<!--           <section class="formBox">
               <span>甲方类型</span>
               <el-select
                 class="input-box"
@@ -48,34 +40,26 @@
                 filterable
                 placeholder="请选择">
                 <el-option
-                  v-for="(item, index) in enterpriseTypes"
+                  v-for="(item, index) in dictionary.enterprise_type"
                   :key="index"
-                  :label="item.dictKeyValue"
-                  :value="item.dictKeyCode">
+                  :label="item.typeName"
+                  :value="item.id">
                 </el-option>
               </el-select>
-          </section>
+          </section> -->
           <section class="formBox">
               <span>交易乙方</span>
-              <el-select
-                class="input-box"
-                v-model="item.secondParty"
-                @change="secondPartyChange(item.secondParty, index)"
-                filterable
-                placeholder="请选择">
-                <el-option
-                        :label="'无'"
-                        :value="''">
-                </el-option>
-                <el-option
-                  v-for="(item, index) in enterpriseList"
-                  :key="index"
-                  :label="item.enterpriseNameReg"
-                  :value="item.enterpriseCode">
-                </el-option>
-              </el-select>
+              <search-input   :class="'input-box'"
+                              :search-data="item"
+                              :fetch-suggestions="getEnterpriseList"
+                              :m-code="'secondParty'"
+                              :m-name="'secondPartyName'"
+                              :m-type="'secondPartyType'"
+                              :s-code="'enterpriseCode'"
+                              :s-name="'enterpriseNameReg'"
+                              :s-type="'enterpriseType'"></search-input>
           </section>
-          <section class="formBox">
+          <!-- <section class="formBox">
               <span>乙方类型</span>
               <el-select
                 class="input-box"
@@ -84,13 +68,13 @@
                 filterable
                 placeholder="请选择">
                 <el-option
-                  v-for="(item, index) in enterpriseTypes"
+                  v-for="(item, index) in dictionary.enterprise_type"
                   :key="index"
-                  :label="item.dictKeyValue"
-                  :value="item.dictKeyCode">
+                  :label="item.typeName"
+                  :value="item.id">
                 </el-option>
               </el-select>
-          </section>
+          </section> -->
           <section class="formBox">
               <span>交易类型</span>
               <el-select
@@ -99,7 +83,7 @@
                 filterable
                 placeholder="请选择">
                 <el-option
-                  v-for="(item, index) in []"
+                  v-for="(item, index) in dictionary.trade_type"
                   :key="index"
                   :label="item.typeName"
                   :value="item.id">
@@ -160,6 +144,16 @@
         <div class="clear"></div>
       </section>
 
+      <div class="clear"></div>
+      <el-pagination
+          v-if="total"
+          class="page-box"
+          @current-change="pageChange"
+          layout="prev, pager, next"
+          :page-size="pageSize"
+          :total="total">
+      </el-pagination>
+
       <div v-if="!barrieList.length" class="null-page">
             暂无交易
       </div>
@@ -167,18 +161,20 @@
 </template>
 <script>
 import util from '../../../../assets/common/util'
+import searchInput from '../../../../components/common/search-input'
 import { mapGetters } from 'vuex'
 export default {
-    props: ['base', 'enterpriseList', 'propertyCode', 'propertyType'],
+    props: ['base', 'enterpriseList', 'propertyCode', 'propertyType', 'dictionary'],
     data () {
         return {
             barrieList: [],
-            enterpriseTypes: []
+            pageNumber: 1,
+            pageSize: 5,
+            total: 0
         }
     },
     mounted () {
       this.getList()
-      this.getEnterpriseTypes()
     },
     computed: {
         ...mapGetters({
@@ -189,59 +185,58 @@ export default {
         }
     },
     methods: {
-        firstPartyChange (value, index) {
-          for (var i = 0, len = this.enterpriseList.length; i < len; i++) {
-            if (this.enterpriseList[i].enterpriseCode == value) {
-              this.barrieList[index].firstPartyType = this.enterpriseList[i].enterpriseType
-              break
-            }
+        getEnterpriseList (queryString, cb) {
+          if (!this.requestNum) {
+            this.requestNum = 1
+          } else {
+            this.requestNum++
+          }
+          
+          var requestNum = this.requestNum
+
+          var formData = {
+            keyName: queryString,
+            pageNumber: 1,
+            pageSize: 20
           }
 
-          if (!value) {
-            this.barrieList[index].firstPartyType = ''
-          }
-        },
-        secondPartyChange (value, index) {
-          for (var i = 0, len = this.enterpriseList.length; i < len; i++) {
-            if (this.enterpriseList[i].enterpriseCode == value) {
-              this.barrieList[index].secondPartyType = this.enterpriseList[i].enterpriseType
-              break
-            }
-          }
-
-          if (!value) {
-            this.barrieList[index].secondPartyType = ''
-          }
-        },
-        getEnterpriseTypes () {
           util.request({
               method: 'get',
-              interface: 'findDictionaryByType',
-              data: {
-                typeCode: 'enterprise_type'
-              }
+              interface: 'enterpriseListByKeyname',
+              data: formData
           }).then(res => {
               if (res.result.success == '1') {
-                this.enterpriseTypes = res.result.result
+                  if (requestNum == this.requestNum) {
+                    if (res.result.result.length) {
+                      cb(res.result.result)
+                    }
+                  }
               } else {
-                this.$message.error(res.result.message)
+                  this.$message.error(res.result.message)
               }
-          })
+          })       
         },
         getList () {
           util.request({
               method: 'get',
               interface: 'propertyTradeList',
               data: {
-                propertyCode: this.propertyCode
+                propertyCode: this.propertyCode,
+                pageNumber: this.pageNumber,
+                pageSize: this.pageSize
               }
           }).then(res => {
               if (res.result.success == '1') {
-                this.barrieList = res.result.result
+                this.total = Number(res.result.result)
+                this.barrieList = res.result.result.length ? res.result.result : []
               } else {
                 this.$message.error(res.result.message)
               }
           })
+        },
+        pageChange (size) {
+            this.pageNumber = size
+            this.getList()
         },
         addBarrier () {
           this.barrieList.unshift({
@@ -288,6 +283,7 @@ export default {
                 return false
             }
 
+            console.log(barrieData)
             if (!barrieData.firstParty) {
                 this.$message({
                     message: '请选择交易甲方！',
@@ -353,6 +349,9 @@ export default {
                 }
             })
         }
+    },
+    components: {
+      searchInput
     }
 }
 </script>

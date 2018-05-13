@@ -28,8 +28,11 @@ const userStore = new Vuex.Store({
       cityName:'',
       cityCode:''
     },
-    cityList: []
-    
+    cityList: [],
+    selectExchange: {
+      exchangeName: '',
+      exchangeCode: ''
+    }
   },
   getters: {
     getUserInfo (state) {
@@ -40,7 +43,10 @@ const userStore = new Vuex.Store({
     },
     getCityList (state) {
       return state.cityList
-    }
+    },
+    getSelectExchange (state) {
+      return state.selectExchange
+    },
   },
   mutations: {
     setUserInfo (state, userInfo) {
@@ -49,8 +55,11 @@ const userStore = new Vuex.Store({
     setSelectCity (state, selectCity) {
       state.selectCity = selectCity
     },
-    setCityList (state,cityList) {
+    setCityList (state, cityList) {
       return state.cityList = cityList
+    },
+    setSelectExchange (state, selectExchange) {
+      return state.selectExchange = selectExchange
     }
   },
   actions: {
@@ -60,8 +69,11 @@ const userStore = new Vuex.Store({
     setSelectCity ({ commit }, selectCity) {
       commit('setSelectCity', selectCity)
     },
-    setCityList ({ commit },cityList) {
+    setCityList ({ commit }, cityList) {
       commit('setCityList', cityList)
+    },
+    setSelectExchange ({ commit }, selectExchange) {
+      commit('setSelectExchange', selectExchange)
     }
   }
 })

@@ -9,8 +9,6 @@
                   <el-input
                     class="input-box"
                     placeholder="请输入标题，最多25个字"
-                    :disabled="true"
-                    @blur="checkCname"
                     v-model="base.enterpriseCname">
                   </el-input>
                   <div class="btn-box"
@@ -24,7 +22,6 @@
                     class="input-box"
                     placeholder="请输入简称，最多12个字"
                     :maxlength="12"
-                    @blur="checkReg"
                     v-model="base.enterpriseNameReg">
                   </el-input>
               </section>
@@ -33,7 +30,6 @@
                   <span>企业类型</span>
                   <el-select class="input-box"
                             v-model="base.enterpriseType"
-                            :disabled="true"
                             placeholder="请选择">
                       <el-option
                         v-for="item in enterpriseTypes"
@@ -49,7 +45,6 @@
                   <el-input
                     class="input-box"
                     placeholder="请输入内容"
-                    :disabled="true"
                     v-model="base.enterpriseCorporateRep">
                   </el-input>
               </section>
@@ -59,7 +54,6 @@
                   <el-input
                     class="input-box"
                     placeholder="请输入内容"
-                    :disabled="true"
                     v-model="base.enterpriseTaxNo">
                   </el-input>
               </section>
@@ -69,7 +63,6 @@
                   <el-input
                     class="input-box"
                     placeholder="请输入内容"
-                    :disabled="true"
                     v-model="base.enterpriseBank">
                   </el-input>
               </section>
@@ -79,7 +72,6 @@
                   <el-input
                     class="input-box"
                     placeholder="请输入内容"
-                    :disabled="true"
                     v-model="base.enterpriseBankAccount">
                   </el-input>
               </section>
@@ -89,79 +81,50 @@
                   <el-input
                     class="input-box"
                     placeholder="请输入内容"
-                    :disabled="true"
                     v-model="base.enterpriseWeb">
                   </el-input>
               </section>
+              
+              <template v-if="base.enterpriseType == 'enterprise_type_0'">
+                <section class="formBox">
+                  <span>超级管理员</span>
+                  <div class="input-btn-box">
+                    <el-input
+                      class="input-b"
+                      placeholder="请输入内容"
+                      @blur="checkUserName"
+                      v-model="base.userName">
+                    </el-input>
 
-              <section class="formBox">
-                  <span>快递城市</span>
-                  <el-select v-model="base.enterpriseAddrCity"
-                              class="input-box"
-                              :disabled="true"
-                              @change="cityChange"
-                              filterable placeholder="请选择">
-                      <el-option
-                              :label="'无'"
-                              :value="''">
-                      </el-option>
-                      <el-option
-                        v-for="(item, index) in cityData"
-                        :key="index"
-                        :label="item"
-                        :value="item">
-                      </el-option>
-                  </el-select>
-              </section>
+                    <el-button class="input-btn"
+                              type="primary"
+                              size="small"
+                              :disabled="hasTel"
+                              @click="checkName">验证</el-button>
+                  </div>
+                  
+                </section>
 
-              <section class="formBox">
-                  <span>邮政编码</span>
-                  <el-input
-                    class="input-box"
-                    placeholder="请输入内容"
-                    :disabled="true"
-                    v-model="base.enterpriseZipCode">
-                  </el-input>
-              </section>
+                <section class="formBox">
+                    <span>企业职务</span>
+                    <el-input
+                      class="input-box"
+                      placeholder="请输入内容"
+                      v-model="base.userPosition">
+                    </el-input>
+                </section>
+              </template>
 
               <section class="formBox bigF">
-                  <span>具体地址</span>
-                  <el-input
-                    class="input-box"
-                    placeholder="请输入内容"
-                    :disabled="true"
-                    v-model="base.enterpriseAddrDetail">
-                  </el-input>
-              </section>
-
-              <section class="formBox">
-                  <span>企业编码</span>
-                  <el-input
-                    class="input-box"
-                    placeholder="非手添项"
-                    :disabled="true"
-                    v-model="base.enterpriseCode">
-                  </el-input>
-              </section>
-
-              <section class="formBox">
-                  <span>超级管理员</span>
-                  <el-input
-                    class="input-box"
-                    placeholder="请输入内容"
-                    @blur="checkTel"
-                    v-model="base.userCname">
-                  </el-input>
-              </section>
-
-              <section class="formBox">
-                  <span>企业职务</span>
-                  <el-input
-                    class="input-box"
-                    placeholder="请输入内容"
-                    :disabled="true"
-                    v-model="base.userPosition">
-                  </el-input>
+                <span>企业简介</span>
+                <el-input
+                  type="textarea"
+                  :rows="4"
+                  :maxlength="500"
+                  placeholder="请输入内容"
+                  v-model="base.enterpriseAddrDetail">
+                </el-input>
+                <div class="limit-box">剩余<a>{{500 - base.enterpriseAddrDetail.length}}</a>字</div>
               </section>
 
               <section class="formBox">
@@ -170,20 +133,11 @@
                   <div class="logo-upload">
                     <upload :path="base.enterpriseLogo"
                             :bg-path="true"
-                            :is-operate="false"></upload>
+                            :is-operate="true"
+                            :img-width="'120px'"
+                            @changeImg="changeImg"></upload>
                   </div>
                 </div>
-              </section>
-
-              <section class="formBox">
-                  <span>企业微信二维码</span>
-                  <div class="input-box">
-                    <div class="logo-upload">
-                      <upload :path="base.enterpriseWechatQrcode"
-                              :bg-path="true"
-                              :is-operate="false"></upload>
-                    </div>
-                  </div>
               </section>
               
               <div class="clear"></div>
@@ -191,28 +145,13 @@
               @click="saveBase">保存</el-button>
             </div>
           </el-collapse-item>
-          <!-- 管理员 -->
-          <div class="line-bold"></div>
-          <el-collapse-item class="float-form-box" title="服务管理" name="3">
-            <div class="formDiscount">
-              <template v-for="(item, index) in productEventList">
-                <section class="formBox">
-                    <span class="font-b">{{item.productInfo.productCname}}</span>
-                    <div class="btn-right-box">
-                      <el-tooltip class="item" effect="dark" :content="item.productPrice.priceDesc" placement="top">
-                        <el-button>服务费用说明</el-button>
-                      </el-tooltip>
-                      
-                      <el-button :disabled="true" class="btn-right" type="primary" size="small">
-                        {{item.productStatus1 == '1' ? '已开通' : '未开通'}}
-                      </el-button>
-                    </div>
-                </section>
-              </template>
-              
-              <div class="clear"></div>
-            </div>
-          </el-collapse-item>
+
+          <template v-if="!!$route.query.enterpriseCode">
+            <div class="line-bold"></div>
+            <el-collapse-item class="float-form-box" title="员工管理" name="2">
+              <user-list></user-list>
+            </el-collapse-item>
+          </template>
         </el-collapse>
 
         <el-dialog
@@ -249,18 +188,16 @@
 import util from '../../../assets/common/util'
 import $ from 'Jquery'
 import upload from '../../../components/common/uploadFile'
+import userList from './formAlist/userList'
 
 export default {
     data () {
         return {
             isOperate: true,
             activeNames: ['1'],
-            enterpriseCname: '',
-            isCheckCname: true,
-            enterpriseNameReg: '',
-            isCheckReg: true,
             isCheckTel: false,
-            userCname: '',
+            hasTel: false,
+            userName: '',
             base: {
               enterpriseAddrCity: '',
               enterpriseAddrDetail: '',
@@ -280,17 +217,13 @@ export default {
               enterpriseStatus: '',
               enterpriseTaxNo: '',
               enterpriseZipCode: '',
-              enterpriseType: 'enterprise_type_0',
+              enterpriseType: '',
               enterpriseWeb: '',
-              userCname: '',
+              userName: '',
               userMobile: '',
               userPosition: ''
             },
-            isPlatformPub: false,
-            isPlatformWechat: false,
             enterpriseTypes: [],
-            cityData: [],
-            postList: [],
             // 手机验证
             isClick: false,
             dialogVisible: false,
@@ -310,43 +243,13 @@ export default {
       }
       if (this.$route.query.enterpriseCode) {
         this.getBase()
-        this.getProductAndEvent()
       }
       
       this.getEnterpriseTypes()
-      this.getCitys()
     },
     methods: {
-        handleSelectionChange(val) {
-          this.multipleSelection = val;
-        },
-        checkCname () {
-          if (this.base.enterpriseCname === this.enterpriseCname || this.base.enterpriseCname === '') {
-            return false
-          }
-
-          util.request({
-              method: 'get',
-              interface: 'checkName',
-              data: {
-                  enterpriseCname: this.base.enterpriseCname
-              }
-          }).then((res) => {
-              if (res.result.success == '1') {
-                  if (res.result.result == '1') {
-                    this.enterpriseCname = this.base.enterpriseCname
-                    this.isCheckCname = true
-                  } else {
-                    this.isCheckCname = false
-                    this.$message({
-                      message: '该企业已被注册过，不能重复注册!',
-                      type: 'warning'
-                    })
-                  }
-              } else {
-                  this.$message.error(res.result.message)
-              }
-          })
+        changeImg (data) {
+            this.base.enterpriseLogo = data.url
         },
         getEnterpriseInfo () {
           if (this.base.enterpriseCname === '') {
@@ -386,33 +289,27 @@ export default {
               }
           })
         },
-        checkReg () {
-          if (this.base.enterpriseNameReg === this.enterpriseNameReg || this.base.enterpriseNameReg === '') {
+        checkUserName () {
+          if (this.userName != '' && this.base.userName == this.userName) {
+            this.hasTel = true
+          } else {
+            this.hasTel = false
+          }
+        },
+        checkName () {
+          if (this.isCheckTel) {
             return false
           }
 
-          util.request({
-              method: 'get',
-              interface: 'checkName',
-              data: {
-                  enterpriseNameReg: this.base.enterpriseNameReg
-              }
-          }).then((res) => {
-              if (res.result.success == '1') {
-                  if (res.result.result == '1') {
-                    this.enterpriseNameReg = this.base.enterpriseNameReg
-                    this.isCheckReg = true
-                  } else {
-                    this.isCheckReg = false
-                    this.$message({
-                      message: '该企业简称已被其它使用!',
-                      type: 'warning'
-                    })
-                  }
-              } else {
-                  this.$message.error(res.result.message)
-              }
-          })
+          if (this.base.userName == '') {
+              this.$message({
+                message: '请先填写超级管理员!',
+                type: 'warning'
+              })
+              return false
+          }
+
+          this.dialogVisible = true
         },
         checkTel () {
           if (!(/^1[3|4|5|8][0-9]{9}$/).test(this.base.userMobile.trim())) {
@@ -481,8 +378,6 @@ export default {
           }).then((res) => {
               if (res.result.success == '1') {
                   this.base = res.result.result
-                  this.enterpriseCname = this.base.enterpriseCname
-                  this.enterpriseNameReg = this.base.enterpriseCname
                   this.userName = this.base.userName
                   this.isCheckTel = true
                   this.switchStatus = this.base.enterpriseStatus
@@ -506,76 +401,23 @@ export default {
               }
           })
         },
-        getProductAndEvent () {
-          util.request({
-              method: 'get',
-              interface: 'selectProductAndEvent',
-              data: {
-                enterpriseCode: this.$route.query.enterpriseCode
-              }
-          }).then((res) => {
-              if (res.result.success == '1') {
-                  this.productEventList = res.result.result
-              } else {
-                  this.$message.error(res.result.message)
-              }
-          })
-        },
-        getCitys () {
-            util.request({
-                method: 'get',
-                interface: 'getCitys',
-                data: {}
-            }).then(res => {
-                if (res.result.success == '1') {
-                    var citys = []
-                    var posts = []
-
-                    res.result.results.forEach((item) => {
-                        citys = citys.concat(item.citys)
-                        posts = posts.concat(item.posts)
-                    })
-
-                    this.cityData = citys
-                    this.postList = posts
-                } else {
-                    this.$message.error(res.result.message)
-                }
-            })
-        },
-        cityChange () {
-            for (var i = 0, len = this.cityData.length; i < len; i++) {
-                if (this.cityData[i] == this.base.enterpriseAddrCity) {
-                    this.base.enterpriseZipCode = this.postList[i]
-                    break
-                }
-            }
-        },
         collChange () {
             localStorage.setItem("enterpriseColl", this.activeNames)
         },
         saveBase () {
-          if (this.isPost) {
-            return false
-          }
+          // if (this.isPost) {
+          //   return false
+          // }
 
-          if (this.base.enterpriseCname && !this.isCheckCname) {
+          if (!this.base.enterpriseCname) {
             this.$message({
-              message: '该企业已被注册过，不能重复注册!',
+              message: '请填写企业工商名称!',
               type: 'warning'
             })
             return false
           }
 
-          if (!this.isCheckReg) {
-            this.$message({
-              message: '该企业简称已被其它使用!',
-              type: 'warning'
-            })
-            return false
-          }
-
-          if (this.base.enterpriseCname == '') {
+          if (this.base.enterpriseNameReg == '') {
               this.$message({
                 message: '请填写企业简称!',
                 type: 'warning'
@@ -583,7 +425,15 @@ export default {
               return false
           }
 
-          if (this.base.userName == '') {
+          if (this.base.enterpriseType == '') {
+              this.$message({
+                message: '请填写企业类型!',
+                type: 'warning'
+              })
+              return false
+          }
+
+          if (this.base.userName == '' && this.base.enterpriseType == 'enterprise_type_0') {
               this.$message({
                 message: '请填写超级管理员!',
                 type: 'warning'
@@ -591,7 +441,7 @@ export default {
               return false
           }
 
-          if ((this.userName == '' || this.base.userName !== this.userName) && !this.isCheckTel) {
+          if ((this.userName == '' || this.base.userName !== this.userName) && !this.isCheckTel && this.base.enterpriseType == 'enterprise_type_0') {
             this.dialogVisible = true
             return false
           }
@@ -604,9 +454,9 @@ export default {
               return false
           }
 
-          if (this.base.enterpriseWechatQrcode == '') {
+          if (this.base.enterpriseLogo == '') {
               this.$message({
-                message: '请填加企业微信二维码!',
+                message: '请填加企业LOGO!',
                 type: 'warning'
               })
               return false
@@ -616,7 +466,7 @@ export default {
 
           util.request({
               method: 'post',
-              interface: 'platformBaseInfoSave',
+              interface: 'enterpriseWechatInfoSave',
               data: this.base
           }).then((res) => {
               this.isPost = false
@@ -639,7 +489,8 @@ export default {
         }
     },
     components: {
-      upload
+      upload,
+      userList
     }
 }
 </script>

@@ -2,7 +2,7 @@
     <section class="form-small-box">
       <div class="add-btn">
         <span>
-          费用(元)
+          面积(m²)&nbsp;&nbsp;费用(元)
         </span>
         <el-button type="primary" icon="plus" size="small"
                 @click="addBarrier"
@@ -53,53 +53,69 @@
             </el-select>
           </section>
           <section class="formBox">
-              <span>运维成本</span>
+              <span>年化租金</span>
               <el-input-number  class="input-box"
                                 size="small"
                                 :min="0"
                                 :step="1"
-                                v-model="item.maintainCost"></el-input-number>
+                                v-model="item.annualRentIncome"></el-input-number>
           </section>
           <section class="formBox">
-              <span>人力成本</span>
+              <span>能源费</span>
               <el-input-number  class="input-box"
                                 size="small"
                                 :min="0"
                                 :step="1"
-                                v-model="item.hrCost"></el-input-number>
+                                v-model="item.energyIncome"></el-input-number>
           </section>
           <section class="formBox">
-              <span>管理成本</span>
+              <span>物业管理费</span>
               <el-input-number  class="input-box"
                                 size="small"
                                 :min="0"
                                 :step="1"
-                                v-model="item.managementCost"></el-input-number>
+                                v-model="item.estateManagementIncome"></el-input-number>
           </section>
           <section class="formBox">
-              <span>其他成本</span>
+              <span>广告费</span>
               <el-input-number  class="input-box"
                                 size="small"
                                 :min="0"
                                 :step="1"
-                                v-model="item.otherCost"></el-input-number>
+                                v-model="item.adIncome"></el-input-number>
           </section>
           <section class="formBox">
-              <span>税费</span>
+              <span>车位费</span>
               <el-input-number  class="input-box"
                                 size="small"
                                 :min="0"
                                 :step="1"
-                                v-model="item.tax"></el-input-number>
+                                v-model="item.packingLotIncome"></el-input-number>
           </section>
           <section class="formBox">
-              <span>总成本</span>
+              <span>花车费</span>
+              <el-input-number  class="input-box"
+                                size="small"
+                                :min="0"
+                                :step="1"
+                                v-model="item.flowerIncome"></el-input-number>
+          </section>
+          <section class="formBox">
+              <span>其他收入</span>
+              <el-input-number  class="input-box"
+                                size="small"
+                                :min="0"
+                                :step="1"
+                                v-model="item.otherIncome"></el-input-number>
+          </section>
+          <section class="formBox">
+              <span>总收入</span>
               <div class="input-btn-box">
                 <el-input-number  class="input-b"
                                 size="small"
                                 :min="0"
                                 :step="1"
-                                v-model="item.totalCost"></el-input-number>
+                                v-model="item.totalIncome"></el-input-number>
 
                 <el-button class="input-btn"
                               type="primary"
@@ -110,26 +126,15 @@
               
           </section>
           <section class="formBox bigF">
-            <span>其他成本说明</span>
+            <span>其他收入说明</span>
             <el-input
               type="textarea"
               :rows="4"
               placeholder="请输入内容,最140个字"
               :maxlength="140"
-              v-model="item.otherCostDesc">
+              v-model="item.otherIncomeDesc">
             </el-input>
-            <div class="limit-box">剩余<a>{{140 - item.otherCostDesc.length}}</a>字</div>
-          </section>
-          <section class="formBox bigF">
-            <span>税费说明</span>
-            <el-input
-              type="textarea"
-              :rows="4"
-              placeholder="请输入内容,最140个字"
-              :maxlength="140"
-              v-model="item.taxDesc">
-            </el-input>
-            <div class="limit-box">剩余<a>{{140 - item.taxDesc.length}}</a>字</div>
+            <div class="limit-box">剩余<a>{{140 - item.otherIncomeDesc.length}}</a>字</div>
           </section>
           <section class="formBox bigF">
             <span>备注</span>
@@ -147,7 +152,7 @@
             @click="deleteBase(item, index)">删除</el-button>
 
         <el-button v-if="isEdit" class="save-btn" type="info" :plain="true" size="small" icon="document"
-            @click="saveBase(item, index)">保存</el-button>
+            @click="saveBase(item)">保存</el-button>
         <div class="clear"></div>
       </section>
 
@@ -162,7 +167,7 @@
       </el-pagination>
 
       <div v-if="!barrieList.length" class="null-page">
-            暂无支出
+            暂无收入
       </div>
     </section>
 </template>
@@ -252,12 +257,12 @@ export default {
     },
     methods: {
         checkHandle (item) {
-          return !(item.maintainCost && item.hrCost && item.managementCost && item.tax && totalCost)
+          return !(item.annualRentIncome && item.energyIncome && item.estateManagementIncome && item.adIncome && item.packingLotIncome && item.flowerIncome && totalIncome)
         },
         checkMessage (item) {
-          var total = Number(item.maintainCost) + Number(item.hrCost) + Number(item.managementCost) + Number(item.tax) + Number(item.otherCost)
+          var total = Number(item.annualRentIncome) + Number(item.energyIncome) + Number(item.estateManagementIncome) + Number(item.adIncome) + Number(item.packingLotIncome) + Number(item.flowerIncome) + Number(item.otherIncome)
 
-          if (Number(item.totalCost) !== total) {
+          if (Number(item.totalIncome) !== total) {
             this.$message({
                 message: '校验失败！',
                 type: 'warning'
@@ -272,9 +277,9 @@ export default {
         getList () {
           util.request({
               method: 'get',
-              interface: 'officeCostList',
+              interface: 'mallIncomeList',
               data: {
-                officeCode: this.$route.query.officeCode,
+                mallCode: this.$route.query.mallCode,
                 pageNumber: this.pageNumber,
                 pageSize: this.pageSize
               }
@@ -293,18 +298,19 @@ export default {
         },
         addBarrier () {
           this.barrieList.unshift({
-            officeCode: this.$route.query.officeCode,
+            mallCode: this.$route.query.mallCode,
             dateType: '1',
             dateYear: '',
             dateOther: '',
-            maintainCost: '',
-            hrCost: '',
-            managementCost: '',
-            otherCost: '',
-            otherCostDesc: '',
-            tax: '',
-            totalCost: '',
-            taxDesc: '',
+            annualRentIncome: '',
+            energyIncome: '',
+            estateManagementIncome: '',
+            adIncome: '',
+            packingLotIncome: '',
+            flowerIncome: '',
+            otherIncome: '',
+            totalIncome: '',
+            otherIncomeDesc: '',
             memo: ''
           })
         },
@@ -314,7 +320,7 @@ export default {
           } else {
             util.request({
                 method: 'get',
-                interface: 'officeCostDelete',
+                interface: 'mallIncomeDelete',
                 data: {
                   id: barrieData.id
                 }
@@ -327,22 +333,35 @@ export default {
             })
           }
         },
-        saveBase (barrieData, index) {
-            if (!barrieData.rangeDate.length) {
+        saveBase (barrieData) {
+            if (!barrieData.dateYear) {
                 this.$message({
-                    message: '请选择时间范围！',
+                    message: '请选择年份！',
                     type: 'warning'
                 })
                 return false
             }
 
-            barrieData.beginDate = new Date(barrieData.rangeDate[0])
-            barrieData.endDate = new Date(barrieData.rangeDate[1])
+            if (barrieData.dateType == '2' && !barrieData.dateOther) {
+                this.$message({
+                    message: '请选择季度！',
+                    type: 'warning'
+                })
+                return false
+            }
 
-            var interfaceName = 'officeCostSave'
+            if (barrieData.dateType == '3' && !barrieData.dateOther) {
+                this.$message({
+                    message: '请选择月份！',
+                    type: 'warning'
+                })
+                return false
+            }
+
+            var interfaceName = 'mallIncomeSave'
 
             if (barrieData.id) {
-              interfaceName = 'officeCostUpdate'
+              interfaceName = 'mallIncomeUpdate'
             }
             
             util.request({
@@ -358,7 +377,6 @@ export default {
 
                     this.getList()
                 } else {
-                    this.barrieList.splice(index, 1)
                     this.$message.error(res.result.message)
                 }
             })

@@ -12,12 +12,45 @@
       <section class="inForm" v-for="(item, index) in barrieList" :key="index">
         <div class="formDiscount">
           <section class="formBox">
-              <span>时间</span>
+              <span>时间类型</span>
+              <el-select
+                class="input-box"
+                v-model="item.dateType"
+                filterable
+                :disabled="!!item.id"
+                placeholder="请选择">
+                <el-option
+                  v-for="(item, index) in dateTypes"
+                  :key="index"
+                  :label="item.typeName"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+          </section>
+          <section class="formBox">
+              <span>年份</span>
               <el-date-picker class="input-box"
-                              v-model="item.rangeDate"
-                              type="daterange"
+                              :disabled="!!item.id"
+                              v-model="item.dateYear"
+                              type="year"
                               placeholder="选择租期">
               </el-date-picker>
+          </section>
+          <section class="formBox" v-show="item.dateType == '2'">
+            <span>月份</span>
+            <el-select
+              class="input-box"
+              v-model="item.dateOther"
+              :disabled="!!item.id"
+              filterable
+              placeholder="请选择">
+              <el-option
+                v-for="(item, index) in months"
+                :key="index"
+                :label="item.typeName"
+                :value="item.id">
+              </el-option>
+            </el-select>
           </section>
           <section class="formBox">
               <span>年化租金</span>
@@ -59,6 +92,23 @@
                                 :step="1"
                                 v-model="item.otherIncome"></el-input-number>
           </section>
+          <section class="formBox">
+              <span>总收入</span>
+              <div class="input-btn-box">
+                <el-input-number  class="input-b"
+                                size="small"
+                                :min="0"
+                                :step="1"
+                                v-model="item.totalIncome"></el-input-number>
+
+                <el-button class="input-btn"
+                              type="primary"
+                              size="small"
+                              :disabled="checkHandle(item)"
+                              @click="checkMessage(item)">校验</el-button>
+              </div>
+              
+          </section>
           <section class="formBox bigF">
             <span>其他收入说明</span>
             <el-input
@@ -86,9 +136,19 @@
             @click="deleteBase(item, index)">删除</el-button>
 
         <el-button v-if="isEdit" class="save-btn" type="info" :plain="true" size="small" icon="document"
-            @click="saveBase(item)">保存</el-button>
+            @click="saveBase(item, index)">保存</el-button>
         <div class="clear"></div>
       </section>
+
+      <div class="clear"></div>
+      <el-pagination
+          v-if="total"
+          class="page-box"
+          @current-change="pageChange"
+          layout="prev, pager, next"
+          :page-size="pageSize"
+          :total="total">
+      </el-pagination>
 
       <div v-if="!barrieList.length" class="null-page">
             暂无收入
@@ -102,7 +162,70 @@ export default {
     props: ['base'],
     data () {
         return {
-            barrieList: []
+            barrieList: [],
+            dateTypes: [
+              {
+                typeName: '以年为单位',
+                id: '1'
+              },
+              {
+                typeName: '以月为单位',
+                id: '2'
+              }
+            ],
+            months: [
+              {
+                typeName: '一月',
+                id: '1'
+              },
+              {
+                typeName: '二月',
+                id: '2'
+              },
+              {
+                typeName: '三月',
+                id: '3'
+              },
+              {
+                typeName: '四月',
+                id: '4'
+              },
+              {
+                typeName: '五月',
+                id: '5'
+              },
+              {
+                typeName: '六月',
+                id: '6'
+              },
+              {
+                typeName: '七月',
+                id: '7'
+              },
+              {
+                typeName: '八月',
+                id: '8'
+              },
+              {
+                typeName: '九月',
+                id: '9'
+              },
+              {
+                typeName: '十月',
+                id: '10'
+              },
+              {
+                typeName: '十一月',
+                id: '11'
+              },
+              {
+                typeName: '十二月',
+                id: '12'
+              }
+            ],
+            pageNumber: 1,
+            pageSize: 5,
+            total: 0
         }
     },
     mounted () {
@@ -117,38 +240,58 @@ export default {
         }
     },
     methods: {
+        checkHandle (item) {
+          return !(item.annualRentIncome && item.estateManagementIncome && item.adIncome && item.packingLotIncome && item.totalIncome)
+        },
+        checkMessage (item) {
+          var total = Number(item.annualRentIncome) + Number(item.estateManagementIncome) + Number(item.adIncome) + Number(item.packingLotIncome) + Number(item.otherIncome)
+
+          if (Number(item.totalIncome) !== total) {
+            this.$message({
+                message: '校验失败！',
+                type: 'warning'
+            })
+          } else {
+            this.$message({
+                message: '校验成功！',
+                type: 'success'
+            })
+          }
+        },
         getList () {
           util.request({
               method: 'get',
               interface: 'officeIncomeList',
               data: {
-                officeCode: this.$route.query.officeCode
+                officeCode: this.$route.query.officeCode,
+                pageNumber: this.pageNumber,
+                pageSize: this.pageSize
               }
           }).then(res => {
               if (res.result.success == '1') {
-                if (res.result.result.length) {
-                  res.result.result.forEach((item) => {
-                    item.rangeDate = [item.beginDate, item.endDate]
-                  })
-                }
-
+                this.total = Number(res.result.total)
                 this.barrieList = res.result.result
               } else {
                 this.$message.error(res.result.message)
               }
           })
         },
+        pageChange (size) {
+            this.pageNumber = size
+            this.getList()
+        },
         addBarrier () {
           this.barrieList.unshift({
             officeCode: this.$route.query.officeCode,
-            rangeDate: [],
-            beginDate: '',
-            endDate: '',
+            dateType: '1',
+            dateYear: '',
+            dateOther: '',
             annualRentIncome: '',
             estateManagementIncome: '',
             adIncome: '',
             packingLotIncome: '',
             otherIncome: '',
+            totalIncome: '',
             otherIncomeDesc: '',
             memo: ''
           })
@@ -172,17 +315,32 @@ export default {
             })
           }
         },
-        saveBase (barrieData) {
-            if (!barrieData.rangeDate.length) {
+        saveBase (barrieData, index) {
+            if (!barrieData.dateYear) {
                 this.$message({
-                    message: '请选择时间范围！',
+                    message: '请选择年份！',
                     type: 'warning'
                 })
                 return false
             }
 
-            barrieData.beginDate = new Date(barrieData.rangeDate[0])
-            barrieData.endDate = new Date(barrieData.rangeDate[1])
+            if (barrieData.dateType == '2' && !barrieData.dateOther) {
+                this.$message({
+                    message: '请选择季度！',
+                    type: 'warning'
+                })
+                return false
+            }
+
+            if (barrieData.dateType == '3' && !barrieData.dateOther) {
+                this.$message({
+                    message: '请选择月份！',
+                    type: 'warning'
+                })
+                return false
+            }
+
+            barrieData.dateYear = new Date(barrieData.dateYear).getFullYear()
 
             var interfaceName = 'officeIncomeSave'
 
@@ -203,6 +361,7 @@ export default {
 
                     this.getList()
                 } else {
+                    this.barrieList.splice(index, 1)
                     this.$message.error(res.result.message)
                 }
             })

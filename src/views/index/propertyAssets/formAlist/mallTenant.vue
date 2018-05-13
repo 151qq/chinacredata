@@ -58,12 +58,54 @@
               </el-select>
           </section>
           <section class="formBox">
+              <span>租金类型</span>
+              <el-select
+                class="input-box"
+                v-model="item.leaseType"
+                filterable
+                placeholder="请选择">
+                <el-option
+                        :label="'无'"
+                        :value="''">
+                </el-option>
+                <el-option
+                  v-for="(item, index) in dictionary.lease_type"
+                  :key="index"
+                  :label="item.typeName"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+          </section>
+          <section class="formBox">
               <span>免租期</span>
               <el-input-number  class="input-box"
                                 size="small"
                                 :min="0"
                                 :step="1"
                                 v-model="item.rentFreePeriod"></el-input-number>
+          </section>
+          <section class="formBox">
+              <span>主力店</span>
+              <el-select
+                class="input-box"
+                v-model="item.tenantLevel"
+                filterable
+                placeholder="请选择">
+                <el-option
+                  v-for="(item, index) in tenantLevels"
+                  :key="index"
+                  :label="item.typeName"
+                  :value="item.id">
+                </el-option>
+              </el-select>
+          </section>
+          <section class="formBox">
+              <span>装修补贴</span>
+              <el-input-number  class="input-box"
+                                size="small"
+                                :min="0"
+                                :step="1"
+                                v-model="item.constructionAllowance"></el-input-number>
           </section>
           <section class="formBox">
               <span>面积</span>
@@ -138,6 +180,17 @@ export default {
     data () {
         return {
             barrieList: [],
+            enterpriseTypes: [],
+            tenantLevels: [
+              {
+                typeName: '主力店',
+                id: '1'
+              },
+              {
+                typeName: '非主力店',
+                id: '0'
+              }
+            ],
             pageNumber: 1,
             pageSize: 5,
             total: 0
@@ -155,24 +208,12 @@ export default {
         }
     },
     methods: {
-        tenantNameChange (value, index) {
-          for (var i = 0, len = this.enterpriseList.length; i < len; i++) {
-            if (this.enterpriseList[i].enterpriseCode == value) {
-              this.barrieList[index].tenantType = this.enterpriseList[i].enterpriseType
-              break
-            }
-          }
-
-          if (!value) {
-            this.barrieList[index].tenantType = ''
-          }
-        },
         getList () {
           util.request({
               method: 'get',
-              interface: 'officeTenantInfoList',
+              interface: 'mallTenantInfoList',
               data: {
-                officeCode: this.$route.query.officeCode,
+                mallCode: this.$route.query.mallCode,
                 pageNumber: this.pageNumber,
                 pageSize: this.pageSize
               }
@@ -197,11 +238,14 @@ export default {
         },
         addBarrier () {
           this.barrieList.unshift({
-            officeCode: this.$route.query.officeCode,
+            mallCode: this.$route.query.mallCode,
             rangeDate: [],
             tenantName: '',
             tenantType: '',
+            leaseType: '',
+            tenantLevel: '',
             rentFreePeriod: '',
+            constructionAllowance: '',
             rentAcreage: '',
             tenantDesc: '',
             rentBusinessGoal: '',
@@ -216,7 +260,7 @@ export default {
           } else {
             util.request({
                 method: 'get',
-                interface: 'officeTenantInfoDelete',
+                interface: 'mallTenantInfoDelete',
                 data: {
                   id: barrieData.id
                 }
@@ -241,10 +285,10 @@ export default {
             barrieData.beginDate = new Date(barrieData.rangeDate[0])
             barrieData.endDate = new Date(barrieData.rangeDate[1])
 
-            var interfaceName = 'officeTenantInfoSave'
+            var interfaceName = 'mallTenantInfoSave'
 
             if (barrieData.id) {
-              interfaceName = 'officeTenantInfoUpdate'
+              interfaceName = 'mallTenantInfoUpdate'
             }
             
             util.request({

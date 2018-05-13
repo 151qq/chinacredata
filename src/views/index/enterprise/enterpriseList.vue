@@ -10,8 +10,14 @@
             <el-button class="search-btn" type="primary" icon="search" @click="searchItem">
               搜索
             </el-button>
-
-            <!-- <el-button class="add-new-btn" type="primary" icon="plus" @click="goToNew">新增</el-button> -->
+            
+            <router-link class="add-new-btn"
+                            target="_blank"
+                             :to="{
+                                name: 'enterprise-detail'
+                             }">
+                <el-button class="add-new-btn" type="primary" icon="plus">新增</el-button>
+            </router-link>
         </div>
         
         <!-- 列表 -->
@@ -21,7 +27,7 @@
                 <router-link class="cover-box"
                              target="_blank"
                              :to="{
-                                name: item.enterpriseType == 'enterprise_type_0' ? 'platform-detail' : 'enterprise-detail',
+                                name: 'enterprise-detail',
                                 query: {
                                     enterpriseCode: item.enterpriseCode
                                 }
@@ -30,14 +36,11 @@
                 </router-link>
                 <div class="title-box">
                     <div class="title" v-text="item.enterpriseNameReg"></div>
-                    <!-- <div class="time">
-                        <span>
-                            {{item.enterpriseRegDate}}
+                    <span class="time">
+                        <span class="btn-box" v-if="item.enterpriseType != 'enterprise_type_0'">
+                            <i @click.prevent="deleteItem(item)" class="el-icon-delete2"></i>
                         </span>
-                        <span class="btn-box">
-                            <i @click.stop="deleteOpt(item)" class="el-icon-delete2"></i>
-                        </span>
-                    </div> -->
+                    </span>
                 </div>
             </section>
             
@@ -83,33 +86,23 @@ export default {
         },
         // 增删改查
         getItems () {
-
             var formData = {
+                status: '0',
                 pageNumber: this.pageNumber,
                 pageSize: this.pageSize
             }
 
             if (this.keyValue) {
-                formData.keyValue = this.keyValue
+                formData.enterpriseCname = this.keyValue
             }
 
             util.request({
                 method: 'get',
-                interface: 'showAllEnterprise',
+                interface: 'enterpriseList',
                 data: formData
             }).then(res => {
                 if (res.result.success == '1') {
                     this.total = Number(res.result.total)
-
-                    // 格式化时间
-                    if (res.result.result.length) {
-                        res.result.result.forEach((item) => {
-                            if (item.enterpriseRegDate) {
-                                item.enterpriseRegDate = item.enterpriseRegDate.split(' ')[0]
-                            }
-                        })
-                    }
-
                     this.sourceDatas = res.result.result
                 } else {
                     this.$message.error(res.result.message)
@@ -118,7 +111,7 @@ export default {
         },
         deleteItem (item) {
             util.request({
-                method: 'post',
+                method: 'get',
                 interface: 'removeEnterpriseInfo',
                 data: {
                     enterpriseCode: item.enterpriseCode
@@ -138,24 +131,6 @@ export default {
         pageChange (size) {
             this.pageNumber = size
             this.getItems()
-        },
-        goToNew () {
-
-        },
-        // 删除操作弹窗
-        deleteOpt (item) {
-            this.$confirm('确定执行删除操作?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then(() => {
-                this.deleteItem(item)
-            }).catch(() => {
-                this.$message({
-                    type: 'info',
-                    message: '已取消删除'
-                })     
-            })
         }
     }
 }
@@ -168,7 +143,7 @@ export default {
 
     .input-box {
         display: block;
-        width: 696px;
+        width: 800px;
         height: 50px;
         margin: 0 auto 30px;
 
@@ -247,22 +222,24 @@ export default {
         }
 
         .title-box {
-            padding: 5px 10px;
+            display: flex;
+            padding: 5px;
             border-top: 1px solid #D3DCE6;
             
             .title {
-                display: block;
+                flex: 1;
                 font-size: 14px;
                 line-height: 20px;
-                height: 20px;
                 border: none;
                 color: #000000;
                 overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
 
             .time {
                 display: block;
-                font-size: 12px;
+                font-size: 14px;
                 height: 20px;
                 line-height: 20px;
                 color: #999999;
@@ -272,9 +249,14 @@ export default {
                float: right;
                font-size: 14px;
                color: #333333;
+               margin-left: 5px;
 
                i, label {
                     cursor: pointer;
+               }
+
+               &:hover {
+                    color: #20a0ff;
                }
             }
         }

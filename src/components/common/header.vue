@@ -12,6 +12,14 @@
                       }">
           物业资产
         </router-link>
+        <router-link  :to="{
+                        name: 'exchange-list',
+                        query:{
+                          enterpriseCode: userInfo.enterpriseCode
+                        }
+                      }">
+          资管产品
+        </router-link>
         <router-link :to="{ name: 'enterprise'}">
           企业信息
         </router-link>
@@ -36,7 +44,7 @@
       </div>
 
       <div class="select-city-box"
-            v-if="selectCity.cityName">
+            v-if="selectCity.cityName && $route.name === 'zone-list'">
         <span @click="addCity">
           {{selectCity.cityName}}
           &nbsp;<i class="el-icon-caret-bottom"></i>
@@ -56,6 +64,31 @@
               layout="prev, pager, next"
               :page-size="pageSize"
               :total="total">
+          </el-pagination>
+        </div>
+      </div>
+
+      <div class="select-city-box"
+            v-if="selectExchange.exchangeName && $route.name === 'securit-list'">
+        <span>
+          {{selectExchange.exchangeName}}
+          &nbsp;<i class="el-icon-caret-bottom"></i>
+        </span>
+        <div class="city-drop-box">
+          <span :class="selectExchange.exchangeName == item.exchangeName ? 'nowColor' : ''"
+                @click="setExchange(item)"
+                v-for="(item, index) in exchangeList">
+            {{item.exchangeName}}
+          </span>
+
+          <div class="clear"></div>
+          <el-pagination
+              v-if="totalE"
+              class="page-box"
+              @current-change="pageEChange"
+              layout="prev, pager, next"
+              :page-size="pageESize"
+              :total="totalE">
           </el-pagination>
         </div>
       </div>
@@ -130,7 +163,11 @@ export default {
       },
       pageNumber: 1,
       pageSize: 20,
-      total: 0
+      total: 0,
+      exchangeList: [],
+      pageENumber: 1,
+      pageESize: 20,
+      totalE: 0
     }
   },
   created () {
@@ -146,20 +183,64 @@ export default {
     this.getUserInfo()
     this.haveCitys()
     this.getCitys()
+
+    if (this.$route.name === 'securit-list') {
+      this.getExchangeList()
+    }
+  },
+  watch: {
+    $route () {
+      if (this.$route.name === 'securit-list') {
+        this.getExchangeList()
+      } else {
+        return false
+      }
+    }
   },
   computed: {
       ...mapGetters({
         userInfo: 'getUserInfo',
         selectCity: 'getSelectCity',
-        cityList:'getCityList'
+        cityList:'getCityList',
+        selectExchange: 'getSelectExchange',
       })
   },
   methods: {
     ...mapActions([
       'setUserInfo',
       'setSelectCity',
-      'setCityList'
+      'setCityList',
+      'setSelectExchange'
     ]),
+    getExchangeList () {
+        var formData = {
+            pageSize: this.pageESize,
+            pageNumber: this.pageENumber
+        }
+
+        util.request({
+            method: 'get',
+            interface: 'exchangeInfoList',
+            data: formData
+        }).then(res => {
+            if (res.result.success == '1') {
+                this.totalE = Number(res.result.total)
+                this.exchangeList = res.result.result
+            } else {
+                this.$message.error(res.result.message)
+            }
+        })
+    },
+    pageEChange (size) {
+        this.pageENumber = size
+        this.getExchangeList()
+    },
+    setExchange (exchange) {
+      this.setSelectExchange({
+        exchangeName: exchange.exchangeName,
+        exchangeCode: exchange.exchangeCode
+      })
+    },
     setCity (city) {
       this.setSelectCity({
         cityName: city.cityCname,
@@ -167,13 +248,13 @@ export default {
       })
     },
     pageChange (size) {
-        this.itemPageNumber = size
+        this.pageNumber = size
         this.haveCitys()
     },
     // 当前已有的城市
     haveCitys(){
       util.request({
-          method: 'post',
+          method: 'get',
           interface: 'haveCity',
           data: {
             pageNumber: this.pageNumber,
@@ -401,6 +482,7 @@ export default {
       .city-drop-box {
         display: none;
         max-width: 600px;
+        min-width: 300px;
         position: fixed;
         top: 50px;
         right: 0;
@@ -414,6 +496,10 @@ export default {
           color: #000000;
           line-height: 30px;
           margin-right: 10px;
+
+          &:hover {
+            color: #4db3ff;
+          }
         }
 
         .nowColor {

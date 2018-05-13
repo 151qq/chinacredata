@@ -1,9 +1,6 @@
 <template>
     <section class="activity-box">
         <div class="add-btn">
-          <span>
-            比例(%)
-          </span>
           <el-button type="primary" icon="plus" size="small"
                   @click="addItem"
                   v-if="isEdit">增加</el-button>
@@ -14,16 +11,12 @@
           border
           style="width: 100%">
           <el-table-column
-            prop="ownerStockRight"
-            label="股权比例">
-          </el-table-column>
-          <el-table-column
-            prop="enterpriseType"
-            label="业主类型">
+            prop="shareholderShareRatio"
+            label="股权比例(%)">
           </el-table-column>
           <el-table-column
             prop="enterpriseNameReg"
-            label="业主名称">
+            label="股东名称">
           </el-table-column>
           <el-table-column
             v-if="isEdit"
@@ -47,18 +40,18 @@
         </el-pagination>
 
         <el-dialog :title="operateText" :visible.sync="isAddOEdit">
-          <el-form :label-position="'left'" :model="itemData" label-width="80px">
-            <el-form-item label="股权比例">
+          <el-form :label-position="'left'" :model="itemData" label-width="100px">
+            <el-form-item label="股权比例(%)">
                 <el-input-number  size="small"
                                 :min="0"
                                 :max="100"
                                 :step="0.01"
-                                v-model="itemData.ownerStockRight"></el-input-number>
+                                v-model="itemData.shareholderShareRatio"></el-input-number>
             </el-form-item>
-            <el-form-item label="业主">
-                <search-input :search-data="base"
+            <el-form-item label="股东">
+                <search-input :search-data="itemData"
                               :fetch-suggestions="getEnterpriseList"
-                              :m-code="'ownerEnterpriseCode'"
+                              :m-code="'securityShareholder'"
                               :m-name="'enterpriseNameReg'"
                               :s-code="'enterpriseCode'"
                               :s-name="'enterpriseNameReg'"></search-input>
@@ -77,17 +70,17 @@ import searchInput from '../../../../components/common/search-input'
 import { mapGetters } from 'vuex'
 
 export default {
-    props: ['base', 'enterpriseList', 'propertyCode', 'propertyType'],
+    props: ['base', 'enterpriseList', 'securityCode', 'securityType'],
     data () {
         return {
           operateText: '添加',
           itemList: [],
           isAddOEdit: false,
           itemData: {
-            propertyCode: '',
-            ownerStockRight: '',
-            propertyType: '',
-            ownerEnterpriseCode: ''
+            securityCode: '',
+            shareholderShareRatio: '',
+            securityType: '',
+            securityShareholder: ''
           },
           pageNumber: 1,
           pageSize: 10,
@@ -140,9 +133,9 @@ export default {
       getItemList () {
         util.request({
             method: 'get',
-            interface: 'propertyOwnerList',
+            interface: 'securityShareholderList',
             data: {
-              propertyCode: this.propertyCode,
+              securityCode: this.securityCode,
               pageNumber: this.pageNumber,
               pageSize: this.pageSize
             }
@@ -161,10 +154,10 @@ export default {
       },
       addItem () {
         this.itemData = {
-          propertyCode: this.propertyCode,
-          ownerStockRight: '',
-          propertyType: this.propertyType,
-          ownerEnterpriseCode: ''
+          securityCode: this.securityCode,
+          shareholderShareRatio: '',
+          securityType: this.securityType,
+          securityShareholder: ''
         }
 
         this.operateText = '添加'
@@ -179,7 +172,7 @@ export default {
         this.isAddOEdit = true
       },
       confirmItem () {
-        if (this.itemData.ownerStockRight === '') {
+        if (this.itemData.shareholderShareRatio === '') {
           this.$message({
               message: '请填写股权比例！',
               type: 'warning'
@@ -187,9 +180,9 @@ export default {
           return false
         }
 
-        if (this.itemData.ownerEnterpriseCode === '') {
+        if (this.itemData.securityShareholder === '') {
           this.$message({
-              message: '请选择业主！',
+              message: '请选择股东！',
               type: 'warning'
           })
           return false
@@ -198,10 +191,10 @@ export default {
         this.insertOrUpdateItem()
       },
       insertOrUpdateItem () {
-        var interfaceName = 'propertyOwnerSave'
+        var interfaceName = 'securityShareholderSave'
 
         if (this.itemData.id) {
-          interfaceName = 'propertyOwnerUpdate'
+          interfaceName = 'securityShareholderUpdate'
         }
 
         util.request({
@@ -220,10 +213,10 @@ export default {
       deleteItem (row) {
         util.request({
             method: 'post',
-            interface: 'propertyOwnerDelete',
+            interface: 'securityShareholderDelete',
             data: {
-              propertyCode: row.propertyCode,
-              ownerEnterpriseCode: row.ownerEnterpriseCode
+              securityCode: row.securityCode,
+              securityShareholder: row.securityShareholder
             }
         }).then(res => {
           if (res.result.success == '1') {

@@ -76,6 +76,73 @@ const routers = [
         }
       },
       {
+        // 物业资产 - 商圈列表
+        path: 'securityAssets',
+        name: 'securityAssets',
+        component (resolve) {
+          require.ensure(['./securityAssets/main.vue'], () => {
+            resolve(require('./securityAssets/main.vue'))
+          })
+        },
+        children: [
+          {
+            // 企业信息
+            path: '',
+            name: 'exchange-list',
+            component (resolve) {
+              require.ensure(['./securityAssets/exchangeList.vue'], () => {
+                resolve(require('./securityAssets/exchangeList.vue'))
+              })
+            },
+            meta: {
+              title: '资管产品'
+            }
+          },
+          {
+            // 企业信息详情
+            path: 'securitList',
+            name: 'securit-list',
+            component (resolve) {
+              require.ensure(['./securityAssets/securitList.vue'], () => {
+                resolve(require('./securityAssets/securitList.vue'))
+              })
+            },
+            meta: {
+              title: '资管产品'
+            }
+          },
+          {
+            // 平台企业信息详情
+            path: 'managementDetail',
+            name: 'management-detail',
+            component (resolve) {
+              require.ensure(['./securityAssets/managementDetail.vue'], () => {
+                resolve(require('./securityAssets/managementDetail.vue'))
+              })
+            },
+            meta: {
+              title: '资管产品'
+            }
+          },
+          {
+            // 平台企业信息详情
+            path: 'reitsDetail',
+            name: 'reits-detail',
+            component (resolve) {
+              require.ensure(['./securityAssets/reitsDetail.vue'], () => {
+                resolve(require('./securityAssets/reitsDetail.vue'))
+              })
+            },
+            meta: {
+              title: '海外REITs'
+            }
+          }
+        ],
+        meta: {
+          title: '资管产品'
+        }
+      },
+      {
         // 企业信息
         path: 'enterprise',
         component (resolve) {

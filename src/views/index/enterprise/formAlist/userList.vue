@@ -1,40 +1,42 @@
 <template>
-    <section class="user-list-wx-box">
+    <section class="card-list-box user-list-wx-box">
         <el-button class="add-btn" type="primary" icon="plus" size="small" @click="addItem">增加</el-button>
-        <el-table
-          :data="itemList"
-          border
-          style="width: 100%">
-          <el-table-column
-            prop="userName"
-            label="用户名">
-          </el-table-column>
-          <el-table-column
-            prop="userMobile"
-            label="手机号">
-          </el-table-column>
-          <el-table-column
-            prop="roleName"
-            label="用户角色">
-          </el-table-column>
-          <el-table-column
-            label="操作"
-            width="70">
-            <template scope="scope">
-              <i v-if="scope.row.isDelete" class="el-icon-delete2" @click="deleteItem(scope.row)"></i>
-            </template>
-          </el-table-column>
-        </el-table>
+        
+        <div class="sou-box check-box"
+              v-for="(item, index) in itemList"
+              :key="index">
+            <div class="cover-box">
+                <img :src="item.userWechatLogo">
+            </div>
+            <div class="title-box">
+                <div class="title">{{item.userName}}</div>
+                <div class="time">
+                    <span>
+                        {{item.userMobile}}
+                    </span>
+
+                    <span class="btn-box">
+                        <i @click.prevent="deleteItem(item.zoneCode)" class="el-icon-delete2"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="!itemList.length" class="null-page">
+              暂无内容
+        </div>
 
         <div class="clear"></div>
         <el-pagination
-            v-if="total"
+            v-if="total && itemList.length"
             class="page-box"
             @current-change="pageChange"
             layout="prev, pager, next"
             :page-size="pageSize"
             :total="total">
         </el-pagination>
+
+
         <el-dialog class="user-add-box" title="添加员工" :visible.sync="isAddOEdit">
           <el-form :label-position="'left'" :model="itemData" label-width="80px">
             <el-form-item label="用户名">
@@ -42,6 +44,13 @@
             </el-form-item>
             <el-form-item label="手机号">
                 <el-input type="number" v-model="itemData.userMobile"></el-input>
+            </el-form-item>
+            <el-form-item label="用户名片">
+                <upload-file :path="itemData.userWechatLogo"
+                            :is-operate="true"
+                            :bg-path="false"
+                            :id-name="'userWechatLogo'"
+                            @changeImg="changeImg"></upload-file>
             </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
@@ -53,6 +62,7 @@
 </template>
 <script>
 import util from '../../../../assets/common/util'
+import upload from '../../../../components/common/uploadFile'
 
 export default {
     data () {
@@ -61,7 +71,8 @@ export default {
           isAddOEdit: false,
           itemData: {
             userName: '',
-            userMobile: ''
+            userMobile: '',
+            userWechatLogo: ''
           },
           pageNumber: 1,
           pageSize: 20,
@@ -77,6 +88,9 @@ export default {
       }
     },
     methods: {
+      changeImg (data) {
+          this.itemData.userWechatLogo = data.url
+      },
       getItemList () {
         util.request({
             method: 'get',
@@ -88,25 +102,27 @@ export default {
             }
         }).then(res => {
             if (res.result.success == '1') {
+              var datas = res.result.result
               this.total = Number(res.result.total)
 
-              if (res.result.result) {
-                res.result.result.forEach((user) => {
-                  if (user.securityRoles.length) {
-                    var roleArr = []
-                    var isDelete = true
-                    user.securityRoles.forEach((role) => {
-                      roleArr.push(role.roleName)
+              if (datas.length) {
+                for (var i = 0, len = datas.length; i < len; i++) {
+                  if (datas[i].securityRoles.length) {
+                    var isShow = true
+                    datas[i].securityRoles.forEach((role) => {
                       if (role.roleCode == 'platform_root') {
-                        isDelete = false
+                        isShow = false
                       }
                     })
-                    user.isDelete = isDelete
-                    user.roleName = roleArr.join(',')
+                    
+                    if (!isShow) {
+                      datas.splice(i, 1)
+                      break
+                    }
                   }
-                })
+                }
               }
-              this.itemList = res.result.result
+              this.itemList = datas
             } else {
               this.$message.error(res.result.message)
             }
@@ -120,7 +136,8 @@ export default {
         this.itemData = {
           enterpriseCode: this.$route.query.enterpriseCode,
           userName: '',
-          userName: ''
+          userName: '',
+          userWechatLogo: ''
         }
 
         this.isAddOEdit = true
@@ -136,6 +153,14 @@ export default {
 
         if (!(/^1[3|4|5|8][0-9]{9}$/).test(this.itemData.userMobile.trim())) {
           this.$message.error('请输入11位用户手机号')
+          return false
+        }
+
+        if (!this.itemData.userWechatLogo) {
+          this.$message({
+              message: '请填写用户名片！',
+              type: 'warning'
+          })
           return false
         }
 
@@ -177,17 +202,15 @@ export default {
           }
         })
       }
+    },
+    components: {
+      upload
     }
 }
 </script>
 <style lang="scss">
 .user-list-wx-box {
-  .page-box {
-    margin-top: 15px;
-  }
-
-  .el-dialog--small {
-    width: 360px;
-  }
+  position: static;
+  margin: 0 auto 30px;
 }
 </style>

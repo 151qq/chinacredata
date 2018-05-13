@@ -52,8 +52,15 @@ export default {
         onSearchComplete (results) {
           // 更新调用记录
           _self.count++
-          console.log(results)
-          _self.messDate = results.Br
+          var arrs = [];      
+          for (var i = 0; i < results.getCurrentNumPois(); i ++){
+              arrs.push({
+                title: results.getPoi(i).title,
+                address: results.getPoi(i).address,
+                point: results.getPoi(i).point
+              })      
+          }
+          _self.messDate = arrs
         }
       }
       

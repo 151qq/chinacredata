@@ -21,17 +21,18 @@
                 <router-link class="sou-box"
                             target="_blank"
                             :to="{
-                                name: 'assets-list',
+                                name: 'securit-list',
                                 query: {
                                     enterpriseCode: userInfo.enterpriseCode,
-                                    zoneCode: item.zoneCode
+                                    exchangeCode: item.exchangeCode,
+                                    exchangeName: item.exchangeName
                                 }
                             }">
                     <div class="cover-box">
-                        <img :src="item.zoneCover">
+                        <img :src="item.exchangeCover">
                     </div>
                     <div class="title-box">
-                        <div class="title">{{item.zoneName}}</div>
+                        <div class="title">{{item.exchangeName}}</div>
                         <div class="time">
                             <span>
                                 {{item.zoneTypeName}}
@@ -41,7 +42,7 @@
                             </span>
 
                             <span class="btn-box">
-                                <i @click.prevent="deleteItem(item.zoneCode)" class="el-icon-delete2"></i>
+                                <i @click.prevent="deleteItem(item.exchangeCode)" class="el-icon-delete2"></i>
                             </span>
                         </div>
                     </div>
@@ -60,50 +61,34 @@
         </template>
         <!-- 无内容 -->
         <section v-else class="no-img">
-            当前城市暂无商圈，请更换或添加城市！！！
+            暂无交易所，请添加！！！
         </section>
         
         <!-- 添加弹窗 -->
         <el-dialog :title="operateText" :visible.sync="isAddItem">
-          <el-form :label-position="'left'" :model="addItemForm" label-width="80px">
-            <el-form-item label="商圈名称">
-                <el-input v-model="addItemForm.zoneName"
+          <el-form :label-position="'left'" :model="addItemForm" label-width="100px">
+            <el-form-item label="交易所名称">
+                <el-input v-model="addItemForm.exchangeName"
                             :maxlength="20"
                             placeholder="请输入内容，最多12个字"></el-input>
             </el-form-item>
-            <el-form-item label="商圈类型">
-                <el-select v-model="addItemForm.zoneType"
-                            filterable
-                            placeholder="请选择">
-                    <el-option
-                            :label="'无'"
-                            :value="''">
-                    </el-option>
-                    <el-option
-                      v-for="(item, index) in tradingAreaTypes"
-                      :key="index"
-                      :label="item.dictKeyValue"
-                      :value="item.dictKeyCode">
-                    </el-option>
-                </el-select>
-            </el-form-item>
             
-            <el-form-item label="商圈描述">
+            <el-form-item label="交易所描述">
                 <el-input
                     type="textarea"
                     :rows="3"
                     placeholder="请输入内容"
-                    :maxlength="140"
-                    v-model="addItemForm.zoneDesc">
+                    :maxlength="500"
+                    v-model="addItemForm.exchangeDesc">
                 </el-input>
-                <div class="limit-box">剩余<a>{{140 - addItemForm.zoneDesc.length}}</a>字</div>
+                <div class="limit-box">剩余<a>{{500 - addItemForm.exchangeDesc.length}}</a>字</div>
             </el-form-item>
             
-            <el-form-item label="商圈图片">
-                <upload-file :path="addItemForm.zoneCover"
+            <el-form-item label="交易所图片">
+                <upload-file :path="addItemForm.exchangeCover"
                             :is-operate="true"
                             :bg-path="false"
-                            :id-name="'zoneCover'"
+                            :id-name="'exchangeCover'"
                             @changeImg="changeImg"></upload-file>
             </el-form-item>
           </el-form>
@@ -133,71 +118,40 @@ export default {
             isAddItem: false,
             addItemForm: {
                 enterpriseCode: '',
-                zoneName:'',
-                zoneType:'',
-                zoneDesc:'',
-                zoneCover:'',
-                cityCname:'',
-                zoneCode:'',
-                cityCode:''
+                exchangeName:'',
+                exchangeDesc:'',
+                exchangeCover:'',
+                exchangeCode:''
             },
             tradingAreaTypes: []
         }
     },
     mounted () {
         this.getItems()
-        this.tradingAreaType()
     },
     computed: {
         ...mapGetters({
-            userInfo: 'getUserInfo',
-            selectCity: 'getSelectCity'
+            userInfo: 'getUserInfo'
         })
-    },
-    watch: {
-       selectCity () {
-           this.getItems()
-       } 
     },
     methods: {
         searchItem () {
             this.getItems()
         },
-        // 获取商圈类型
-        tradingAreaType () {
-            util.request({
-                method: 'get',
-                interface: 'findDictionaryByType',
-                data: {
-                    typeCode:'zone_type'
-                }
-            }).then(res => {
-                if (res.result.success == '1') {
-                    this.tradingAreaTypes = res.result.result
-                } else {
-                    this.$message.error(res.result.message)
-                }
-            }) 
-        },
         // 增删改查
         getItems () {
-            if (!this.selectCity.cityCode) {
-                return false
-            }
-
             var formData = {
-                cityCode: this.selectCity.cityCode,
                 pageSize: this.pageSize,
                 pageNumber: this.pageNumber
             }
 
             if (this.keyValue) {
-                formData.zoneName = this.keyValue
+                formData.exchangeName = this.keyValue
             }
 
             util.request({
                 method: 'get',
-                interface: 'cityZoneList',
+                interface: 'exchangeInfoList',
                 data: formData
             }).then(res => {
                 if (res.result.success == '1') {
@@ -211,7 +165,7 @@ export default {
         insterItem () {
             util.request({
                 method: 'post',
-                interface: 'saveCityzone',
+                interface: 'exchangeInfoSave',
                 data: this.addItemForm
             }).then(res => {
                 if (res.result.success == '1') {
@@ -231,7 +185,7 @@ export default {
         updateItem () {
             util.request({
                 method: 'post',
-                interface: 'cityZoneUp',
+                interface: 'exchangeInfoUpdate',
                 data: this.addItemForm
             }).then(res => {
                 if (res.result.success == '1') {
@@ -250,9 +204,9 @@ export default {
         deleteItem (code) {
             util.request({
                 method: 'get',
-                interface: 'cityZoneDel',
+                interface: 'exchangeInfoDelete',
                 data: {
-                    zoneCode: code
+                    exchangeCode: code
                 }
             }).then(res => {
                 if (res.result.success == '1') {
@@ -268,24 +222,13 @@ export default {
         },
         // 添加 编辑
         addItem () {
-            if (!this.selectCity.cityCode) {
-                this.$message({
-                    message: '该城市不在列表中，请先更换或添加城市！',
-                    type: 'warning'
-                })
-                return false
-            }
-
             this.operateText = '添加'
             this.addItemForm = {
                 enterpriseCode: this.$route.query.enterpriseCode,
-                zoneName:'',
-                zoneType:'',
-                zoneDesc:'',
-                zoneCover:'',
-                cityCname:'',
-                zoneCode:'',
-                cityCode: this.selectCity.cityCode
+                exchangeName:'',
+                exchangeDesc:'',
+                exchangeCover:'',
+                exchangeCode:''
             }
 
             this.isAddItem = true
@@ -296,32 +239,25 @@ export default {
             this.isAddItem = true
         },
         changeImg (data) {
-            this.addItemForm.zoneCover = data.url
+            this.addItemForm.exchangeCover = data.url
         },
         confirmItem () {
-            if (!this.addItemForm.zoneName) {
+            if (!this.addItemForm.exchangeName) {
                 this.$message({
-                    message: '请输入商圈名称！',
+                    message: '请输入交易所名称！',
                     type: 'warning'
                 })
                 return false
             }
-            if (!this.addItemForm.zoneType) {
+            if (!this.addItemForm.exchangeCover) {
                 this.$message({
-                    message: '请选择商圈类型！',
-                    type: 'warning'
-                })
-                return false
-            }
-            if (!this.addItemForm.zoneCover) {
-                this.$message({
-                    message: '请上传商圈图片！',
+                    message: '请上传交易所图片！',
                     type: 'warning'
                 })
                 return false
             }
 
-            if (this.addItemForm.zoneCode) {
+            if (this.addItemForm.exchangeCode) {
                 this.updateItem()
             } else {
                 this.insterItem()

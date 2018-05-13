@@ -1,7 +1,10 @@
 <template>
     <div class="image-su-box">
         <!-- 控制操作 -->
-        <section class="btns-op" v-if="true">
+        <section class="btns-op">
+            <img v-show="!isCheck" src="../../../assets/images/select-icon.png" @click="setCheck">
+            <img v-show="isCheck" src="../../../assets/images/select-now.png" @click="setCheck">
+            <span></span>
             <!-- 控制导出 -->
             <img :class="isCheck ? '' : 'disable'"
                 src="../../../assets/images/import-icon.png"
@@ -19,14 +22,17 @@
         <template v-if="sourceDatas.length">
             <router-link v-for="(item, index) in sourceDatas"
                         class="check-box"
+                        target="_blank"
                         :to="{
-                            name: "mall-detail",
+                            name: 'mall-detail',
                             query: {
                                 enterpriseCode: userInfo.enterpriseCode,
                                 mallCode: item.mallCode
                             }
                         }">
-                <section v-if="isCheck" @click.stop="selectItem(item)"
+                <!-- 自己操作自己的 -->
+                <section v-if="isCheck && item.recoder == userInfo.userCode"
+                            @click.prevent="selectItem(item)"
                             class="select-box"
                             :class="selectItemList.indexOf(item.mallCode) > -1 ? 'active' : ''"></section>
                 
@@ -38,8 +44,8 @@
                     <div class="title-box">
                         <div class="title" v-text="item.mallName"></div>
                         <span class="time">
-                            <span class="btn-box" v-if="true">
-                                <i @click="editItem(item)" class="el-icon-document"></i>
+                            <span class="btn-box" v-if="item.recoder == userInfo.userCode">
+                                <i @click.prevent="editItem(item)" class="el-icon-document"></i>
                             </span>
                         </span>
                     </div>
@@ -64,10 +70,13 @@
         <el-dialog title="资产" :visible.sync="isAddItem">
           <el-form :label-position="'left'" :model="addItemForm" label-width="80px">
             <div class="map-show-box">
-                <map-show :point-str="addItemForm.mallGps" :map-height="'140px'" ref="mapShow"></map-show>
+                <map-show :point-str="addItemForm.mallGps"
+                            :map-height="'140px'"
+                            :ref="'mapShow'"></map-show>
             </div>
             <el-form-item label="物业检索">
-                <search-box :city="selectCity.mallAddr" @mapChange="mapChange"></search-box>
+                <search-box @mapChange="mapChange"
+                            :ref="'searchBox'"></search-box>
             </el-form-item>
             <el-form-item label="物业简称">
                 <el-input v-model="addItemForm.mallName"
@@ -137,7 +146,11 @@ export default {
                 mallName: '',
                 mallCover: ''
             },
-            checkedLabels: [],
+            zoneDatas: [],
+            zoneTotal: '',
+            zonePageSize: 15,
+            zonePageNumber: 1,
+            checkedLabel: '',
             isselectVisible: false,
             // 选中的图片
             selectItemList: [],
@@ -170,19 +183,25 @@ export default {
                 mallCover: ''
             }
 
-            this.$refs['mapShow'].drawMap()
             this.isAddItem = true
+            setTimeout(() => {
+                this.$refs['mapShow'].initMap()
+            }, 30)
         },
         mapChange (mapInfo) {
             this.addItemForm.mallAddr = mapInfo.title
             this.addItemForm.mallGps = mapInfo.point.lng + ',' + mapInfo.point.lat
             setTimeout(() => {
-                this.$refs['mapShow'].drawMap()
-            }, 0)
+                this.$refs['mapShow'].initMap()
+            }, 30)
         },
         editItem (item) {
             this.addItemForm = Object.assign({}, item)
             this.isAddItem = true
+            setTimeout(() => {
+                this.$refs['mapShow'].initMap()
+                this.$refs['searchBox'].resetKey(this.addItemForm.mallAddr)
+            }, 30)
         },
         changeItem (data) {
             this.addItemForm.mallCover = data.url
@@ -231,7 +250,7 @@ export default {
         getItems () {
             util.request({
                 method: 'get',
-                interface: 'listPage',
+                interface: 'mallInfoList',
                 data: {
                     enterpriseCode: this.$route.query.enterpriseCode,
                     zoneCode: this.$route.query.zoneCode,
@@ -253,7 +272,7 @@ export default {
         insterItem () {
             util.request({
                 method: 'post',
-                interface: 'materialFolderInsert',
+                interface: 'mallInfoSave',
                 data: this.addItemForm
             }).then(res => {
                 if (res.result.success == '1') {
@@ -268,7 +287,7 @@ export default {
         updateItem () {
             util.request({
                 method: 'post',
-                interface: 'materialFolderUpdate',
+                interface: 'mallInfoUpdate',
                 data: this.addItemForm
             }).then(res => {
                 if (res.result.success == '1') {
@@ -284,7 +303,7 @@ export default {
             if (!this.isCheck) {
                 return false
             }
-            this.checkedLabels = []
+            this.checkedLabel = ''
             this.isselectVisible = true
         },
         selectZone (item) {
@@ -320,10 +339,10 @@ export default {
         removeItem () {
             util.request({
                 method: 'post',
-                interface: 'materialMove',
+                interface: 'mallInfoMove',
                 data: {
-                    mallCodes: this.selectItemList,
-                    zoneCode: this.checkedLabel
+                    mallCodeList: this.selectItemList.join(','),
+                    toZoneCode: this.checkedLabel
                 }
             }).then(res => {
                 if (res.result.success == '1') {
@@ -338,7 +357,8 @@ export default {
     },
     components: {
         uploadFile,
-        searchBox
+        searchBox,
+        mapShow
     }
 }
 </script>
