@@ -24,7 +24,9 @@
                                 name: 'assets-list',
                                 query: {
                                     enterpriseCode: userInfo.enterpriseCode,
-                                    zoneCode: item.zoneCode
+                                    zoneCode: item.zoneCode,
+                                    cityName: item.cityName,
+                                    cityCode: item.cityCode
                                 }
                             }">
                     <div class="cover-box">
@@ -270,7 +272,7 @@ export default {
         addItem () {
             if (!this.selectCity.cityCode) {
                 this.$message({
-                    message: '该城市不在列表中，请先更换或添加城市！',
+                    message: '请先在右上角新增城市！',
                     type: 'warning'
                 })
                 return false

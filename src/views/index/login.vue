@@ -216,15 +216,14 @@
 
                         if (this.userLoginAccount != 'E2PlatformIniter') {
                             pathUrl = {
-                                name: 'zone-list',
-                                query: {
-                                    enterpriseCode: res.result.result.enterpriseCode,
-                                    platform: 'platform'
-                                }
+                                name: 'zone-list'
                             }
                         } else {
                             pathUrl = {
-                                name: 'enterprise-detail'
+                                name: 'enterprise-detail',
+                                query: {
+                                    platform: 'platform'
+                                }
                             }
                         }
 

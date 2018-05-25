@@ -217,7 +217,7 @@ export default {
             })       
         },
         pageChange (size) {
-            this.itemPageNumber = size
+            this.pageNumber = size
             this.getItems()
         },
         // 添加 编辑

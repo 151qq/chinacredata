@@ -2,7 +2,7 @@
   <div class="imgs-box">
     <section class="img-box" v-for="(item, index) in imgLists" :key="index">
       <img class="img-big" :src="item" @click="showImg(index)">
-      <div class="delete-box" v-if="proCover && item != proCover">
+      <div class="delete-box" v-if="proCover && item != proCover && isEdit">
         <i @click="setImg(item)">设为封面</i>
         <i @click="deleteImg(index)">删除</i>
       </div>

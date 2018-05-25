@@ -1,10 +1,5 @@
 <template>
     <section>
-      <div class="add-btn">
-        <span>
-          高度(m)&nbsp;&nbsp;面积(m²)&nbsp;&nbsp;率(%)&nbsp;&nbsp;年限(年)
-        </span>
-      </div>
       <div class="formDiscount">
           <section class="formBox">
               <span>写字楼类型</span>
@@ -26,92 +21,73 @@
               </el-select>
           </section>
           <section class="formBox">
-              <span>地上建筑面积</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="0.01"
-                                v-model="base.groundBuiltupArea"></el-input-number>
+              <span>地上建筑面积(m²)</span>
+              <el-input class="input-box"
+                        size="small"
+                        @change="computAreaUp"
+                        v-my-float="base.groundBuiltupArea">
+              </el-input>
           </section>
           <section class="formBox">
-              <span>套内面积</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="0.01"
-                                v-model="base.innerArea"></el-input-number>
+              <span>套内面积(m²)</span>
+              <el-input  class="input-box"
+                          size="small"
+                          v-my-float="base.innerArea"></el-input>
           </section>
           <section class="formBox">
               <span>地上层数</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="1"
-                                v-model="base.floorOvergroundLayer"></el-input-number>
+              <el-input  class="input-box"
+                          size="small"
+                          v-my-integer="base.floorOvergroundLayer"></el-input>
           </section>
           <section class="formBox">
-              <span>地下建筑面积</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="0.01"
-                                v-model="base.undergroundBuiltupArea"></el-input-number>
+              <span>地下建筑面积(m²)</span>
+              <el-input  class="input-box"
+                          size="small"
+                          @change="computAreaUn"
+                          v-my-float="base.undergroundBuiltupArea"></el-input>
           </section>
           <section class="formBox">
-              <span>地下商业面积</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="0.01"
-                                v-model="base.undergroundBusinessArea"></el-input-number>
+              <span>地下商业面积(m²)</span>
+              <el-input  class="input-box"
+                          size="small"
+                          v-my-float="base.undergroundBusinessArea"></el-input>
           </section>
           <section class="formBox">
               <span>地下层数</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="1"
-                                v-model="base.floorUndergroundLayer"></el-input-number>
+              <el-input  class="input-box"
+                          size="small"
+                          v-my-integer="base.floorUndergroundLayer"></el-input>
           </section>
           <section class="formBox">
-              <span>总建筑面积</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="0.01"
-                                v-model="base.totalBuiltupArea"></el-input-number>
+              <span>总建筑面积(m²)</span>
+              <el-input  class="input-box"
+                          size="small"
+                          v-my-float="totalArea"></el-input>
           </section>
           <section class="formBox">
-              <span>层高</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="0.01"
-                                v-model="base.floorHeight"></el-input-number>
+              <span>层高(m)</span>
+              <el-input  class="input-box"
+                          size="small"
+                          v-my-float="base.floorHeight"></el-input>
           </section>
           <section class="formBox">
-              <span>净高</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="0.01"
-                                v-model="base.netHeight"></el-input-number>
+              <span>净高(m)</span>
+              <el-input  class="input-box"
+                          size="small"
+                          v-my-float="base.netHeight"></el-input>
           </section>
           <section class="formBox">
               <span>车位数量</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="1"
-                                v-model="base.parkingNumber"></el-input-number>
+              <el-input  class="input-box"
+                          size="small"
+                          v-my-integer="base.parkingNumber"></el-input>
           </section>
           <section class="formBox">
               <span>电梯数量</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="1"
-                                v-model="base.liftNumber"></el-input-number>
+              <el-input  class="input-box"
+                          size="small"
+                          v-my-integer="base.liftNumber"></el-input>
           </section>
           <section class="formBox">
               <span>空调类型</span>
@@ -266,20 +242,9 @@
           </section>
           <section class="formBox">
               <span>土地剩余年限</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="1"
-                                v-model="base.landLifeLeft"></el-input-number>
-          </section>
-          <section class="formBox">
-              <span>容积率</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :max="100"
-                                :step="1"
-                                v-model="base.plotRation"></el-input-number>
+              <el-input  class="input-box"
+                          size="small"
+                          v-my-integer="base.landLifeLeft"></el-input>
           </section>
           <section class="formBox bigF">
               <span>土地使用说明</span>
@@ -291,6 +256,13 @@
                 v-model="base.landOtherMemo">
               </el-input>
               <div class="limit-box">剩余<a>{{140 - base.landOtherMemo.length}}</a>字</div>
+          </section>
+          <section class="formBox">
+              <span>容积率(%)</span>
+              <el-input  class="input-box"
+                          size="small"
+                          :max="100"
+                          v-my-float="base.plotRation"></el-input>
           </section>
           <section class="formBox">
               <span>投入使用时间</span>
@@ -403,6 +375,7 @@ export default {
 
           var formData = {
             keyName: queryString,
+            status: '0',
             pageNumber: 1,
             pageSize: 20
           }
@@ -423,12 +396,12 @@ export default {
               }
           })       
         },
-        // computAreaUp (value) {
-        //   this.totalArea = Number(value) + Number(this.base.undergroundBuiltupArea)
-        // },
-        // computAreaUn (value) {
-        //   this.totalArea = Number(this.base.groundBuiltupArea) + Number(value)
-        // },
+        computAreaUp (value) {
+          this.totalArea = Number(value) + Number(this.base.undergroundBuiltupArea)
+        },
+        computAreaUn (value) {
+          this.totalArea = Number(this.base.groundBuiltupArea) + Number(value)
+        },
         mapChange (mapInfo) {
           this.base.officeAddr = mapInfo.title
           this.base.officeGps = mapInfo.point.lng + ',' + mapInfo.point.lat
@@ -443,7 +416,7 @@ export default {
           }).then(res => {
               if (res.result.success == '1') {
                 this.base = res.result.result
-                // this.totalArea = res.result.result.totalBuiltupArea
+                this.totalArea = res.result.result.totalBuiltupArea
                 this.$emit('change', res.result.result)
               } else {
                 this.$message.error(res.result.message)
@@ -474,6 +447,8 @@ export default {
           if (this.base.officeOpenDate) {
             this.base.officeOpenDate = new Date(this.base.officeOpenDate)
           }
+
+          this.base.totalBuiltupArea = this.totalArea
 
           util.request({
               method: 'post',

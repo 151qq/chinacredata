@@ -1,26 +1,23 @@
 <template>
   <section>
     <section class="header-web">
-      <router-link class="logo-box" :to="{name: 'market'}"><img src="../../assets/images/logo.png"></router-link>
+      <router-link class="logo-box" :to="{name: 'zone-list'}"><img src="../../assets/images/logo.png"></router-link>
 
       <div class="nav-box">
         <router-link  :to="{
-                        name: 'zone-list',
-                        query:{
-                          enterpriseCode: userInfo.enterpriseCode
-                        }
-                      }">
+                        name: 'zone-list'
+                      }"
+                      v-if="isRoot || isProperty">
           物业资产
         </router-link>
         <router-link  :to="{
-                        name: 'exchange-list',
-                        query:{
-                          enterpriseCode: userInfo.enterpriseCode
-                        }
-                      }">
+                        name: 'exchange-list'
+                      }"
+                      v-if="isRoot || isAssets">
           资管产品
         </router-link>
-        <router-link :to="{ name: 'enterprise'}">
+        <router-link :to="{ name: 'enterprise'}"
+                      v-if="isRoot || isEnterprise">
           企业信息
         </router-link>
       </div>
@@ -49,7 +46,7 @@
           {{selectCity.cityName}}
           &nbsp;<i class="el-icon-caret-bottom"></i>
         </span>
-        <div class="city-drop-box">
+        <div class="city-drop-box" v-if="cityList.length">
           <span :class="selectCity.cityName == item.cityCname ? 'nowColor' : ''"
                 @click="setCity(item)"
                 v-for="(item, index) in cityList">
@@ -66,6 +63,14 @@
               :total="total">
           </el-pagination>
         </div>
+      </div>
+
+      <div class="select-city-box"
+            v-if="$route.query.cityName">
+        <span>
+          {{$route.query.cityName}}
+          &nbsp;<i class="el-icon-caret-bottom"></i>
+        </span>
       </div>
 
       <div class="select-city-box"
@@ -134,6 +139,7 @@
         <el-form-item label="拼音简称">
             <el-input
                 type="text"
+                @change="checkFont"
                 v-model="cityBase.cityEname">
             </el-input>
         </el-form-item>
@@ -171,15 +177,6 @@ export default {
     }
   },
   created () {
-    // 当前定位城市
-    var myCity = new BMap.LocalCity()
-    myCity.get((res) => {
-      this.setSelectCity({
-        cityName: res.name,
-        cityCode: ''
-      })
-    })
-
     this.getUserInfo()
     this.haveCitys()
     this.getCitys()
@@ -203,7 +200,19 @@ export default {
         selectCity: 'getSelectCity',
         cityList:'getCityList',
         selectExchange: 'getSelectExchange',
-      })
+      }),
+      isRoot () {
+        return this.roleCodes.indexOf('platform_root') > -1
+      },
+      isAssets () {
+        return this.roleCodes.indexOf('platform_assets') > -1
+      },
+      isProperty () {
+        return this.roleCodes.indexOf('platform_property') > -1
+      },
+      isEnterprise () {
+        return this.roleCodes.indexOf('platform_enterprise') > -1
+      }
   },
   methods: {
     ...mapActions([
@@ -212,6 +221,14 @@ export default {
       'setCityList',
       'setSelectExchange'
     ]),
+    checkFont (value) {
+
+      if (/[^a-zA-Z]+/.test(value)) {
+        setTimeout(() => {
+          this.cityBase.cityEname = value.replace(/[^a-zA-Z]+/, '')
+        }, 0)
+      }
+    },
     getExchangeList () {
         var formData = {
             pageSize: this.pageESize,
@@ -264,20 +281,48 @@ export default {
           if (res.result.success == '1') {
             var datas = res.result.result
             this.total = Number(res.result.total)
+            this.setCityList(datas.length ? datas : [])
 
+            console.log(this.selectCity, 'selectCity')
+
+            // 没有城市定位全国
             if (datas.length) {
+              // 有定位选定为，没定位有北京选北京，没北京，选第一个
               for (var i = 0, len = datas.length; i < len; i++) {
                   if (datas[i].cityCname.indexOf(this.selectCity.cityName) > -1) {
                       this.setSelectCity({
                         cityName: datas[i].cityCname,
                         cityCode: datas[i].cityCode
                       })
+                      return
+                      break
+                  }
+
+                  
+              }
+
+              for (var i = 0, len = datas.length; i < len; i++) {
+                  if (datas[i].cityCname.indexOf('北京') > -1) {
+                      this.setSelectCity({
+                        cityName: datas[i].cityCname,
+                        cityCode: datas[i].cityCode
+                      })
+
+                      return
                       break
                   }
               }
-            }
 
-            this.setCityList(datas.length ? datas : [])
+              this.setSelectCity({
+                cityName: datas[0].cityCname,
+                cityCode: datas[0].cityCode
+              })
+            } else {
+              this.setSelectCity({
+                cityName: '新增',
+                cityCode: ''
+              })
+            }
           } else {
             this.$message.error(res.result.message)
           }
@@ -356,6 +401,12 @@ export default {
                     type: 'success'
                 })
                 this.isAddCity = false
+
+                this.setSelectCity({
+                  cityName: this.cityBase.cityCname,
+                  cityCode: ''
+                })
+
                 this.haveCitys()
             } else {
                 this.$message.error(res.result.message)
@@ -378,7 +429,7 @@ export default {
             this.roleCodes = roleCodes
 
             res.result.result.roleCodes = roleCodes.concat([])
-
+            // 是否注册企业
             this.setUserInfo(res.result.result)
             this.$emit('loadPage', '1')
           } else {

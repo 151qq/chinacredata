@@ -42,11 +42,10 @@
         <el-dialog :title="operateText" :visible.sync="isAddOEdit">
           <el-form :label-position="'left'" :model="itemData" label-width="100px">
             <el-form-item label="贡献比例(%)">
-                <el-input-number  size="small"
-                                :min="0"
-                                :max="100"
-                                :step="0.01"
-                                v-model="itemData.assetRatio"></el-input-number>
+                <el-input  size="small"
+                          :min="0"
+                          :max="100"
+                          v-my-float="itemData.assetRatio"></el-input>
             </el-form-item>
             <el-form-item label="物业类型">
                 <el-select
@@ -268,7 +267,9 @@ export default {
             data: {
               id: row.id,
               securityCode: row.securityCode,
-              propertyCode: row.propertyCode
+              propertyCode: row.propertyCode,
+              securityType: row.securityType,
+              propertyType: row.propertyType
             }
         }).then(res => {
           if (res.result.success == '1') {

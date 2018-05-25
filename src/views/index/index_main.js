@@ -5,6 +5,7 @@ import jsCookie from 'js-cookie'
 import routes from './router'
 import Element from 'element-ui'
 import store from '../../vuex/store'
+import $ from 'Jquery'
 import 'element-ui/lib/theme-default/index.css'
 import '../../assets/scss/common.scss'
 import './scss/index.scss'
@@ -41,6 +42,70 @@ Vue.use(VueHtml5Editor, {
 Vue.use(VueRouter)
 Vue.use(Element)
 
+Vue.directive('my-integer', {
+  componentUpdated (el, binding, vnode) {
+    if (!binding.expression) {
+        throw 'no expression'
+    }
+
+    if (binding.value === binding.oldValue && binding.value !== '') {
+        return
+    }
+
+    var elementInput = $(el).find('input')
+    elementInput.val(binding.value)
+    elementInput.on('keyup', function(){
+        var value = $(this).val()
+        if (/[^0-9]*/.test(value)) {
+            value = value.replace(/[^0-9]*/g, '')
+        }
+        $(this).val(value)
+
+        eval("vnode.context." + binding.expression + "= value")
+    })
+  }
+})
+
+Vue.directive('my-float', {
+  componentUpdated (el, binding, vnode) {
+    if (!binding.expression) {
+        throw 'no expression'
+    }
+
+    if (binding.value === binding.oldValue && binding.value !== '') {
+        return
+    }
+
+    console.log(vnode, binding.expression)
+
+    var elementInput = $(el).find('input')
+    elementInput.val(binding.value)
+    elementInput.on('keyup', function(){
+        var value = $(this).val()
+        if (/[^0-9 | .]*/.test(value)) {
+            value = value.replace(/[^0-9 | .]*/g, '')
+        }
+
+        var index = value.indexOf('.')
+
+        if (index === 0) {
+            value = ''
+        }
+
+        if (value.split('.').length > 2) {
+            value = value.split('.')[0]
+        }
+
+        if (index > 0) {
+            value = value.substring(0, index + 3)
+        }
+        $(this).val(value)
+        eval("vnode.context." + binding.expression + "= value")
+    })
+  }
+})
+
+
 // 实例化VueRouter
 const router = new VueRouter({
   mode: 'history',
@@ -56,7 +121,7 @@ router.beforeEach((to, from, next) => {
     }
 
     if (to.name == 'home') {
-        next('/article')
+        next('/propertyAssets')
     }
 
     // 滚动置顶

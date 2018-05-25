@@ -1,9 +1,6 @@
 <template>
     <section class="activity-box">
         <div class="add-btn">
-          <span>
-            比例(%)
-          </span>
           <el-button type="primary" icon="plus" size="small"
                   @click="addItem"
                   v-if="isEdit">增加</el-button>
@@ -15,15 +12,22 @@
           style="width: 100%">
           <el-table-column
             prop="ownerStockRight"
-            label="股权比例">
+            label="股权比例(%)">
           </el-table-column>
           <el-table-column
-            prop="enterpriseType"
-            label="业主类型">
-          </el-table-column>
-          <el-table-column
-            prop="enterpriseNameReg"
             label="业主名称">
+            <template scope="scope">
+              <router-link class="black nav-hover"
+                            target="_blank"
+                            :to="{
+                              name: 'enterprise-info',
+                              query: {
+                                enterpriseCode: scope.row.ownerEnterpriseCode
+                              }
+                            }">
+                  {{scope.row.enterpriseNameReg}}
+              </router-link>
+            </template>
           </el-table-column>
           <el-table-column
             v-if="isEdit"
@@ -47,8 +51,8 @@
         </el-pagination>
 
         <el-dialog :title="operateText" :visible.sync="isAddOEdit">
-          <el-form :label-position="'left'" :model="itemData" label-width="80px">
-            <el-form-item label="股权比例">
+          <el-form :label-position="'left'" :model="itemData" label-width="90px">
+            <el-form-item label="股权比例(%)">
                 <el-input-number  size="small"
                                 :min="0"
                                 :max="100"
@@ -56,7 +60,7 @@
                                 v-model="itemData.ownerStockRight"></el-input-number>
             </el-form-item>
             <el-form-item label="业主">
-                <search-input :search-data="base"
+                <search-input :search-data="itemData"
                               :fetch-suggestions="getEnterpriseList"
                               :m-code="'ownerEnterpriseCode'"
                               :m-name="'enterpriseNameReg'"
@@ -89,6 +93,7 @@ export default {
             propertyType: '',
             ownerEnterpriseCode: ''
           },
+          itemNowIndex: '',
           pageNumber: 1,
           pageSize: 10,
           total: 0
@@ -117,6 +122,7 @@ export default {
 
         var formData = {
           keyName: queryString,
+          status: '0',
           pageNumber: 1,
           pageSize: 20
         }
@@ -169,9 +175,13 @@ export default {
 
         this.operateText = '添加'
 
+        this.itemNowIndex = ''
+
         this.isAddOEdit = true
       },
       editItem (item) {
+        this.itemNowIndex = this.itemList.indexOf(item)
+
         this.itemData = Object.assign({}, item)
 
         this.operateText = '编辑'
@@ -190,6 +200,24 @@ export default {
         if (this.itemData.ownerEnterpriseCode === '') {
           this.$message({
               message: '请选择业主！',
+              type: 'warning'
+          })
+          return false
+        }
+
+        var sum = 0
+
+        for (var i = 0, len = this.itemList.length; i < len; i++) {
+          if (i !== this.itemNowIndex) {
+            sum += this.itemList[i].ownerStockRight
+          }
+        }
+
+        sum += this.itemData.ownerStockRight
+
+        if (sum > 100) {
+          this.$message({
+              message: '总股权比例必须小于100！',
               type: 'warning'
           })
           return false
@@ -222,6 +250,7 @@ export default {
             method: 'post',
             interface: 'propertyOwnerDelete',
             data: {
+              id: row.id,
               propertyCode: row.propertyCode,
               ownerEnterpriseCode: row.ownerEnterpriseCode
             }

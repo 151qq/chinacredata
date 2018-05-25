@@ -31,8 +31,13 @@ export default {
         enterpriseWechatInfoSave: platform + 'enterprise/insertOrUpdate.json',
 
         addUser: platform + 'enterprise/addUser.json',
+        updateUser: platform + 'enterprise/updateUser.json',
         deleteUser: platform + 'enterprise/deleteUser.json',
         selectUserInfoOfPage: platform + 'enterprise/selectUserInfoOfPage.json',
+
+        setRole: platform + 'user/setRole.json',
+        delRole: platform + 'user/delRole.json',
+        roleList: platform + 'role/list.json',
 
         /**
         * 我的素材库 get
@@ -78,51 +83,61 @@ export default {
         propertyOwnerDelete: platform + 'propertyOwner/delete.json',
 
         propertyTradeList: platform + 'propertyTrade/list.json',
+        propertyTradeInfo: platform + 'propertyTrade/view.json',
         propertyTradeSave: platform + 'propertyTrade/save.json',
         propertyTradeUpdate: platform + 'propertyTrade/update.json',
         propertyTradeDelete: platform + 'propertyTrade/delete.json',
 
         propertyValueList: platform + 'propertyValue/list.json',
+        propertyValueInfo: platform + 'propertyValue/view.json',
         propertyValueSave: platform + 'propertyValue/save.json',
         propertyValueUpdate: platform + 'propertyValue/update.json',
         propertyValueDelete: platform + 'propertyValue/delete.json',
 
         officeRentHistoryList: platform + 'officeRentHistory/list.json',
+        officeRentHistoryInfo: platform + 'officeRentHistory/view.json',
         officeRentHistorySave: platform + 'officeRentHistory/save.json',
         officeRentHistoryUpdate: platform + 'officeRentHistory/update.json',
         officeRentHistoryDelete: platform + 'officeRentHistory/delete.json',
 
         officeIncomeList: platform + 'officeIncome/list.json',
+        officeIncomeInfo: platform + 'officeIncome/view.json',
         officeIncomeSave: platform + 'officeIncome/save.json',
         officeIncomeUpdate: platform + 'officeIncome/update.json',
         officeIncomeDelete: platform + 'officeIncome/delete.json',
 
         officeCostList: platform + 'officeCost/list.json',
+        officeCostInfo: platform + 'officeCost/view.json',
         officeCostSave: platform + 'officeCost/save.json',
         officeCostUpdate: platform + 'officeCost/update.json',
         officeCostDelete: platform + 'officeCost/delete.json',
 
         officeTenantInfoList: platform + 'officeTenantInfo/list.json',
+        officeTenantInfoInfo: platform + 'officeTenantInfo/view.json',
         officeTenantInfoSave: platform + 'officeTenantInfo/save.json',
         officeTenantInfoUpdate: platform + 'officeTenantInfo/update.json',
         officeTenantInfoDelete: platform + 'officeTenantInfo/delete.json',
 
         mallRentHistoryList: platform + 'mallrenthistory/list.json',
+        mallRentHistoryInfo: platform + 'mallrenthistory/view.json',
         mallRentHistorySave: platform + 'mallrenthistory/save.json',
         mallRentHistoryUpdate: platform + 'mallrenthistory/update.json',
         mallRentHistoryDelete: platform + 'mallrenthistory/delete.json',
 
         mallIncomeList: platform + 'mallIncome/list.json',
+        mallIncomeInfo: platform + 'mallIncome/view.json',
         mallIncomeSave: platform + 'mallIncome/save.json',
         mallIncomeUpdate: platform + 'mallIncome/update.json',
         mallIncomeDelete: platform + 'mallIncome/delete.json',
 
         mallCostList: platform + 'mallCost/list.json',
+        mallCostInfo: platform + 'mallCost/view.json',
         mallCostSave: platform + 'mallCost/save.json',
         mallCostUpdate: platform + 'mallCost/update.json',
         mallCostDelete: platform + 'mallCost/delete.json',
 
         mallTenantInfoList: platform + 'mallTenantInfo/list.json',
+        mallTenantInfoInfo: platform + 'mallTenantInfo/view.json',
         mallTenantInfoSave: platform + 'mallTenantInfo/save.json',
         mallTenantInfoUpdate: platform + 'mallTenantInfo/update.json',
         mallTenantInfoDelete: platform + 'mallTenantInfo/delete.json',
@@ -155,6 +170,7 @@ export default {
         securityAssetDelete: platform + 'securityAsset/delete.json',
 
         assetManagementProductLevelList: platform + 'assetProductLevel/list.json',
+        assetManagementProductLevelInfo: platform + 'assetProductLevel/view.json',
         assetManagementProductLevelSave: platform + 'assetProductLevel/save.json',
         assetManagementProductLevelUpdate: platform + 'assetProductLevel/update.json',
         assetManagementProductLevelDelete: platform + 'assetProductLevel/delete.json',
@@ -162,6 +178,7 @@ export default {
         poroductCashFlowInfo: platform + 'assetProductLevelYearProfit/poroductCashFlowInfo.json',
         assetProductLevelYearProfitList: platform + 'assetProductLevelYearProfit/assetCashFlowList.json',
         assetProductLevelYearProfitUpdate: platform + 'assetProductLevelYearProfit/updateTotalProfitList.json',
+        updateAssetProfitList: platform + 'assetProductLevelYearProfit/updateAssetProfitList.json',
         validateAssetProfit: platform + 'assetProductLevelYearProfit/validateAssetProfit.json'
         
     }

@@ -69,6 +69,32 @@ const routers = [
             meta: {
               title: '购物中心'
             }
+          },
+          {
+            // 平台企业信息详情
+            path: 'formOffice',
+            name: 'form-office',
+            component (resolve) {
+              require.ensure(['./propertyAssets/formOffice.vue'], () => {
+                resolve(require('./propertyAssets/formOffice.vue'))
+              })
+            },
+            meta: {
+              title: '写字楼'
+            }
+          },
+          {
+            // 平台企业信息详情
+            path: 'formMall',
+            name: 'form-mall',
+            component (resolve) {
+              require.ensure(['./propertyAssets/formMall.vue'], () => {
+                resolve(require('./propertyAssets/formMall.vue'))
+              })
+            },
+            meta: {
+              title: '购物中心'
+            }
           }
         ],
         meta: {
@@ -118,6 +144,19 @@ const routers = [
             component (resolve) {
               require.ensure(['./securityAssets/managementDetail.vue'], () => {
                 resolve(require('./securityAssets/managementDetail.vue'))
+              })
+            },
+            meta: {
+              title: '资管产品'
+            }
+          },
+          {
+            // 平台企业信息详情
+            path: 'formManagement',
+            name: 'form-management',
+            component (resolve) {
+              require.ensure(['./securityAssets/formManagement.vue'], () => {
+                resolve(require('./securityAssets/formManagement.vue'))
               })
             },
             meta: {
@@ -178,12 +217,12 @@ const routers = [
             }
           },
           {
-            // 平台企业信息详情
-            path: 'platformDetail',
-            name: 'platform-detail',
+            // 企业信息详情
+            path: 'enterpriseInfo',
+            name: 'enterprise-info',
             component (resolve) {
-              require.ensure(['./enterprise/platformDetail.vue'], () => {
-                resolve(require('./enterprise/platformDetail.vue'))
+              require.ensure(['./enterprise/enterpriseInfo.vue'], () => {
+                resolve(require('./enterprise/enterpriseInfo.vue'))
               })
             },
             meta: {

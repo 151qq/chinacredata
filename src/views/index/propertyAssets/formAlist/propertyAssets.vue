@@ -37,7 +37,7 @@ export default {
     data () {
         return {
           assetsList: [],
-          pageSize: 5,
+          pageSize: 3,
           pageNumber: 1,
           total: 0
         }

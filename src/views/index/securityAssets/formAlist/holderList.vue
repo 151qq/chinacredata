@@ -15,8 +15,19 @@
             label="股权比例(%)">
           </el-table-column>
           <el-table-column
-            prop="enterpriseNameReg"
             label="股东名称">
+            <template scope="scope">
+              <router-link class="black nav-hover"
+                            target="_blank"
+                            :to="{
+                              name: 'enterprise-info',
+                              query: {
+                                enterpriseCode: scope.row.securityShareholder
+                              }
+                            }">
+                  {{scope.row.enterpriseNameReg}}
+              </router-link>
+            </template>
           </el-table-column>
           <el-table-column
             v-if="isEdit"
@@ -42,11 +53,10 @@
         <el-dialog :title="operateText" :visible.sync="isAddOEdit">
           <el-form :label-position="'left'" :model="itemData" label-width="100px">
             <el-form-item label="股权比例(%)">
-                <el-input-number  size="small"
+                <el-input  size="small"
                                 :min="0"
                                 :max="100"
-                                :step="0.01"
-                                v-model="itemData.shareholderShareRatio"></el-input-number>
+                                v-my-float="itemData.shareholderShareRatio"></el-input>
             </el-form-item>
             <el-form-item label="股东">
                 <search-input :search-data="itemData"
@@ -82,6 +92,7 @@ export default {
             securityType: '',
             securityShareholder: ''
           },
+          itemNowIndex: '',
           pageNumber: 1,
           pageSize: 10,
           total: 0
@@ -110,6 +121,7 @@ export default {
 
         var formData = {
           keyName: queryString,
+          status: '0',
           pageNumber: 1,
           pageSize: 20
         }
@@ -162,9 +174,13 @@ export default {
 
         this.operateText = '添加'
 
+        this.itemNowIndex = ''
+
         this.isAddOEdit = true
       },
       editItem (item) {
+        this.itemNowIndex = this.itemList.indexOf(item)
+
         this.itemData = Object.assign({}, item)
 
         this.operateText = '编辑'
@@ -183,6 +199,24 @@ export default {
         if (this.itemData.securityShareholder === '') {
           this.$message({
               message: '请选择股东！',
+              type: 'warning'
+          })
+          return false
+        }
+
+        var sum = 0
+
+        for (var i = 0, len = this.itemList.length; i < len; i++) {
+          if (i !== this.itemNowIndex) {
+            sum += this.itemList[i].shareholderShareRatio
+          }
+        }
+
+        sum += this.itemData.shareholderShareRatio
+
+        if (sum > 100) {
+          this.$message({
+              message: '总股权比例必须小于100！',
               type: 'warning'
           })
           return false

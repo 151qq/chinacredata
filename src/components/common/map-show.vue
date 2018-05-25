@@ -5,7 +5,7 @@
 </template>
 <script>
 export default {
-    props: ['pointStr', 'mapHeight'],
+    props: ['pointStr', 'mapHeight', 'cityName'],
     data () {
         return {
             map: '',
@@ -21,8 +21,8 @@ export default {
             if (!this.map) {
                 var map = new window.BMap.Map('containerhouse')
                 this.map = map
-                var point = new window.BMap.Point(116.409, 39.918)
-                map.centerAndZoom(point, 15)
+                var city = this.cityName ? this.cityName : '北京'
+                map.centerAndZoom(city, 15)
             }
 
             if (this.pointStr) {

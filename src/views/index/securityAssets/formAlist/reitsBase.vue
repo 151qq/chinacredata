@@ -53,19 +53,15 @@
           </section>
           <section class="formBox">
               <span>发行价格(万元)</span>
-              <el-input-number  class="input-box"
+              <el-input  class="input-box"
                                 size="small"
-                                :min="0"
-                                :step="0.01"
-                                v-model="base.issuePrice"></el-input-number>
+                                v-my-float="base.issuePrice"></el-input>
           </section>
           <section class="formBox">
               <span>发行股份数</span>
-              <el-input-number  class="input-box"
+              <el-input  class="input-box"
                                 size="small"
-                                :min="0"
-                                :step="1"
-                                v-model="base.fundShares"></el-input-number>
+                                v-my-integer="base.fundShares"></el-input>
           </section>
           <section class="formBox">
               <span>相关链接</span>
@@ -201,6 +197,15 @@ export default {
         }
     },
     methods: {
+        setInteger (data, key) {
+          var str = this[data][key] + ''
+          if (/[^0-9]*/.test(str)) {
+            str = str.replace(/[^0-9]*/g, '')
+          }
+          setTimeout(() => {
+            this[data][key] = str
+          }, 0)
+        },
         getEnterpriseList (queryString, cb) {
           if (!this.requestNum) {
             this.requestNum = 1
@@ -212,6 +217,7 @@ export default {
 
           var formData = {
             keyName: queryString,
+            status: '0',
             pageNumber: 1,
             pageSize: 20
           }

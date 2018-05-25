@@ -28,6 +28,10 @@
   color: #1f2d3d;
 }
 
+.el-icon-document {
+  color: #1f2d3d;
+}
+
 #app {
   min-height: 600px;
 }
@@ -159,6 +163,12 @@
     }
 }
 
+.nav-hover {
+  &:hover {
+    color: #20a0ff;
+  }
+}
+
 // 三排表单
 .form-discount {
     min-height: 600px;
@@ -185,7 +195,7 @@
 
             &>span {
                 float: left;
-                width: 100px;
+                width: 120px;
                 font-size: 14px;
                 color: #1F2D3D;
                 line-height: 30px;
@@ -194,7 +204,7 @@
 
             .btn-right-box {
               float: left;
-              width: 200px;
+              width: 180px;
 
               .el-tooltip {
                 float: left;
@@ -213,18 +223,18 @@
 
             .input-btn-box {
               float: left;
-              width: 220px;
+              width: 200px;
 
               .input-b {
                   float: left;
-                  width: 160px;
+                  width: 140px;
 
                   .el-select {
-                      width: 160px;
+                      width: 140px;
                   }
 
                   .el-autocomplete {
-                    width: 160px;
+                    width: 140px;
                   }
 
                   input {
@@ -240,10 +250,10 @@
 
             .input-box {
                 float: left;
-                width: 220px;
+                width: 200px;
 
                 .el-select {
-                    width: 220px;
+                    width: 200px;
                 }
 
                 input {
@@ -256,35 +266,89 @@
             }
 
             .el-textarea {
-              width: 220px;
+              width: 200px;
+            }
+        }
+
+        .bigBigSpan {
+
+            &>span {
+                width: 160px;
+            }
+
+            .btn-right-box {
+              width: 140px;
+            }
+
+            .input-btn-box {
+              float: left;
+              width: 160px;
+
+              .input-b {
+                  width: 100px;
+
+                  .el-select {
+                      width: 100px;
+                  }
+
+                  .el-autocomplete {
+                    width: 100px;
+                  }
+              }
+            }
+
+            .input-box {
+                width: 160px;
+
+                .el-select {
+                    width: 160px;
+                }
+            }
+
+            .el-textarea {
+              width: 160px;
             }
         }
 
         .bigF {
             .input-box {
-                width: 900px;
+                width: 880px;
 
                 .el-select {
-                    width: 900px;
+                    width: 880px;
                 }
             }
 
             .el-textarea {
-              width: 900px;
+              width: 880px;
+            }
+        }
+
+        .bigBigSpanF {
+            .input-box {
+                width: 840px;
+
+                .el-select {
+                    width: 840px;
+                }
+            }
+
+            .el-textarea {
+              width: 840px;
             }
         }
 
         .btnB {
           .input-box {
-              width: 800px;
+              width: 780px;
 
               .el-select {
-                  width: 800px;
+                  width: 780px;
               }
           }
 
           .el-textarea {
-            width: 800px;
+            width: 780px;
           }
 
           .btn-box {
@@ -311,7 +375,7 @@
 
         .mapBox {
             .input-box {
-              width: 560px;
+              width: 540px;
               display: flex;
 
               .map-show-box {
@@ -340,6 +404,39 @@
         &:last-child {
             margin-bottom: 30px;
         }
+    }
+
+    .static-box {
+      .input-box {
+        border-radius: 4px;
+        border: 1px solid #bfcbd9;
+        box-sizing: border-box;
+        color: #1f2d3d;
+        font-size: 14px;
+        min-height: 30px;
+        line-height: 24px;
+        padding: 3px 10px;
+      }
+
+      .static-small-img {
+        float: left;
+        width: 120px;
+
+        img {
+          display: block;
+          width: 100%;
+        }
+      }
+
+      .static-img {
+        float: left;
+        width: 200px;
+
+        img {
+          display: block;
+          width: 100%;
+        }
+      }
     }
 }
 
@@ -435,6 +532,7 @@
 .sou-box .cover-box,.card-box .card-img {
   display: block;
   overflow: hidden !important;
+  background: #fefefe;
 
   img {
     position: relative !important;
@@ -973,7 +1071,7 @@
 
             .time {
                 display: block;
-                font-size: 14px;
+                font-size: 12px;
                 height: 20px;
                 line-height: 20px;
                 color: #999999;
@@ -981,7 +1079,7 @@
 
             .btn-box {
                float: right;
-               font-size: 14px;
+               font-size: 12px;
                color: #333333;
                margin-left: 5px;
 
@@ -1271,6 +1369,28 @@
                 color: #20A0FF;
                }
             }
+        }
+    }
+}
+
+.dia-check-body {
+    overflow: hidden;
+
+    .select-item-box {
+        float: left;
+        height: 40px;
+        font-size: 14px;
+        color: #000000;
+        line-height: 40px;
+        margin-right: 15px;
+        cursor: pointer;
+        padding-left: 20px;
+        background: url(../../../assets/images/check-icon.png) left center no-repeat;
+        background-size: 16px 16px;
+
+        &.active {
+            background: url(../../../assets/images/check-now.png) left center no-repeat;
+            background-size: 16px 16px;
         }
     }
 }

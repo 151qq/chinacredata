@@ -46,6 +46,14 @@ export default {
         var day = dayStr < 10 ? '0' + dayStr : dayStr
         return year + '-' + month + '-' + day
     },
+    formMonthDate (str) {
+        var dateStr = new Date(str)
+        var year = dateStr.getFullYear()
+        var monthStr = dateStr.getMonth() + 1
+        var dayStr = dateStr.getDate()
+        var month = monthStr < 10 ? '0' + monthStr : monthStr
+        return year + '-' + month
+    },
     range: function (n) {
         n = n.toString()
         return n[1] ? n : '0' + n
@@ -83,11 +91,11 @@ export default {
                         status == 200
                     }
                     console.log("进入状态" + status);
-                    if (status == 203) { //无认证状态
-                        console.log("进入203状态")
-                        window.location.href = "/login";
-                        return;
-                    }
+                    // if (status == 203) { //无认证状态
+                    //     console.log("进入203状态")
+                    //     window.location.href = "/login";
+                    //     return;
+                    // }
 
                     common.removeLoading();
                     return response;

@@ -15,8 +15,11 @@
                         {{item.userMobile}}
                     </span>
 
+                    <span class="btn-box" v-if="isPlatform">
+                        <i @click.prevent="eidtItem(item)">编辑</i>
+                    </span>
                     <span class="btn-box">
-                        <i @click.prevent="deleteItem(item.zoneCode)" class="el-icon-delete2"></i>
+                        <i @click.prevent="deleteItem(item)">删除</i>
                     </span>
                 </div>
             </div>
@@ -36,21 +39,34 @@
             :total="total">
         </el-pagination>
 
-
+  
         <el-dialog class="user-add-box" title="添加员工" :visible.sync="isAddOEdit">
           <el-form :label-position="'left'" :model="itemData" label-width="80px">
             <el-form-item label="用户名">
                 <el-input v-model="itemData.userName"></el-input>
             </el-form-item>
             <el-form-item label="手机号">
-                <el-input type="number" v-model="itemData.userMobile"></el-input>
+                <el-input type="number"
+                          :disabled="!!itemData.id"
+                          v-model="itemData.userMobile"></el-input>
+            </el-form-item>
+            <el-form-item label="角色" v-if="isPlatform">
+              <section class="dia-check-body">
+                <section v-for="(item, index) in roleDatas" 
+                        :index="index"
+                        @click.stop="selectRole(item)"
+                        class="select-item-box"
+                        :class="itemData.roleList.indexOf(item.roleCode) > -1 ? 'active' : ''">
+                    {{item.roleName}}
+                </section>
+              </section>
             </el-form-item>
             <el-form-item label="用户名片">
-                <upload-file :path="itemData.userWechatLogo"
+                <upload :path="itemData.userWechatLogo"
                             :is-operate="true"
                             :bg-path="false"
                             :id-name="'userWechatLogo'"
-                            @changeImg="changeImg"></upload-file>
+                            @changeImg="changeImg"></upload>
             </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
@@ -65,6 +81,7 @@ import util from '../../../../assets/common/util'
 import upload from '../../../../components/common/uploadFile'
 
 export default {
+    props: ['isPlatform'],
     data () {
         return {
           itemList: [],
@@ -72,24 +89,73 @@ export default {
           itemData: {
             userName: '',
             userMobile: '',
-            userWechatLogo: ''
+            userWechatLogo: '',
+            roleList: ''
           },
           pageNumber: 1,
           pageSize: 20,
-          total: 0
+          total: 0,
+          roleDatas: []
         }
     },
     mounted () {
+      this.getRoleList()
       this.getItemList()
     },
     watch: {
       $route () {
+        this.getRoleList()
         this.getItemList()
       }
     },
     methods: {
+      getRoleList () {
+        util.request({
+            method: 'get',
+            interface: 'roleList',
+            data: {}
+        }).then(res => {
+            if (res.result.success == '1') {
+              var datas = res.result.result
+              this.total = Number(res.result.total)
+
+              var roleList = []
+
+              if (datas.length) {
+                for (var i = 0, len = datas.length; i < len; i++) {
+                  if (['platform_root', 'platform_user', 'enterprise_user'].indexOf(datas[i].roleCode) < 0) {
+                    roleList.push(datas[i])
+                  }
+                }
+              }
+              this.roleDatas = roleList
+            } else {
+              this.$message.error(res.result.message)
+            }
+        })
+      },
       changeImg (data) {
           this.itemData.userWechatLogo = data.url
+      },
+      eidtItem (item) {
+        this.itemData = Object.assign({}, item)
+        this.isAddOEdit = true
+      },
+      selectRole (item) {
+        var roleList = []
+        if (this.itemData.roleList.length) {
+          roleList = this.itemData.roleList.split(',')
+        }
+
+        var index = roleList.indexOf(item.roleCode)
+
+        if (index > -1) {
+          roleList.splice(index, 1)
+        } else {
+          roleList.push(item.roleCode)
+        }
+
+        this.itemData.roleList = roleList.join(',') 
       },
       getItemList () {
         util.request({
@@ -105,24 +171,31 @@ export default {
               var datas = res.result.result
               this.total = Number(res.result.total)
 
+              var userList = []
+
               if (datas.length) {
                 for (var i = 0, len = datas.length; i < len; i++) {
                   if (datas[i].securityRoles.length) {
                     var isShow = true
+                    var roleList = []
                     datas[i].securityRoles.forEach((role) => {
                       if (role.roleCode == 'platform_root') {
                         isShow = false
                       }
+
+                      if (['platform_root', 'platform_user', 'enterprise_user'].indexOf(role.roleCode) < 0) {
+                        roleList.push(role.roleCode)
+                      }
                     })
                     
-                    if (!isShow) {
-                      datas.splice(i, 1)
-                      break
+                    if (isShow) {
+                      datas[i].roleList = roleList.join(',')
+                      userList.push(datas[i])
                     }
                   }
                 }
               }
-              this.itemList = datas
+              this.itemList = userList
             } else {
               this.$message.error(res.result.message)
             }
@@ -135,9 +208,11 @@ export default {
       addItem () {
         this.itemData = {
           enterpriseCode: this.$route.query.enterpriseCode,
+          isPlatform: this.isPlatform ? '1' : '0',
           userName: '',
-          userName: '',
-          userWechatLogo: ''
+          userMobile: '',
+          userWechatLogo: '',
+          roleList: ''
         }
 
         this.isAddOEdit = true
@@ -167,9 +242,15 @@ export default {
         this.insertOrUpdateItem()
       },
       insertOrUpdateItem () {
+        var interfaceName = 'addUser'
+
+        if (this.itemData.id) {
+          interfaceName = 'updateUser'
+        }
+
         util.request({
             method: 'post',
-            interface: 'addUser',
+            interface: interfaceName,
             data: this.itemData
         }).then((res) => {
             if (res.result.success == '1') {

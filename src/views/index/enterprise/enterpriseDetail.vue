@@ -29,6 +29,7 @@
               <section class="formBox">
                   <span>企业类型</span>
                   <el-select class="input-box"
+                            :disabled="base.enterpriseType == 'enterprise_type_0'"
                             v-model="base.enterpriseType"
                             placeholder="请选择">
                       <el-option
@@ -75,15 +76,6 @@
                     v-model="base.enterpriseBankAccount">
                   </el-input>
               </section>
-
-              <section class="formBox">
-                  <span>公司网站</span>
-                  <el-input
-                    class="input-box"
-                    placeholder="请输入内容"
-                    v-model="base.enterpriseWeb">
-                  </el-input>
-              </section>
               
               <template v-if="base.enterpriseType == 'enterprise_type_0'">
                 <section class="formBox">
@@ -92,6 +84,7 @@
                     <el-input
                       class="input-b"
                       placeholder="请输入内容"
+                      :disabled="!!$route.query.enterpriseCode"
                       @blur="checkUserName"
                       v-model="base.userName">
                     </el-input>
@@ -99,7 +92,7 @@
                     <el-button class="input-btn"
                               type="primary"
                               size="small"
-                              :disabled="hasTel"
+                              :disabled="hasTel || !!$route.query.enterpriseCode"
                               @click="checkName">验证</el-button>
                   </div>
                   
@@ -114,6 +107,15 @@
                     </el-input>
                 </section>
               </template>
+
+              <section class="formBox">
+                  <span>公司网站</span>
+                  <el-input
+                    class="input-box"
+                    placeholder="请输入内容"
+                    v-model="base.enterpriseWeb">
+                  </el-input>
+              </section>
 
               <section class="formBox bigF">
                 <span>企业简介</span>
@@ -139,17 +141,17 @@
                   </div>
                 </div>
               </section>
-              
-              <div class="clear"></div>
-              <el-button class="save-btn" type="info" :plain="true" size="small" icon="document"
-              @click="saveBase">保存</el-button>
             </div>
+            <div class="clear"></div>
+            <el-button class="save-btn" type="info" :plain="true" size="small" icon="document"
+              @click="saveBase">保存</el-button>
+            <div class="clear"></div>
           </el-collapse-item>
 
           <template v-if="!!$route.query.enterpriseCode">
             <div class="line-bold"></div>
             <el-collapse-item class="float-form-box" title="员工管理" name="2">
-              <user-list></user-list>
+              <user-list :is-platform="base.enterpriseType == 'enterprise_type_0'"></user-list>
             </el-collapse-item>
           </template>
         </el-collapse>
@@ -241,11 +243,16 @@ export default {
       if (surveyColl) {
           this.activeNames = surveyColl.split(',')
       }
+
+      if (this.$route.query.platform == 'platform') {
+        this.base.enterpriseType = 'enterprise_type_0'
+      }
+
       if (this.$route.query.enterpriseCode) {
         this.getBase()
+      } else {
+        this.getEnterpriseTypes()
       }
-      
-      this.getEnterpriseTypes()
     },
     methods: {
         changeImg (data) {
@@ -261,7 +268,7 @@ export default {
           }
 
           util.request({
-              method: 'get',
+              method: 'post',
               interface: 'enterpriseQCCGet',
               data: {
                   enterpriseCname: this.base.enterpriseCname
@@ -297,7 +304,7 @@ export default {
           }
         },
         checkName () {
-          if (this.isCheckTel) {
+          if (this.isCheckTel || this.$route.query.enterpriseCode) {
             return false
           }
 
@@ -381,6 +388,8 @@ export default {
                   this.userName = this.base.userName
                   this.isCheckTel = true
                   this.switchStatus = this.base.enterpriseStatus
+
+                  this.getEnterpriseTypes()
               } else {
                   this.$message.error(res.result.message)
               }
@@ -395,7 +404,22 @@ export default {
               }
           }).then((res) => {
               if (res.result.success == '1') {
-                  this.enterpriseTypes = res.result.result
+                var datas = res.result.result
+                var index = ''
+                if (datas.length) {
+                  for(var i = 0,len = datas.length; i < len; i++) {
+                    if (datas[i].dictKeyCode == 'enterprise_type_0' && this.base.enterpriseType != 'enterprise_type_0') {
+                      index = i
+                      break
+                    }
+                  }
+                }
+
+                if (index !== '') {
+                  datas.splice(index, 1)
+                }
+                  
+                this.enterpriseTypes = datas
               } else {
                   this.$message.error(res.result.message)
               }
@@ -409,14 +433,6 @@ export default {
           //   return false
           // }
 
-          if (!this.base.enterpriseCname) {
-            this.$message({
-              message: '请填写企业工商名称!',
-              type: 'warning'
-            })
-            return false
-          }
-
           if (this.base.enterpriseNameReg == '') {
               this.$message({
                 message: '请填写企业简称!',
@@ -425,7 +441,7 @@ export default {
               return false
           }
 
-          if (this.base.enterpriseType == '') {
+          if (this.base.enterpriseType == '' && this.base.enterpriseType == 'enterprise_type_0') {
               this.$message({
                 message: '请填写企业类型!',
                 type: 'warning'
@@ -446,7 +462,7 @@ export default {
             return false
           }
 
-          if (this.base.enterpriseWeb == '') {
+          if (this.base.enterpriseWeb == '' && this.base.enterpriseType == 'enterprise_type_0') {
               this.$message({
                 message: '请填写公司网站!',
                 type: 'warning'

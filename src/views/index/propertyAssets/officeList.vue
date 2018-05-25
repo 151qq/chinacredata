@@ -27,7 +27,8 @@
                             name: 'office-detail',
                             query: {
                                 enterpriseCode: userInfo.enterpriseCode,
-                                officeCode: item.officeCode
+                                officeCode: item.officeCode,
+                                cityName: $route.query.cityName
                             }
                         }">
                 <!-- 自己操作自己的 -->
@@ -71,11 +72,13 @@
           <el-form :label-position="'left'" :model="addItemForm" label-width="80px">
             <div class="map-show-box">
                 <map-show :point-str="addItemForm.officeGps"
+                            :city-name="$route.query.cityName"
                             :map-height="'140px'"
                             :ref="'mapShow'"></map-show>
             </div>
             <el-form-item label="物业检索">
                 <search-box @mapChange="mapChange"
+                            :city="$route.query.cityName"
                             :ref="'searchBox'"></search-box>
             </el-form-item>
             <el-form-item label="物业简称">
@@ -165,8 +168,7 @@ export default {
     },
     computed: {
         ...mapGetters({
-            userInfo: 'getUserInfo',
-            selectCity: 'getSelectCity'
+            userInfo: 'getUserInfo'
         })
     },
     methods: {
@@ -186,14 +188,15 @@ export default {
             this.isAddItem = true
             setTimeout(() => {
                 this.$refs['mapShow'].initMap()
-            }, 30)
+                this.$refs['searchBox'].resetKey()
+            }, 300)
         },
         mapChange (mapInfo) {
             this.addItemForm.officeAddr = mapInfo.title
             this.addItemForm.officeGps = mapInfo.point.lng + ',' + mapInfo.point.lat
             setTimeout(() => {
                 this.$refs['mapShow'].initMap()
-            }, 30)
+            }, 300)
         },
         editItem (item) {
             this.addItemForm = Object.assign({}, item)
@@ -201,7 +204,7 @@ export default {
             setTimeout(() => {
                 this.$refs['mapShow'].initMap()
                 this.$refs['searchBox'].resetKey(this.addItemForm.officeAddr)
-            }, 30)
+            }, 300)
         },
         changeItem (data) {
             this.addItemForm.officeCover = data.url
@@ -311,7 +314,7 @@ export default {
         },
         getZones () {
             var formData = {
-                cityCode: this.selectCity.cityCode,
+                cityCode: this.$route.query.cityCode,
                 pageSize: this.zonePageSize,
                 pageNumber: this.zonePageNumber
             }
@@ -337,6 +340,14 @@ export default {
             this.removeItem()
         },
         removeItem () {
+            if (!this.selectItemList.length) {
+                this.$message({
+                    message: '请选择写字楼！',
+                    type: 'warning'
+                })
+                return false
+            }
+
             util.request({
                 method: 'post',
                 interface: 'officeMove',

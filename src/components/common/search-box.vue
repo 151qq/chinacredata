@@ -19,12 +19,7 @@ import $ from 'Jquery'
 import util from '../../assets/common/util'
 
 export default {
-  props: {
-    isPage: {
-      type: Boolean,
-      default: false
-    }
-  },
+  props: ['city'],
   data () {
     return {
       isShow: false,

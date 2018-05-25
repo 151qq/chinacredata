@@ -34,12 +34,10 @@
               </el-input>
           </section> -->
           <section class="formBox">
-              <span>总金额(万元)</span>
-              <el-input-number  class="input-box"
+              <span>总金额</span>
+              <el-input  class="input-box"
                                 size="small"
-                                :min="0"
-                                :step="0.01"
-                                v-model="base.totalMoney"></el-input-number>
+                                v-my-float="base.totalMoney"></el-input>
           </section>
           <section class="formBox">
               <span>无异议时间</span>
@@ -466,6 +464,7 @@ export default {
 
           var formData = {
             keyName: queryString,
+            status: '0',
             pageNumber: 1,
             pageSize: 20
           }

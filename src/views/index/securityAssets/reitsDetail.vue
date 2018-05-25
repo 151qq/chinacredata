@@ -4,15 +4,13 @@
           <el-collapse-item class="float-form-box" title="基本信息" name="1">
             <reits-base @change="baseChange"
                         :dictionary="dictionary"
-                        :enterprise-list="enterpriseList"
                         ref="baseForm"></reits-base>
           </el-collapse-item>
           <div class="line-bold"></div>
 
           <!-- 股东信息 -->
           <el-collapse-item class="float-form-box" title="股东信息" name="2">
-            <holder-list :enterprise-list="enterpriseList"
-                        :base="baseData"
+            <holder-list :base="baseData"
                         :security-code="$route.query.assetreitsProductCode"
                         :security-type="'security_type_2'"></holder-list>
           </el-collapse-item>
@@ -20,8 +18,7 @@
 
           <!-- 物业资产细节 -->
           <el-collapse-item class="float-form-box" title="物业资产细节" name="3">
-            <property-list :enterprise-list="enterpriseList"
-                        :base="baseData"
+            <property-list :base="baseData"
                         :dictionary="dictionary"
                         :security-code="$route.query.assetreitsProductCode"
                         :security-type="'security_type_2'"></property-list>
@@ -43,7 +40,6 @@ export default {
             baseData: {},
             imgList: [],
             sourceData: [],
-            enterpriseList: [],
             dictionaryTypes: [
               'enterprise_type'
             ],
@@ -58,7 +54,6 @@ export default {
             this.activeNames = reitsColl.split(',')
         }
 
-        this.getEnterprises()
         this.getDictionaryTypes()
     },
     computed: {
@@ -69,24 +64,6 @@ export default {
     methods: {
       baseChange (result) {
         this.baseData = result
-      },
-      getEnterprises () {
-        var formData = {
-            pageNumber: 1,
-            pageSize: 1000
-        }
-
-        util.request({
-            method: 'get',
-            interface: 'showAllEnterprise',
-            data: formData
-        }).then(res => {
-            if (res.result.success == '1') {
-                this.enterpriseList = res.result.result
-            } else {
-                this.$message.error(res.result.message)
-            }
-        })       
       },
       getDictionaryTypes () {
         util.request({

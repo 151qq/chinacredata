@@ -34,7 +34,6 @@
           <el-collapse-item class="float-form-box" title="基本信息" name="1">
             <office-base @change="baseChange"
                         :dictionary="dictionary"
-                        :enterprise-list="enterpriseList"
                         ref="baseForm"></office-base>
           </el-collapse-item>
           <div class="line-bold"></div>
@@ -53,8 +52,7 @@
 
           <!-- 业主信息 -->
           <el-collapse-item class="float-form-box" title="业主信息" name="3">
-            <owner-list :enterprise-list="enterpriseList"
-                        :base="baseData"
+            <owner-list :base="baseData"
                         :property-code="$route.query.officeCode"
                         :property-type="'property_type_1'"></owner-list>
           </el-collapse-item>
@@ -62,9 +60,7 @@
 
           <!-- 交易历史 -->
           <el-collapse-item class="float-form-box" title="交易历史" name="4">
-            <trade-list :enterprise-list="enterpriseList"
-                        :base="baseData"
-                        :dictionary="dictionary"
+            <trade-list :base="baseData"
                         :property-code="$route.query.officeCode"
                         :property-type="'property_type_1'"></trade-list>
           </el-collapse-item>
@@ -72,8 +68,7 @@
 
           <!-- 租户信息 -->
           <el-collapse-item class="float-form-box" title="租户信息" name="5">
-            <office-tenant :enterprise-list="enterpriseList"
-                            :base="baseData"
+            <office-tenant :base="baseData"
                             :dictionary="dictionary"></office-tenant>
           </el-collapse-item>
           <div class="line-bold"></div>
@@ -111,7 +106,10 @@
         </el-collapse>
 
         <el-dialog title="写字楼地址" :visible.sync="isShowMap">
-          <map-show :point-str="baseData.officeGps" :map-height="'300px'" ref="mapShow"></map-show>
+          <map-show :point-str="baseData.officeGps"
+                    :map-height="'300px'"
+                    :city-name="$route.query.cityName"
+                    ref="mapShow"></map-show>
           <div slot="footer" class="dialog-footer">
                 <el-button @click="isShowMap = false">取 消</el-button>
           </div>
@@ -145,7 +143,6 @@ export default {
             },
             imgList: [],
             sourceData: [],
-            enterpriseList: [],
             dictionaryTypes: [
               'enterprise_type',
               'floor_type',
@@ -180,7 +177,6 @@ export default {
             this.activeNames = officeColl.split(',')
         }
 
-        this.getEnterprises()
         this.getDictionaryTypes()
     },
     computed: {
@@ -193,29 +189,11 @@ export default {
         this.isShowMap = true
         setTimeout(() => {
           this.$refs['mapShow'].initMap()
-        }, 30)
+        }, 300)
       },
       baseChange (result) {
         this.baseData = result
         this.getItems(this.baseData.propertyAlbum)
-      },
-      getEnterprises () {
-        var formData = {
-            pageNumber: 1,
-            pageSize: 1000
-        }
-
-        util.request({
-            method: 'get',
-            interface: 'showAllEnterprise',
-            data: formData
-        }).then(res => {
-            if (res.result.success == '1') {
-                this.enterpriseList = res.result.result
-            } else {
-                this.$message.error(res.result.message)
-            }
-        })       
       },
       getDictionaryTypes () {
         util.request({

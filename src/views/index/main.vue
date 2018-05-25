@@ -2,10 +2,16 @@
     <section>
         <web-header @loadPage="loadPage"></web-header>
         <section class="mid-body-box">
-            <router-view v-if="isPage == '1' || $route.name == 'platform-detail'"></router-view>
-            <div v-if="isPage == '0' && $route.name != 'platform-detail'" class="null-register">
+            <router-view v-if="isPage == '1' || $route.name == 'enterprise-detail'"></router-view>
+            <div v-if="isPage == '0' && $route.name != 'enterprise-detail'" class="null-register">
                 请您先去
-                <router-link class="nav-registor" :to="{name: 'platform-detail'}">
+                <router-link class="nav-registor"
+                            :to="{
+                                name: 'enterprise-detail',
+                                query: {
+                                    platform: 'platform'
+                                }
+                            }">
                     <el-button type="text">注册企业</el-button>
                 </router-link>
                 !!!

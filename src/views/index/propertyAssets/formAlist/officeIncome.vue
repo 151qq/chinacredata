@@ -1,145 +1,54 @@
 <template>
     <section class="form-small-box">
-      <div class="add-btn">
-        <span>
-          面积(m²)&nbsp;&nbsp;费用(元)
-        </span>
-        <el-button type="primary" icon="plus" size="small"
-                @click="addBarrier"
-                v-if="isEdit">增加</el-button>
-      </div>
-      
-      <section class="inForm" v-for="(item, index) in barrieList" :key="index">
-        <div class="formDiscount">
-          <section class="formBox">
-              <span>时间类型</span>
-              <el-select
-                class="input-box"
-                v-model="item.dateType"
-                filterable
-                :disabled="!!item.id"
-                placeholder="请选择">
-                <el-option
-                  v-for="(item, index) in dateTypes"
-                  :key="index"
-                  :label="item.typeName"
-                  :value="item.id">
-                </el-option>
-              </el-select>
-          </section>
-          <section class="formBox">
-              <span>年份</span>
-              <el-date-picker class="input-box"
-                              :disabled="!!item.id"
-                              v-model="item.dateYear"
-                              type="year"
-                              placeholder="选择租期">
-              </el-date-picker>
-          </section>
-          <section class="formBox" v-show="item.dateType == '2'">
-            <span>月份</span>
-            <el-select
-              class="input-box"
-              v-model="item.dateOther"
-              :disabled="!!item.id"
-              filterable
-              placeholder="请选择">
-              <el-option
-                v-for="(item, index) in months"
-                :key="index"
-                :label="item.typeName"
-                :value="item.id">
-              </el-option>
-            </el-select>
-          </section>
-          <section class="formBox">
-              <span>年化租金</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="1"
-                                v-model="item.annualRentIncome"></el-input-number>
-          </section>
-          <section class="formBox">
-              <span>物业管理费</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="1"
-                                v-model="item.estateManagementIncome"></el-input-number>
-          </section>
-          <section class="formBox">
-              <span>广告费</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="1"
-                                v-model="item.adIncome"></el-input-number>
-          </section>
-          <section class="formBox">
-              <span>车位费</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="1"
-                                v-model="item.packingLotIncome"></el-input-number>
-          </section>
-          <section class="formBox">
-              <span>其他收入</span>
-              <el-input-number  class="input-box"
-                                size="small"
-                                :min="0"
-                                :step="1"
-                                v-model="item.otherIncome"></el-input-number>
-          </section>
-          <section class="formBox">
-              <span>总收入</span>
-              <div class="input-btn-box">
-                <el-input-number  class="input-b"
-                                size="small"
-                                :min="0"
-                                :step="1"
-                                v-model="item.totalIncome"></el-input-number>
+      <router-link class="add-btn"
+                    target="_blank"
+                    v-if="isEdit"
+                    :to="{
+                      name: 'form-office',
+                      query: {
+                        officeCode: $route.query.officeCode,
+                        type: 'officeIncome'
+                      }
+                    }">
+        <el-button type="primary" icon="plus" size="small">增加</el-button>
+      </router-link>
 
-                <el-button class="input-btn"
-                              type="primary"
-                              size="small"
-                              :disabled="checkHandle(item)"
-                              @click="checkMessage(item)">校验</el-button>
-              </div>
-              
-          </section>
-          <section class="formBox bigF">
-            <span>其他收入说明</span>
-            <el-input
-              type="textarea"
-              :rows="4"
-              placeholder="请输入内容,最140个字"
-              :maxlength="140"
-              v-model="item.otherIncomeDesc">
-            </el-input>
-            <div class="limit-box">剩余<a>{{140 - item.otherIncomeDesc.length}}</a>字</div>
-          </section>
-          <section class="formBox bigF">
-            <span>备注</span>
-            <el-input
-              type="textarea"
-              :rows="4"
-              placeholder="请输入内容,最140个字"
-              :maxlength="140"
-              v-model="item.memo">
-            </el-input>
-            <div class="limit-box">剩余<a>{{140 - item.memo.length}}</a>字</div>
-          </section> 
-        </div>
-        <el-button v-if="isEdit" class="save-btn" type="danger" :plain="true" size="small" icon="delete2"
-            @click="deleteBase(item, index)">删除</el-button>
-
-        <el-button v-if="isEdit" class="save-btn" type="info" :plain="true" size="small" icon="document"
-            @click="saveBase(item, index)">保存</el-button>
-        <div class="clear"></div>
-      </section>
-
+      <el-table
+        :data="barrieList"
+        border
+        style="width: 100%">
+        <el-table-column
+          prop="dateStart"
+          label="开始时间">
+        </el-table-column>
+        <el-table-column
+          prop="dateEnd"
+          label="结束时间">
+        </el-table-column>
+        <el-table-column
+          prop="totalIncome"
+          label="总收入">
+        </el-table-column>
+        <el-table-column
+          v-if="isEdit"
+          label="操作"
+          width="70">
+          <template scope="scope">
+            <i class="el-icon-delete2" @click="deleteItem(scope.row)"></i>
+            <router-link class="el-icon-document"
+                          target="_blank"
+                          :to="{
+                            name: 'form-office',
+                            query: {
+                              officeCode: scope.row.officeCode,
+                              type: 'officeIncome',
+                              id: scope.row.id
+                            }
+                          }">
+            </router-link>
+          </template>
+        </el-table-column>
+      </el-table>
       <div class="clear"></div>
       <el-pagination
           v-if="total"
@@ -149,10 +58,6 @@
           :page-size="pageSize"
           :total="total">
       </el-pagination>
-
-      <div v-if="!barrieList.length" class="null-page">
-            暂无收入
-      </div>
     </section>
 </template>
 <script>
@@ -163,66 +68,6 @@ export default {
     data () {
         return {
             barrieList: [],
-            dateTypes: [
-              {
-                typeName: '以年为单位',
-                id: '1'
-              },
-              {
-                typeName: '以月为单位',
-                id: '2'
-              }
-            ],
-            months: [
-              {
-                typeName: '一月',
-                id: '1'
-              },
-              {
-                typeName: '二月',
-                id: '2'
-              },
-              {
-                typeName: '三月',
-                id: '3'
-              },
-              {
-                typeName: '四月',
-                id: '4'
-              },
-              {
-                typeName: '五月',
-                id: '5'
-              },
-              {
-                typeName: '六月',
-                id: '6'
-              },
-              {
-                typeName: '七月',
-                id: '7'
-              },
-              {
-                typeName: '八月',
-                id: '8'
-              },
-              {
-                typeName: '九月',
-                id: '9'
-              },
-              {
-                typeName: '十月',
-                id: '10'
-              },
-              {
-                typeName: '十一月',
-                id: '11'
-              },
-              {
-                typeName: '十二月',
-                id: '12'
-              }
-            ],
             pageNumber: 1,
             pageSize: 5,
             total: 0
@@ -240,24 +85,6 @@ export default {
         }
     },
     methods: {
-        checkHandle (item) {
-          return !(item.annualRentIncome && item.estateManagementIncome && item.adIncome && item.packingLotIncome && item.totalIncome)
-        },
-        checkMessage (item) {
-          var total = Number(item.annualRentIncome) + Number(item.estateManagementIncome) + Number(item.adIncome) + Number(item.packingLotIncome) + Number(item.otherIncome)
-
-          if (Number(item.totalIncome) !== total) {
-            this.$message({
-                message: '校验失败！',
-                type: 'warning'
-            })
-          } else {
-            this.$message({
-                message: '校验成功！',
-                type: 'success'
-            })
-          }
-        },
         getList () {
           util.request({
               method: 'get',
@@ -280,91 +107,20 @@ export default {
             this.pageNumber = size
             this.getList()
         },
-        addBarrier () {
-          this.barrieList.unshift({
-            officeCode: this.$route.query.officeCode,
-            dateType: '1',
-            dateYear: '',
-            dateOther: '',
-            annualRentIncome: '',
-            estateManagementIncome: '',
-            adIncome: '',
-            packingLotIncome: '',
-            otherIncome: '',
-            totalIncome: '',
-            otherIncomeDesc: '',
-            memo: ''
+        deleteItem (barrieData) {
+          util.request({
+              method: 'get',
+              interface: 'officeIncomeDelete',
+              data: {
+                id: barrieData.id
+              }
+          }).then(res => {
+              if (res.result.success == '1') {
+                  this.getList()
+              } else {
+                  this.$message.error(res.result.message)
+              }
           })
-        },
-        deleteBase (barrieData, index) {
-          if (!barrieData.id) {
-            this.barrieList.splice(index, 1)
-          } else {
-            util.request({
-                method: 'get',
-                interface: 'officeIncomeDelete',
-                data: {
-                  id: barrieData.id
-                }
-            }).then(res => {
-                if (res.result.success == '1') {
-                    this.getList()
-                } else {
-                    this.$message.error(res.result.message)
-                }
-            })
-          }
-        },
-        saveBase (barrieData, index) {
-            if (!barrieData.dateYear) {
-                this.$message({
-                    message: '请选择年份！',
-                    type: 'warning'
-                })
-                return false
-            }
-
-            if (barrieData.dateType == '2' && !barrieData.dateOther) {
-                this.$message({
-                    message: '请选择季度！',
-                    type: 'warning'
-                })
-                return false
-            }
-
-            if (barrieData.dateType == '3' && !barrieData.dateOther) {
-                this.$message({
-                    message: '请选择月份！',
-                    type: 'warning'
-                })
-                return false
-            }
-
-            barrieData.dateYear = new Date(barrieData.dateYear).getFullYear()
-
-            var interfaceName = 'officeIncomeSave'
-
-            if (barrieData.id) {
-              interfaceName = 'officeIncomeUpdate'
-            }
-            
-            util.request({
-                method: 'post',
-                interface: interfaceName,
-                data: barrieData
-            }).then(res => {
-                if (res.result.success == '1') {
-                    this.$message({
-                      type: 'success',
-                      message: '保存成功!'
-                    })
-
-                    this.getList()
-                } else {
-                    this.barrieList.splice(index, 1)
-                    this.$message.error(res.result.message)
-                }
-            })
         }
     }
 }
