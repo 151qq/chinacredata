@@ -29,15 +29,7 @@
                         <span class="time">
                             {{item.securityTypeName}}
                             <span class="btn-box" v-if="item.recoder == userInfo.userCode">
-                                <i @click.prevent="editItem(item)">编辑</i>
-                            </span>
-                            <span class="btn-box"
-                                    v-if="item.recoder == userInfo.userCode && item.stocassetManagementProductStatuskStatus == '1'">
-                                <i @click.prevent="changeStatus(item, '2')">下架</i>
-                            </span>
-                            <span class="btn-box"
-                                v-if="item.recoder == userInfo.userCode && item.stocassetManagementProductStatuskStatus == '0'">
-                                <i @click.prevent="changeStatus(item, '1')">发布</i>
+                                <i @click.prevent="editItem(item)" class="el-icon-document"></i>
                             </span>
                         </span>
                     </div>
@@ -132,7 +124,7 @@ export default {
                 assetManagementProductName: '',
                 assetManagementProductShortName: '',
                 assetManagementProductCover: '',
-                stocassetManagementProductStatuskStatus: '0',
+                assetManagementProductStatus: '1',
                 securityType: 'security_type_1'
             }
 
@@ -170,6 +162,30 @@ export default {
                 return false
             }
 
+            if (this.addItemForm.noObjectionDate) {
+                this.addItemForm.noObjectionDate = new Date(this.addItemForm.noObjectionDate)
+            }
+
+            if (this.addItemForm.fundRegisteDate) {
+                this.addItemForm.fundRegisteDate = new Date(this.addItemForm.fundRegisteDate)
+            }
+
+            if (this.addItemForm.createdDate) {
+                this.addItemForm.createdDate = new Date(this.addItemForm.createdDate)
+            }
+
+            if (this.addItemForm.fundBeginDate) {
+                this.addItemForm.fundBeginDate = new Date(this.addItemForm.fundBeginDate)
+            }
+
+            if (this.addItemForm.fundEndDate) {
+                this.addItemForm.fundEndDate = new Date(this.addItemForm.fundEndDate)
+            }
+
+            if (this.addItemForm.listedDate) {
+                this.addItemForm.listedDate = new Date(this.addItemForm.listedDate)
+            }
+
             this.addItemForm.enterpriseCode = this.$route.query.enterpriseCode
 
             if (this.addItemForm.assetManagementProductCode) {
@@ -177,22 +193,6 @@ export default {
             } else {
                 this.insterItem()
             }
-        },
-        changeStatus (item, status) {
-            util.request({
-                method: 'get',
-                interface: 'assetManagementProductInfoUpdate',
-                data: {
-                    assetManagementProductCode: item.assetManagementProductCode,
-                    stocassetManagementProductStatuskStatus: status
-                }
-            }).then(res => {
-                if (res.result.success == '1') {
-                    this.sourceDatas = res.result.result
-                } else {
-                    this.$message.error(res.result.message)
-                }
-            })
         },
         getItems () {
             var formData = {

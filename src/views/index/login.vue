@@ -213,10 +213,15 @@
                 }).then((res) => {
                     if (res.result.success != '0') {
                         var pathUrl = {}
+                        var datas = res.result.result
 
                         if (this.userLoginAccount != 'E2PlatformIniter') {
                             pathUrl = {
-                                name: 'zone-list'
+                                name: 'organize-detail',
+                                query: {
+                                    enterpriseCode: datas.enterpriseCode,
+                                    departmentCode: datas.departmentCode
+                                }
                             }
                         } else {
                             pathUrl = {

@@ -15,8 +15,22 @@
             label="贡献比例(%)">
           </el-table-column>
           <el-table-column
-            prop="propertyName"
             label="物业名称">
+            <template scope="scope">
+              <a class="black nav-hover"
+                    v-if="scope.row.propertyType == 'property_type_1'"
+                    target="_blank"
+                    :href="domainFont + 'propertyAssets/officeDetail?officeCode=' + scope.row.propertyCode">
+                {{scope.row.propertyName}}
+              </a>
+    
+              <a class="black nav-hover"
+                    v-if="scope.row.propertyType == 'property_type_2'"
+                    target="_blank"
+                    :href="domainFont + 'propertyAssets/mallDetail?mallCode=' + scope.row.propertyCode">
+                {{scope.row.propertyName}}      
+              </a>
+            </template>
           </el-table-column>
           <el-table-column
             v-if="isEdit"
@@ -42,10 +56,9 @@
         <el-dialog :title="operateText" :visible.sync="isAddOEdit">
           <el-form :label-position="'left'" :model="itemData" label-width="100px">
             <el-form-item label="贡献比例(%)">
-                <el-input  size="small"
-                          :min="0"
-                          :max="100"
-                          v-my-float="itemData.assetRatio"></el-input>
+                <my-el-input  type="float"
+                                :max="100"
+                                v-model="itemData.assetRatio"></my-el-input>
             </el-form-item>
             <el-form-item label="物业类型">
                 <el-select
@@ -82,9 +95,10 @@ import searchInput from '../../../../components/common/search-input'
 import { mapGetters } from 'vuex'
 
 export default {
-    props: ['base', 'enterpriseList', 'securityCode', 'securityType', 'dictionary'],
+    props: ['base', 'securityCode', 'securityType', 'dictionary'],
     data () {
         return {
+          domainFont: 'http://enterprisedev.chinacredata.com/',
           operateText: '添加',
           itemList: [],
           propertyList: [],
@@ -99,8 +113,9 @@ export default {
             propertyCode: '',
             propertyName: ''
           },
+          itemNowIndex: '',
           pageNumber: 1,
-          pageSize: 10,
+          pageSize: 5,
           total: 0
         }
     },
@@ -125,8 +140,6 @@ export default {
         
         var requestNum = this.requestNum
         var interfaceName = ''
-
-        console.log(this.itemData.propertyType)
 
         switch (this.itemData.propertyType) {
           case 'property_type_1':
@@ -204,6 +217,8 @@ export default {
         this.isAddOEdit = true
       },
       editItem (item) {
+        this.itemNowIndex = this.itemList.indexOf(item)
+
         this.itemData = Object.assign({}, item)
 
         this.operateText = '编辑'
@@ -230,6 +245,24 @@ export default {
         if (this.itemData.propertyCode === '') {
           this.$message({
               message: '请选择物业！',
+              type: 'warning'
+          })
+          return false
+        }
+
+        var sum = 0
+
+        for (var i = 0, len = this.itemList.length; i < len; i++) {
+          if (i !== this.itemNowIndex) {
+            sum += Number(this.itemList[i].assetRatio)
+          }
+        }
+
+        sum += Number(this.itemData.assetRatio)
+
+        if (sum > 100) {
+          this.$message({
+              message: '总贡献比例必须小于100！',
               type: 'warning'
           })
           return false

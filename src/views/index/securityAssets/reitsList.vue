@@ -29,15 +29,7 @@
                         <span class="time">
                             {{item.securityTypeName}}
                             <span class="btn-box" v-if="item.recoder == userInfo.userCode">
-                                <i @click.prevent="editItem(item)">编辑</i>
-                            </span>
-                            <span class="btn-box"
-                                    v-if="item.recoder == userInfo.userCode && item.stockStatus == '1'">
-                                <i @click.prevent="changeStatus(item, '2')">下架</i>
-                            </span>
-                            <span class="btn-box"
-                                v-if="item.recoder == userInfo.userCode && item.stockStatus == '0'">
-                                <i @click.prevent="changeStatus(item, '1')">发布</i>
+                                <i @click.prevent="editItem(item)" class="el-icon-document"></i>
                             </span>
                         </span>
                     </div>
@@ -127,7 +119,7 @@ export default {
                 assetManagementProductName: '',
                 foreignReitsName: '',
                 foreignReitsCover: '',
-                stockStatus: '0',
+                stockStatus: '1',
                 securityType: 'security_type_1'
             }
 
@@ -157,6 +149,14 @@ export default {
                 return false
             }
 
+            if (this.addItemForm.createdDate) {
+                this.addItemForm.createdDate = new Date(this.addItemForm.createdDate)
+            }
+
+            if (this.addItemForm.listedDate) {
+                this.addItemForm.listedDate = new Date(this.addItemForm.listedDate)
+            }
+
             this.addItemForm.enterpriseCode = this.$route.query.enterpriseCode
 
             if (this.addItemForm.foreignReitsCode) {
@@ -164,22 +164,6 @@ export default {
             } else {
                 this.insterItem()
             }
-        },
-        changeStatus (item, status) {
-            util.request({
-                method: 'get',
-                interface: 'foreignReitsInfoUpdate',
-                data: {
-                    foreignReitsCode: item.foreignReitsCode,
-                    stockStatus: status
-                }
-            }).then(res => {
-                if (res.result.success == '1') {
-                    this.sourceDatas = res.result.result
-                } else {
-                    this.$message.error(res.result.message)
-                }
-            })
         },
         getItems () {
             var formData = {
@@ -227,7 +211,7 @@ export default {
         updateItem () {
             util.request({
                 method: 'post',
-                interface: 'foreignReitsInfoUpdate',
+                interface: 'foreignReitsInfoSave',
                 data: this.addItemForm
             }).then(res => {
                 if (res.result.success == '1') {

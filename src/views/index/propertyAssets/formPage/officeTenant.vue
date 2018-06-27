@@ -5,7 +5,7 @@
         <section class="formBox">
             <span>开始时间</span>
             <el-date-picker class="input-box"
-                            :disabled="$route.query.id"
+                            :disabled="!!$route.query.id"
                             v-model="barrieData.beginDate"
                             type="date"
                             placeholder="选择日期">
@@ -14,7 +14,7 @@
         <section class="formBox">
             <span>结束时间</span>
             <el-date-picker class="input-box"
-                            :disabled="$route.query.id"
+                            :disabled="!!$route.query.id"
                             v-model="barrieData.endDate"
                             type="date"
                             placeholder="选择日期">
@@ -50,15 +50,21 @@
         </section>
         <section class="formBox">
             <span>免租期</span>
-            <el-input class="input-box"
-                      size="small"
-                      v-my-float="barrieData.rentFreePeriod"></el-input>
+            <my-el-input class="input-box"
+                      type="float"
+                      v-model="barrieData.rentFreePeriod"></my-el-input>
         </section>
         <section class="formBox">
             <span>面积(m²)</span>
-            <el-input class="input-box"
-                      size="small"
-                      v-my-float="barrieData.rentAcreage"></el-input>
+            <my-el-input class="input-box"
+                      type="float"
+                      v-model="barrieData.rentAcreage"></my-el-input>
+        </section>
+        <section class="formBox">
+            <span>租金(元)</span>
+            <my-el-input class="input-box"
+                      type="float"
+                      v-model="barrieData.tenantRent"></my-el-input>
         </section>
         <section class="formBox bigF">
           <span>租用目的</span>
@@ -114,6 +120,7 @@ export default {
               tenantType: '',
               rentFreePeriod: '',
               rentAcreage: '',
+              tenantRent: '',
               tenantDesc: '',
               rentBusinessGoal: '',
               memo: '',
@@ -180,6 +187,22 @@ export default {
             if (!this.barrieData.tenantName) {
                 this.$message({
                     message: '请填写租户名称！',
+                    type: 'warning'
+                })
+                return false
+            }
+
+            if (!this.barrieData.rentAcreage) {
+                this.$message({
+                    message: '请填写租用面积！',
+                    type: 'warning'
+                })
+                return false
+            }
+
+            if (!this.barrieData.tenantRent) {
+                this.$message({
+                    message: '请填写租金！',
                     type: 'warning'
                 })
                 return false

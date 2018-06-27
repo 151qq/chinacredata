@@ -11,7 +11,7 @@
           <!-- 股东信息 -->
           <el-collapse-item class="float-form-box" title="股东信息" name="2">
             <holder-list :base="baseData"
-                        :security-code="$route.query.assetreitsProductCode"
+                        :security-code="$route.query.foreignReitsCode"
                         :security-type="'security_type_2'"></holder-list>
           </el-collapse-item>
           <div class="line-bold"></div>
@@ -20,7 +20,7 @@
           <el-collapse-item class="float-form-box" title="物业资产细节" name="3">
             <property-list :base="baseData"
                         :dictionary="dictionary"
-                        :security-code="$route.query.assetreitsProductCode"
+                        :security-code="$route.query.foreignReitsCode"
                         :security-type="'security_type_2'"></property-list>
           </el-collapse-item>
         </el-collapse>
@@ -41,10 +41,12 @@ export default {
             imgList: [],
             sourceData: [],
             dictionaryTypes: [
-              'enterprise_type'
+              'enterprise_type',
+              'property_type'
             ],
             dictionary: {
-              enterprise_type: []
+              enterprise_type: [],
+              property_type: []
             }
         }
     },

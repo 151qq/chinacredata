@@ -53,10 +53,9 @@
         <el-dialog :title="operateText" :visible.sync="isAddOEdit">
           <el-form :label-position="'left'" :model="itemData" label-width="100px">
             <el-form-item label="股权比例(%)">
-                <el-input  size="small"
-                                :min="0"
+                <my-el-input  type="float"
                                 :max="100"
-                                v-my-float="itemData.shareholderShareRatio"></el-input>
+                                v-model="itemData.shareholderShareRatio"></my-el-input>
             </el-form-item>
             <el-form-item label="股东">
                 <search-input :search-data="itemData"
@@ -94,7 +93,7 @@ export default {
           },
           itemNowIndex: '',
           pageNumber: 1,
-          pageSize: 10,
+          pageSize: 5,
           total: 0
         }
     },
@@ -208,11 +207,11 @@ export default {
 
         for (var i = 0, len = this.itemList.length; i < len; i++) {
           if (i !== this.itemNowIndex) {
-            sum += this.itemList[i].shareholderShareRatio
+            sum += Number(this.itemList[i].shareholderShareRatio)
           }
         }
 
-        sum += this.itemData.shareholderShareRatio
+        sum += Number(this.itemData.shareholderShareRatio)
 
         if (sum > 100) {
           this.$message({
@@ -249,6 +248,7 @@ export default {
             method: 'post',
             interface: 'securityShareholderDelete',
             data: {
+              id: row.id,
               securityCode: row.securityCode,
               securityShareholder: row.securityShareholder
             }

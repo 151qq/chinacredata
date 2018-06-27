@@ -1,5 +1,5 @@
 <template>
-    <section class="big-cards-box">
+    <section class="assets-cards-box">
       <router-link class="card-box"
                    target="_blank"
                    v-for="(item, index) in assetsList"
@@ -94,3 +94,48 @@ export default {
     }
 }
 </script>
+<style lang="scss">
+.assets-cards-box {
+  .card-box {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #C0CCDA;
+    margin-bottom: 20px;
+
+    .card-img {
+      float: left;
+      width: 160px;
+      height: 100px;
+      background: #cfcfd0;
+
+      img {
+        display: block;
+        width: 160px;
+        height: 100px;
+      }
+    }
+
+    .card-content {
+      float: right;
+      width: 820px;
+
+      .card-title {
+        font-size: 16px;
+        line-height: 24px;
+        color: #000000;
+        margin-bottom: 3px;
+      }
+
+      .card-desc {
+        font-size: 14px;
+        line-height: 24px;
+        color: #475669;
+        height: 48px;
+        overflow: hidden;
+      }
+    }
+  }
+}
+</style>

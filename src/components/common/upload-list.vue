@@ -1,7 +1,7 @@
 <template>
   <div class="imgs-box">
     <section class="img-box" v-for="(item, index) in imgLists" :key="index">
-      <img class="img-big" :src="item" @click="showImg(index)">
+      <img class="img-big" :src="item">
       <div class="delete-box" v-if="proCover && item != proCover && isEdit">
         <i @click="setImg(item)">设为封面</i>
         <i @click="deleteImg(index)">删除</i>
@@ -13,7 +13,7 @@
     <input v-if="isEdit" :id="idName" type="file" accept="image/*" class="img-input" @change="postImg($event)">
 
     <!-- 大图 -->
-    <swiper-img :is-show="isShow" :index="nowIndex" :big-imgs="imgLists"></swiper-img>
+    <!-- <swiper-img :is-show="isShow" :index="nowIndex" :big-imgs="imgLists"></swiper-img> -->
   </div>
 </template>
 <script>

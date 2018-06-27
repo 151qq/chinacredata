@@ -5,6 +5,7 @@
               <span>交易时间</span>
               <el-date-picker class="input-box"
                               v-model="barrieData.tradeDate"
+                              :disabled="!!barrieData.id"
                               type="date"
                               placeholder="选择日期">
               </el-date-picker>
@@ -12,6 +13,7 @@
           <section class="formBox">
               <span>交易甲方</span>
               <search-input   :class="'input-box'"
+                              :disabled="!!barrieData.id"
                               :search-data="barrieData"
                               :fetch-suggestions="getEnterpriseList"
                               :m-code="'firstParty'"
@@ -24,6 +26,7 @@
           <section class="formBox">
               <span>交易乙方</span>
               <search-input   :class="'input-box'"
+                              :disabled="!!barrieData.id"
                               :search-data="barrieData"
                               :fetch-suggestions="getEnterpriseList"
                               :m-code="'secondParty'"
@@ -50,11 +53,10 @@
           </section>
           <section class="formBox">
               <span>股权比例(%)</span>
-              <el-input  class="input-box"
-                                size="small"
-                                :min="0"
+              <my-el-input  class="input-box"
+                                type="float"
                                 :max="100"
-                                v-my-float="barrieData.stockRightRation"></el-input>
+                                v-model="barrieData.stockRightRation"></my-el-input>
           </section>
           <section class="formBox">
               <span>股权交易场所</span>
@@ -65,12 +67,10 @@
               </el-input>
           </section>
           <section class="formBox">
-              <span>交易价格</span>
-              <el-input  class="input-box"
-                                size="small"
-                                :min="0"
-                                :max="999999999"
-                                v-my-float="barrieData.tradePrice"></el-input>
+              <span>交易价格(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.tradePrice"></my-el-input>
           </section>
           <section class="formBox bigF">
             <span>交易说明</span>

@@ -108,10 +108,12 @@ export default {
               method: 'get',
               interface: 'assetManagementProductLevelDelete',
               data: {
+                id: barrieData.id,
                 fundLevelCode: barrieData.fundLevelCode
               }
           }).then(res => {
               if (res.result.success == '1') {
+                  this.$emit('incomeChange')
                   this.getList()
               } else {
                   this.$message.error(res.result.message)

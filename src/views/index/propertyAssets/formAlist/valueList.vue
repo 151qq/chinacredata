@@ -22,7 +22,7 @@
         </el-table-column>
         <el-table-column
           prop="propertyValue"
-          label="估值">
+          label="估值(元)">
         </el-table-column>
         <el-table-column
           prop="propertyValuer"

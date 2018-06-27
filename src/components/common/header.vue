@@ -7,17 +7,17 @@
         <router-link  :to="{
                         name: 'zone-list'
                       }"
-                      v-if="isRoot || isProperty">
+                      v-if="userRole.isRoot || userRole.isProperty">
           物业资产
         </router-link>
         <router-link  :to="{
                         name: 'exchange-list'
                       }"
-                      v-if="isRoot || isAssets">
+                      v-if="userRole.isRoot || userRole.isAssets">
           资管产品
         </router-link>
         <router-link :to="{ name: 'enterprise'}"
-                      v-if="isRoot || isEnterprise">
+                      v-if="userRole.isRoot || userRole.isEnterprise">
           企业信息
         </router-link>
       </div>
@@ -177,7 +177,6 @@ export default {
     }
   },
   created () {
-    this.getUserInfo()
     this.haveCitys()
     this.getCitys()
 
@@ -197,26 +196,16 @@ export default {
   computed: {
       ...mapGetters({
         userInfo: 'getUserInfo',
+        userRole: 'getUserRole',
         selectCity: 'getSelectCity',
         cityList:'getCityList',
         selectExchange: 'getSelectExchange',
-      }),
-      isRoot () {
-        return this.roleCodes.indexOf('platform_root') > -1
-      },
-      isAssets () {
-        return this.roleCodes.indexOf('platform_assets') > -1
-      },
-      isProperty () {
-        return this.roleCodes.indexOf('platform_property') > -1
-      },
-      isEnterprise () {
-        return this.roleCodes.indexOf('platform_enterprise') > -1
-      }
+      })
   },
   methods: {
     ...mapActions([
       'setUserInfo',
+      'setUserRole',
       'setSelectCity',
       'setCityList',
       'setSelectExchange'
@@ -282,8 +271,6 @@ export default {
             var datas = res.result.result
             this.total = Number(res.result.total)
             this.setCityList(datas.length ? datas : [])
-
-            console.log(this.selectCity, 'selectCity')
 
             // 没有城市定位全国
             if (datas.length) {
@@ -413,33 +400,6 @@ export default {
             }
         })    
     },
-    getUserInfo () {
-      util.request({
-        method: 'get',
-        interface: 'getUserInfo',
-        data: {}
-      }).then(res => {
-        if (res.result.success == '1') {
-          if (res.result.result.enterpriseCode) {
-            var roleCodes = []
-            res.result.result.roleDefs.forEach((item) => {
-                roleCodes.push(item.roleCode)
-            })
-
-            this.roleCodes = roleCodes
-
-            res.result.result.roleCodes = roleCodes.concat([])
-            // 是否注册企业
-            this.setUserInfo(res.result.result)
-            this.$emit('loadPage', '1')
-          } else {
-            this.$emit('loadPage', '0')
-          }
-        } else {
-          this.$message.error(res.result.message)
-        }
-      })
-    },
     logout () {
       util.request({
         method: 'post',
@@ -447,7 +407,7 @@ export default {
         data: {}
       }).then(res => {
         if (res.result.success == '1') {
-          this.$router.replace({name: 'login'})
+          window.location.href = '/login'
         }
       })
     }

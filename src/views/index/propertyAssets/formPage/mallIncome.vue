@@ -22,53 +22,53 @@
             </el-date-picker>
           </section>
           <section class="formBox">
-              <span>年化租金</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="barrieData.annualRentIncome"></el-input>
+              <span>年化租金(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.annualRentIncome"></my-el-input>
           </section>
           <section class="formBox">
-              <span>能源费</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="barrieData.energyIncome"></el-input>
+              <span>能源费(元)(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.energyIncome"></my-el-input>
           </section>
           <section class="formBox">
-              <span>物业管理费</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="barrieData.estateManagementIncome"></el-input>
+              <span>物业管理费(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.estateManagementIncome"></my-el-input>
           </section>
           <section class="formBox">
-              <span>广告费</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="barrieData.adIncome"></el-input>
+              <span>广告费(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.adIncome"></my-el-input>
           </section>
           <section class="formBox">
-              <span>车位费</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="barrieData.packingLotIncome"></el-input>
+              <span>车位费(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.packingLotIncome"></my-el-input>
           </section>
           <section class="formBox">
-              <span>花车费</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="barrieData.flowerIncome"></el-input>
+              <span>花车费(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.flowerIncome"></my-el-input>
           </section>
           <section class="formBox">
-              <span>其他收入</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="barrieData.otherIncome"></el-input>
+              <span>其他收入(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.otherIncome"></my-el-input>
           </section>
           <section class="formBox">
-              <span>总收入</span>
+              <span>总收入(元)</span>
               <div class="input-btn-box">
-                <el-input  class="input-b"
-                                size="small"
-                                v-my-float="barrieData.totalIncome"></el-input>
+                <my-el-input  class="input-b"
+                                type="float"
+                                v-model="barrieData.totalIncome"></my-el-input>
 
                 <el-button class="input-btn"
                               type="primary"
@@ -78,16 +78,14 @@
               </div>
               
           </section>
-          <section class="formBox bigF">
+          <section class="formBox">
             <span>其他收入说明</span>
             <el-input
-              type="textarea"
-              :rows="4"
+              class="input-box"
               placeholder="请输入内容,最140个字"
               :maxlength="140"
               v-model="barrieData.otherIncomeDesc">
             </el-input>
-            <div class="limit-box">剩余<a>{{140 - barrieData.otherIncomeDesc.length}}</a>字</div>
           </section>
           <section class="formBox bigF">
             <span>备注</span>
@@ -150,12 +148,12 @@ export default {
     },
     methods: {
         checkHandle (item) {
-          return !(item.annualRentIncome && item.energyIncome && item.estateManagementIncome && item.adIncome && item.packingLotIncome && item.flowerIncome && totalIncome)
+          return !(item.annualRentIncome && item.energyIncome && item.estateManagementIncome && item.adIncome && item.packingLotIncome && item.flowerIncome && item.totalIncome)
         },
         checkMessage (item) {
           var total = Number(item.annualRentIncome) + Number(item.energyIncome) + Number(item.estateManagementIncome) + Number(item.adIncome) + Number(item.packingLotIncome) + Number(item.flowerIncome) + Number(item.otherIncome)
 
-          if (Number(item.totalIncome) !== total) {
+          if (Number(item.totalIncome).toFixed(2) !== total.toFixed(2)) {
             this.$message({
                 message: '总收入和分项收入总和不符！',
                 type: 'warning'
@@ -182,7 +180,6 @@ export default {
               }
           }).then(res => {
               if (res.result.success == '1') {
-                res.result.result.yearDate = new Date(res.result.result.dateYear)
                 this.barrieData = res.result.result
               } else {
                 this.$message.error(res.result.message)

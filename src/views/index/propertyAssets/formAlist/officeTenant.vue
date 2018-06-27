@@ -34,6 +34,14 @@
           label="租户名称">
         </el-table-column>
         <el-table-column
+          prop="rentAcreage"
+          label="面积(m²)">
+        </el-table-column>
+        <el-table-column
+          prop="tenantRent"
+          label="租金(元)">
+        </el-table-column>
+        <el-table-column
           v-if="isEdit"
           label="操作"
           width="70">

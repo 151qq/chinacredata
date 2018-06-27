@@ -22,41 +22,41 @@
             </el-date-picker>
           </section>
           <section class="formBox">
-              <span>运维成本</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="barrieData.maintainCost"></el-input>
+              <span>运维成本(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.maintainCost"></my-el-input>
           </section>
           <section class="formBox">
-              <span>人力成本</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="barrieData.hrCost"></el-input>
+              <span>人力成本(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.hrCost"></my-el-input>
           </section>
           <section class="formBox">
-              <span>管理成本</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="barrieData.managementCost"></el-input>
+              <span>管理成本(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.managementCost"></my-el-input>
           </section>
           <section class="formBox">
-              <span>其他成本</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="barrieData.otherCost"></el-input>
+              <span>其他成本(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.otherCost"></my-el-input>
           </section>
           <section class="formBox">
-              <span>税费</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="barrieData.tax"></el-input>
+              <span>税费(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.tax"></my-el-input>
           </section>
           <section class="formBox">
-              <span>总成本</span>
+              <span>总成本(元)</span>
               <div class="input-btn-box">
-                <el-input  class="input-b"
-                                size="small"
-                                v-my-float="barrieData.totalCost"></el-input>
+                <my-el-input  class="input-b"
+                                type="float"
+                                v-model="barrieData.totalCost"></my-el-input>
 
                 <el-button class="input-btn"
                               type="primary"
@@ -66,16 +66,14 @@
               </div>
               
           </section>
-          <section class="formBox bigF">
+          <section class="formBox">
             <span>其他成本说明</span>
             <el-input
-              type="textarea"
-              :rows="4"
+              class="input-box"
               placeholder="请输入内容,最140个字"
               :maxlength="140"
               v-model="barrieData.otherCostDesc">
             </el-input>
-            <div class="limit-box">剩余<a>{{140 - barrieData.otherCostDesc.length}}</a>字</div>
           </section>
           <section class="formBox bigF">
             <span>税费说明</span>
@@ -148,12 +146,12 @@ export default {
     },
     methods: {
         checkHandle (item) {
-          return !(item.maintainCost && item.hrCost && item.managementCost && item.tax && totalCost)
+          return !(item.maintainCost && item.hrCost && item.managementCost && item.tax && item.totalCost)
         },
         checkMessage (item) {
           var total = Number(item.maintainCost) + Number(item.hrCost) + Number(item.managementCost) + Number(item.tax) + Number(item.otherCost)
 
-          if (Number(item.totalCost) !== total) {
+          if (Number(item.totalCost).toFixed(2) !== total.toFixed(2)) {
             this.$message({
                 message: '总支出和分项支出总和不符！',
                 type: 'warning'
@@ -180,7 +178,6 @@ export default {
               }
           }).then(res => {
               if (res.result.success == '1') {
-                res.result.result.yearDate = new Date(res.result.result.dateYear)
                 this.barrieData = res.result.result
               } else {
                 this.$message.error(res.result.message)

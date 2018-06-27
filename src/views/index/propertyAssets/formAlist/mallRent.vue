@@ -20,13 +20,13 @@
         <el-table-column
           label="开始时间">
           <template scope="scope">
-            <span>{{scope.row.beginDate.split(' ')[0]}}</span>
+            <span>{{scope.row.beginDate}}</span>
           </template>
         </el-table-column>
         <el-table-column
           label="结束时间">
           <template scope="scope">
-            <span>{{scope.row.endDate.split(' ')[0]}}</span>
+            <span>{{scope.row.endDate}}</span>
           </template>
         </el-table-column>
         <el-table-column

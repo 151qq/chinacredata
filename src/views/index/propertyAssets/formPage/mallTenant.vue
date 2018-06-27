@@ -5,7 +5,7 @@
               <span>开始时间</span>
               <el-date-picker class="input-box"
                               v-model="barrieData.beginDate"
-                              :disabled="$route.query.id"
+                              :disabled="!!$route.query.id"
                               type="date"
                               placeholder="选择日期">
               </el-date-picker>
@@ -14,7 +14,7 @@
               <span>结束时间</span>
               <el-date-picker class="input-box"
                               v-model="barrieData.endDate"
-                              :disabled="$route.query.id"
+                              :disabled="!!$route.query.id"
                               type="date"
                               placeholder="选择日期">
               </el-date-picker>
@@ -24,7 +24,7 @@
               <el-input
                 class="input-box"
                 placeholder="请输入内容"
-                :disabled="$route.query.id"
+                :disabled="!!$route.query.id"
                 v-model="barrieData.tenantName">
               </el-input>
           </section>
@@ -68,9 +68,9 @@
           </section>
           <section class="formBox">
               <span>免租期</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="barrieData.rentFreePeriod"></el-input>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.rentFreePeriod"></my-el-input>
           </section>
           <section class="formBox">
               <span>主力店</span>
@@ -89,15 +89,21 @@
           </section>
           <section class="formBox">
               <span>装修补贴</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="barrieData.constructionAllowance"></el-input>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.constructionAllowance"></my-el-input>
           </section>
           <section class="formBox">
               <span>面积(m²)</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="barrieData.rentAcreage"></el-input>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.rentAcreage"></my-el-input>
+          </section>
+          <section class="formBox">
+            <span>租金(元)</span>
+            <my-el-input class="input-box"
+                      type="float"
+                      v-model="barrieData.tenantRent"></my-el-input>
           </section>
           <section class="formBox bigF">
             <span>租用目的</span>
@@ -156,6 +162,7 @@ export default {
               rentFreePeriod: '',
               constructionAllowance: '',
               rentAcreage: '',
+              tenantRent: '',
               tenantDesc: '',
               rentBusinessGoal: '',
               memo: '',
@@ -232,6 +239,22 @@ export default {
             if (!this.barrieData.tenantName) {
                 this.$message({
                     message: '请填写租户名称！',
+                    type: 'warning'
+                })
+                return false
+            }
+
+            if (!this.barrieData.rentAcreage) {
+                this.$message({
+                    message: '请填写租用面积！',
+                    type: 'warning'
+                })
+                return false
+            }
+
+            if (!this.barrieData.tenantRent) {
+                this.$message({
+                    message: '请填写租金！',
                     type: 'warning'
                 })
                 return false

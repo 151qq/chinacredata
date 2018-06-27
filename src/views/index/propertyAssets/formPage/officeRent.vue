@@ -5,7 +5,8 @@
               <span>开始时间</span>
               <el-date-picker class="input-box"
                               v-model="barrieData.beginDate"
-                              type="date"
+                              :disabled="!!barrieData.id"
+                              type="month"
                               placeholder="选择日期">
               </el-date-picker>
           </section>
@@ -13,119 +14,100 @@
               <span>结束时间</span>
               <el-date-picker class="input-box"
                               v-model="barrieData.endDate"
-                              type="date"
+                              :disabled="!!barrieData.id"
+                              type="month"
                               placeholder="选择日期">
               </el-date-picker>
           </section>
           <section class="formBox bigBigSpan">
               <span>高区租金(元 ㎡/天)</span>
-              <el-input  class="input-box"
-                                size="small"
-                                :min="0"
-                                :max="999999999"
-                                v-my-float="barrieData.rentHighLevel"></el-input>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.rentHighLevel"></my-el-input>
           </section>
           <section class="formBox bigBigSpan">
               <span>中区租金(元 ㎡/天)</span>
-              <el-input  class="input-box"
-                                size="small"
-                                :min="0"
-                                :max="999999999"
-                                v-my-float="barrieData.rentMiddleLevel"></el-input>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.rentMiddleLevel"></my-el-input>
           </section>
           <section class="formBox bigBigSpan">
               <span>低区租金(元 ㎡/天)</span>
-              <el-input  class="input-box"
-                                size="small"
-                                :min="0"
-                                :max="999999999"
-                                v-my-float="barrieData.rentLowLevel"></el-input>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.rentLowLevel"></my-el-input>
           </section>
           <section class="formBox bigBigSpan">
               <span>地上商业租金(元 ㎡/天)</span>
-              <el-input  class="input-box"
-                                size="small"
-                                :min="0"
-                                :max="999999999"
-                                v-my-float="barrieData.rentBusiness"></el-input>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.rentBusiness"></my-el-input>
           </section>
           <section class="formBox bigBigSpan">
               <span>地下商业租金(元 ㎡/天)</span>
-              <el-input  class="input-box"
-                                size="small"
-                                :min="0"
-                                :max="999999999"
-                                v-my-float="barrieData.rentUndergroundBusiness"></el-input>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.rentUndergroundBusiness"></my-el-input>
           </section>
           <section class="formBox bigBigSpan">
               <span>高区空置率(%)</span>
-              <el-input  class="input-box"
-                                size="small"
-                                :min="0"
+              <my-el-input  class="input-box"
                                 :max="100"
-                                v-my-float="barrieData.vacancyHighLevel"></el-input>
+                                type="float"
+                                v-model="barrieData.vacancyHighLevel"></my-el-input>
           </section>
           <section class="formBox bigBigSpan">
               <span>中区空置率(%)</span>
-              <el-input  class="input-box"
-                                size="small"
-                                :min="0"
+              <my-el-input  class="input-box"
                                 :max="100"
-                                v-my-float="barrieData.vacancyMiddleLevel"></el-input>
+                                type="float"
+                                v-model="barrieData.vacancyMiddleLevel"></my-el-input>
           </section>
           <section class="formBox bigBigSpan">
               <span>低区空置率(%)</span>
-              <el-input  class="input-box"
-                                size="small"
-                                :min="0"
+              <my-el-input  class="input-box"
                                 :max="100"
-                                v-my-float="barrieData.vacancyLowLevel"></el-input>
+                                type="float"
+                                v-model="barrieData.vacancyLowLevel"></my-el-input>
           </section>
           <section class="formBox bigBigSpan">
               <span>地下商业空置率(%)</span>
-              <el-input  class="input-box"
-                                size="small"
-                                :min="0"
+              <my-el-input  class="input-box"
                                 :max="100"
-                                v-my-float="barrieData.vacancyUndergroundBusiness"></el-input>
+                                type="float"
+                                v-model="barrieData.vacancyUndergroundBusiness"></my-el-input>
           </section>
           <section class="formBox bigBigSpan">
               <span>地上商业空置率(%)</span>
-              <el-input  class="input-box"
-                                size="small"
-                                :min="0"
+              <my-el-input  class="input-box"
                                 :max="100"
-                                v-my-float="barrieData.vacancyBusiness"></el-input>
+                                type="float"
+                                v-model="barrieData.vacancyBusiness"></my-el-input>
           </section>
           <section class="formBox bigBigSpan">
               <span>平均空置率(%)</span>
-              <el-input  class="input-box"
-                                size="small"
-                                :min="0"
-                                v-my-float="barrieData.averageVacancy"></el-input>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.averageVacancy"></my-el-input>
           </section>
           <section class="formBox bigBigSpan">
-              <span>时租停车费</span>
-              <el-input  class="input-box"
-                                size="small"
-                                :min="0"
-                                :max="999999999"
-                                v-my-float="barrieData.parkingHourFee"></el-input>
+              <span>时租停车费(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.parkingHourFee"></my-el-input>
           </section>
           <section class="formBox bigBigSpan">
-              <span>月租停车费</span>
-              <el-input  class="input-box"
-                                size="small"
-                                :min="0"
-                                :max="999999999"
-                                v-my-float="barrieData.parkingMonthFee"></el-input>
+              <span>月租停车费(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.parkingMonthFee"></my-el-input>
           </section>
           <section class="formBox bigBigSpan bigBigSpanF">
             <span>停车费说明</span>
             <el-input
               type="textarea"
               :rows="4"
-              placeholder="请输入内容,最140个字"
+              placeholder="请输入内容,最500个字"
               :maxlength="500"
               v-model="barrieData.parkingFeeDesc">
             </el-input>
@@ -230,8 +212,8 @@ export default {
                 return false
             }
 
-            this.barrieData.beginDate = new Date(this.barrieData.beginDate)
-            this.barrieData.endDate = new Date(this.barrieData.endDate)
+            this.barrieData.beginDate = util.formMonthDate(this.barrieData.beginDate)
+            this.barrieData.endDate = util.formMonthDate(this.barrieData.endDate)
 
             var interfaceName = 'officeRentHistorySave'
 

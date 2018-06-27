@@ -4,34 +4,30 @@
       <section class="inForm inTwoForm" v-if="itemInfo && itemInfo.totalProfitList">
         <div class="formDiscount">
           <section class="formBox">
-              <span>预测现金流</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="itemInfo.productCashFlow.forcastCashFlow"></el-input>
+              <span>预测现金流(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="itemInfo.productCashFlow.forcastCashFlow"></my-el-input>
           </section>
           <section class="formBox">
-              <span>真实现金流</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="itemInfo.productCashFlow.realCashFlow"></el-input>
+              <span>真实现金流(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="itemInfo.productCashFlow.realCashFlow"></my-el-input>
           </section>
           <div class="clear"></div>
           <template v-for="(level, index) in itemInfo.totalProfitList">
             <section class="formBox">
                 <span>{{level.fundLevelName}}回报率(预测)</span>
-                <el-input  class="input-box"
-                                  type="number"
-                                  size="small"
-                                  :step="0.01"
-                                  v-model="level.fundForcastProfit"></el-input>
+                <my-el-input  class="input-box"
+                                  type="float"
+                                  v-model="level.fundForcastProfit"></my-el-input>
             </section>
             <section class="formBox">
                 <span>{{level.fundLevelName}}回报率(实际)</span>
-                <el-input  class="input-box"
-                                  type="number"
-                                  size="small"
-                                  :step="0.01"
-                                  v-model="level.fundRealProfit"></el-input>
+                <my-el-input  class="input-box"
+                                  type="float"
+                                  v-model="level.fundRealProfit"></my-el-input>
             </section>
             <div class="clear"></div>
           </template>
@@ -58,21 +54,17 @@
           </section>
           <div class="clear"></div>
           <section class="formBox">
-              <span>预测现金流</span>
-              <el-input  class="input-box"
-                                type="number"
-                                  size="small"
-                                  :step="0.01"
-                                v-model="item.assetCashFlow.forcastCashFlow"></el-input>
+              <span>预测现金流(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="item.assetCashFlow.forcastCashFlow"></my-el-input>
           </section>
           <section class="formBox">
-              <span>真实现金流</span>
+              <span>真实现金流(元)</span>
               <div class="input-btn-box">
-                <el-input  class="input-b"
-                                type="number"
-                                  size="small"
-                                  :step="0.01"
-                                v-model="item.assetCashFlow.realCashFlow"></el-input>
+                <my-el-input  class="input-b"
+                                type="float"
+                                v-model="item.assetCashFlow.realCashFlow"></my-el-input>
 
                 <el-button class="input-btn"
                               type="primary"
@@ -86,19 +78,15 @@
           <template v-for="(level, index) in item.assetProfitList">
             <section class="formBox">
                 <span>{{level.fundLevelName}}回报率(预测)</span>
-                <el-input  class="input-box"
-                                  type="number"
-                                  size="small"
-                                  :step="0.01"
-                                  v-model="level.fundYearForcastProfit"></el-input>
+                <my-el-input  class="input-box"
+                                  type="float"
+                                  v-model="level.fundYearForcastProfit"></my-el-input>
             </section>
             <section class="formBox">
                 <span>{{level.fundLevelName}}回报率(实际)</span>
-                <el-input  class="input-box"
-                                  type="number"
-                                  size="small"
-                                  :step="0.01"
-                                  v-model="level.fundYearRealProfit"></el-input>
+                <my-el-input  class="input-box"
+                                  type="float"
+                                  v-model="level.fundYearRealProfit"></my-el-input>
             </section>
             <div class="clear"></div>
           </template>
@@ -138,41 +126,23 @@ export default {
         }
     },
     methods: {
-        getFloat (data, key) {
-          var value = this[data][key]
-          if (/[^0-9 | .]*/.test(value)) {
-              value = value.replace(/[^0-9 | .]*/g, '')
-          }
-
-          var index = value.indexOf('.')
-
-          if (index === 0) {
-              value = ''
-          }
-
-          if (value.split('.').length > 2) {
-              value = value.split('.')[0]
-          }
-
-          if (index > 0) {
-              value = value.substring(0, index + 3)
-          }
-          setTimeout(() => {
-            this[data][key] = value
-          }, 0)
-        },
         checkMessage (item) {
           util.request({
               method: 'post',
               interface: 'validateAssetProfit',
               data: {
                 assetManagementProductCode: this.$route.query.assetManagementProductCode,
-                paybackDate: this.year,
+                dateStart: this.year,
                 fundAssetCode: item.assetCode
               }
           }).then(res => {
               if (res.result.success == '1') {
-                this.barrieList = res.result.result.length ? res.result.result : []
+                if (res.result.result.toFixed(2) == item.realCashFlow.toFixed(2)) {
+                  this.$message({
+                    type: 'success',
+                    message: '现金流校验成功!'
+                  })
+                }
               } else {
                 this.$message.error(res.result.message)
               }

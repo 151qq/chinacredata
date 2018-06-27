@@ -234,6 +234,14 @@ export default {
                 return false
             }
 
+            if (this.addItemForm.landGetDate) {
+                this.addItemForm.landGetDate = new Date(this.addItemForm.landGetDate)
+            }
+
+            if (this.addItemForm.officeOpenDate) {
+                this.addItemForm.officeOpenDate = new Date(this.addItemForm.officeOpenDate)
+            }
+
             this.addItemForm.enterpriseCode = this.$route.query.enterpriseCode
 
             if (this.addItemForm.officeCode) {

@@ -5,39 +5,40 @@
               <span>时间</span>
               <el-date-picker class="input-box"
                               v-model="barrieData.evaluationDate"
+                              :disabled="!!barrieData.id"
                               type="date"
                               placeholder="选择租期">
               </el-date-picker>
           </section>
           <section class="formBox">
-              <span>总收入</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="barrieData.totalIncome"></el-input>
+              <span>总收入(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.totalIncome"></my-el-input>
           </section>
           <section class="formBox">
-              <span>总成本</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="barrieData.totalCost"></el-input>
+              <span>总成本(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.totalCost"></my-el-input>
           </section>
           <section class="formBox">
-              <span>息税前利润</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="barrieData.totalProfit"></el-input>
+              <span>息税前利润(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.totalProfit"></my-el-input>
           </section>
           <section class="formBox">
-              <span>折旧与摊销</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="barrieData.depreciationAmortization"></el-input>
+              <span>折旧与摊销(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.depreciationAmortization"></my-el-input>
           </section>
           <section class="formBox">
-              <span>财务支出</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="barrieData.financeCost"></el-input>
+              <span>财务支出(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.financeCost"></my-el-input>
           </section>
           <section class="formBox bigF">
             <span>财务支出说明</span>
@@ -51,30 +52,29 @@
             <div class="limit-box">剩余<a>{{140 - barrieData.financeCostDesc.length}}</a>字</div>
           </section>
           <section class="formBox">
-              <span>所得税</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="barrieData.incomeTax"></el-input>
+              <span>所得税(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.incomeTax"></my-el-input>
           </section>
           <section class="formBox">
-              <span>净利润</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="barrieData.netProfit"></el-input>
+              <span>净利润(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.netProfit"></my-el-input>
           </section>
           <section class="formBox">
               <span>资本化率(%)</span>
-              <el-input  class="input-box"
-                                size="small"
-                                :min="0"
+              <my-el-input  class="input-box"
+                                type="float"
                                 :max="100"
-                                v-my-float="barrieData.capitalizaitonRate"></el-input>
+                                v-model="barrieData.capitalizaitonRate"></my-el-input>
           </section>
           <section class="formBox">
-              <span>估值</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="barrieData.propertyValue"></el-input>
+              <span>估值(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.propertyValue"></my-el-input>
           </section>
           <section class="formBox">
               <span>估值人</span>
@@ -170,6 +170,14 @@ export default {
             if (!this.barrieData.evaluationDate) {
                 this.$message({
                     message: '请选择评估时间！',
+                    type: 'warning'
+                })
+                return false
+            }
+
+            if (!this.barrieData.propertyValue) {
+                this.$message({
+                    message: '请添加估值！',
                     type: 'warning'
                 })
                 return false

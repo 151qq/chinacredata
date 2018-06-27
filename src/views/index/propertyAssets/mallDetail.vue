@@ -4,7 +4,7 @@
           <section class="float-form-box">
             <div class="formDiscount">
               <section class="formBox">
-                  <span>写字楼名称</span>
+                  <span>购物中心名称</span>
                   <el-input
                     class="input-box"
                     placeholder="请输入内容，最多20个字"
@@ -15,7 +15,7 @@
               </section>
 
               <section class="formBox mapBox">
-                  <span>写字楼地址</span>
+                  <span>购物中心地址</span>
                   <div class="input-box">
                     <div class="map-show-box">
                       <el-input
@@ -215,7 +215,6 @@ export default {
               method: 'get',
               interface: 'listPage',
               data: {
-                  enterpriseCode: this.$route.query.enterpriseCode,
                   docFolder: docCode,
                   pageNumber: 1,
                   pageSize: 1000
@@ -260,11 +259,11 @@ export default {
       },
       deleteImg (index) {
         util.request({
-            method: 'post',
+            method: 'get',
             interface: 'materialFolderDelete',
             data: {
                 docType: '2',
-                docCodes: [this.sourceData[index].docCode]
+                docCode: this.sourceData[index].docCode
             }
         }).then(res => {
             if (res.result.success == '1') {

@@ -27,7 +27,7 @@
         </el-table-column>
         <el-table-column
           prop="totalIncome"
-          label="总收入">
+          label="总收入(元)">
         </el-table-column>
         <el-table-column
           v-if="isEdit"
@@ -41,7 +41,7 @@
                             name: 'form-mall',
                             query: {
                               mallCode: scope.row.mallCode,
-                              type: 'officeMall',
+                              type: 'mallIncome',
                               id: scope.row.id
                             }
                           }">
@@ -96,11 +96,6 @@ export default {
               }
           }).then(res => {
               if (res.result.success == '1') {
-                if (res.result.result.length) {
-                  res.result.result.forEach((item) => {
-                    item.totalIncome = Number(item.annualRentIncome) + Number(item.energyIncome) + Number(item.estateManagementIncome) + Number(item.adIncome) + Number(item.packingLotIncome) + Number(item.flowerIncome) + Number(item.otherIncome)
-                  })
-                }
                 this.total = Number(res.result.total)
                 this.barrieList = res.result.result
               } else {

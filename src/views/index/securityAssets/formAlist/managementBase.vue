@@ -34,10 +34,10 @@
               </el-input>
           </section> -->
           <section class="formBox">
-              <span>总金额</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="base.totalMoney"></el-input>
+              <span>总金额(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="base.totalMoney"></my-el-input>
           </section>
           <section class="formBox">
               <span>无异议时间</span>
@@ -541,6 +541,55 @@ export default {
               return false
           }
 
+          // 验证多机构不能重复
+          var ratingAgencyMap = {
+            ratingAgency1: this.base.ratingAgency1,
+            ratingAgency2: this.base.ratingAgency2,
+            ratingAgency3: this.base.ratingAgency3,
+            ratingAgency4: this.base.ratingAgency4,
+            ratingAgency5: this.base.ratingAgency5,
+          }
+
+          if (!this.checkMutKey(this.base, ratingAgencyMap)) {
+            this.$message({
+                message: '评级机构不能重复！',
+                type: 'warning'
+            })
+            return false
+          }
+
+          var evaluationAgencyMap = {
+            evaluationAgency1: this.base.evaluationAgency1,
+            evaluationAgency2: this.base.evaluationAgency2,
+            evaluaitonAgency3: this.base.evaluaitonAgency3,
+            evaluaitonAgency4: this.base.evaluaitonAgency4,
+            evaluationAgency5: this.base.evaluationAgency5,
+          }
+
+          if (!this.checkMutKey(this.base, evaluationAgencyMap)) {
+            this.$message({
+                message: '评估机构不能重复！',
+                type: 'warning'
+            })
+            return false
+          }
+
+          var cashFlowForcasterMap = {
+            cashFlowForcaster1: this.base.cashFlowForcaster1,
+            cashFlowForcaster2: this.base.cashFlowForcaster2,
+            cashFlowForcaster3: this.base.cashFlowForcaster3,
+            cashFlowForcaster4: this.base.cashFlowForcaster4,
+            cashFlowForcaster5: this.base.cashFlowForcaster5,
+          }
+
+          if (!this.checkMutKey(this.base, cashFlowForcasterMap)) {
+            this.$message({
+                message: '现金预测机构不能重复！',
+                type: 'warning'
+            })
+            return false
+          }
+
           if (this.base.noObjectionDate) {
             this.base.noObjectionDate = new Date(this.base.noObjectionDate)
           }
@@ -581,6 +630,29 @@ export default {
                 this.$message.error(res.result.message)
               }
           })
+        },
+        // 多个字段不能重复
+        checkMutKey (data, obj) {
+          var valueList = []
+          var keyMap = {}
+          var mapLen = 0
+          var result = true
+          for (var key in obj) {
+            if (data[key]) {
+              valueList.push(data[key])
+              keyMap[data[key]] = null
+            }
+          }
+
+          for (var key in keyMap) {
+            mapLen++
+          }
+
+          if (mapLen && mapLen != valueList.length) {
+            result = false
+          }
+
+          return result
         }
     },
     components: {

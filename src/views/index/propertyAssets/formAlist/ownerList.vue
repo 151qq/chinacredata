@@ -53,11 +53,10 @@
         <el-dialog :title="operateText" :visible.sync="isAddOEdit">
           <el-form :label-position="'left'" :model="itemData" label-width="90px">
             <el-form-item label="股权比例(%)">
-                <el-input-number  size="small"
-                                :min="0"
+                <my-el-input  size="small"
+                                type="float"
                                 :max="100"
-                                :step="0.01"
-                                v-model="itemData.ownerStockRight"></el-input-number>
+                                v-model="itemData.ownerStockRight"></my-el-input>
             </el-form-item>
             <el-form-item label="业主">
                 <search-input :search-data="itemData"
@@ -209,11 +208,11 @@ export default {
 
         for (var i = 0, len = this.itemList.length; i < len; i++) {
           if (i !== this.itemNowIndex) {
-            sum += this.itemList[i].ownerStockRight
+            sum += Number(this.itemList[i].ownerStockRight)
           }
         }
 
-        sum += this.itemData.ownerStockRight
+        sum += Number(this.itemData.ownerStockRight)
 
         if (sum > 100) {
           this.$message({

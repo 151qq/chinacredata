@@ -5,8 +5,8 @@
               <span>开始时间</span>
               <el-date-picker class="input-box"
                               v-model="barrieData.beginDate"
-                              :disabled="$route.query.id"
-                              type="date"
+                              :disabled="!!$route.query.id"
+                              type="month"
                               placeholder="选择日期">
               </el-date-picker>
           </section>
@@ -14,16 +14,16 @@
               <span>结束时间</span>
               <el-date-picker class="input-box"
                               v-model="barrieData.endDate"
-                              :disabled="$route.query.id"
-                              type="date"
+                              :disabled="!!$route.query.id"
+                              type="month"
                               placeholder="选择日期">
               </el-date-picker>
           </section>
           <section class="formBox bigBigSpan">
               <span>楼层</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-integer="barrieData.floorLevel"></el-input>
+              <my-el-input  class="input-box"
+                                type="integer"
+                                v-model="barrieData.floorLevel"></my-el-input>
           </section>
           <section class="formBox bigBigSpan">
               <span>楼层位置</span>
@@ -35,42 +35,35 @@
           </section>
           <section class="formBox bigBigSpan">
               <span>平均租金(元 ㎡/天)</span>
-              <el-input  class="input-box"
-                                size="small"
-                                :min="0"
-                                :max="999999999"
-                                v-my-float="barrieData.rentAve"></el-input>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.rentAve"></my-el-input>
           </section>
           <section class="formBox bigBigSpan">
               <span>空置率(%)</span>
-              <el-input  class="input-box"
-                                size="small"
-                                :min="0"
+              <my-el-input  class="input-box"
+                                type="float"
                                 :max="100"
-                                v-my-float="barrieData.vacancyAve"></el-input>
+                                v-model="barrieData.vacancyAve"></my-el-input>
           </section>
           <section class="formBox bigBigSpan">
               <span>时租停车费</span>
-              <el-input  class="input-box"
-                                size="small"
-                                :min="0"
-                                :max="999999999"
-                                v-my-float="barrieData.parkingHourFee"></el-input>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.parkingHourFee"></my-el-input>
           </section>
           <section class="formBox bigBigSpan">
               <span>月租停车费</span>
-              <el-input  class="input-box"
-                                size="small"
-                                :min="0"
-                                :max="999999999"
-                                v-my-float="barrieData.parkingMonthFee"></el-input>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.parkingMonthFee"></my-el-input>
           </section>
           <section class="formBox bigBigSpan bigBigSpanF">
             <span>停车费说明</span>
             <el-input
               type="textarea"
               :rows="4"
-              placeholder="请输入内容,最140个字"
+              placeholder="请输入内容,最500个字"
               :maxlength="500"
               v-model="barrieData.parkingFeeDesc">
             </el-input>
@@ -169,6 +162,14 @@ export default {
                 return false
             }
 
+            if (!this.barrieData.floorLevel) {
+                this.$message({
+                    message: '请添加楼层！',
+                    type: 'warning'
+                })
+                return false
+            }
+
             if (new Date(this.barrieData.endDate).getTime() < new Date(this.barrieData.beginDate).getTime()) {
                 this.$message({
                     message: '结束时间不能大于开始时间！',
@@ -177,8 +178,8 @@ export default {
                 return false
             }
 
-            this.barrieData.beginDate = new Date(this.barrieData.beginDate)
-            this.barrieData.endDate = new Date(this.barrieData.endDate)
+            this.barrieData.beginDate = util.formMonthDate(this.barrieData.beginDate)
+            this.barrieData.endDate = util.formMonthDate(this.barrieData.endDate)
 
             var interfaceName = 'mallRentHistorySave'
 
@@ -205,7 +206,7 @@ export default {
                     var pathData = {
                       name: 'form-mall',
                       query: {
-                        mallCode: this.$router.query.mallCode,
+                        mallCode: this.$route.query.mallCode,
                         type: 'mallRent',
                         id: res.result.result
                       }

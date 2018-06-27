@@ -9,6 +9,19 @@ const routers = [
     },
     children: [
       {
+        // 错误页
+        path: 'errorCheck',
+        name: 'errorCheck',
+        component (resolve) {
+          require.ensure(['./errorCheck.vue'], () => {
+            resolve(require('./errorCheck.vue'))
+          })
+        },
+        meta: {
+          title: '错误页'
+        }
+      },
+      {
         // 物业资产 - 商圈列表
         path: 'propertyAssets',
         name: 'propertyAssets',
@@ -28,7 +41,8 @@ const routers = [
               })
             },
             meta: {
-              title: '物业资产'
+              title: '物业资产',
+              role: 'isProperty'
             }
           },
           {
@@ -41,7 +55,8 @@ const routers = [
               })
             },
             meta: {
-              title: '物业资产'
+              title: '物业资产',
+              role: 'isProperty'
             }
           },
           {
@@ -54,7 +69,8 @@ const routers = [
               })
             },
             meta: {
-              title: '写字楼'
+              title: '写字楼',
+              role: 'isProperty'
             }
           },
           {
@@ -67,7 +83,8 @@ const routers = [
               })
             },
             meta: {
-              title: '购物中心'
+              title: '购物中心',
+              role: 'isProperty'
             }
           },
           {
@@ -80,7 +97,8 @@ const routers = [
               })
             },
             meta: {
-              title: '写字楼'
+              title: '写字楼',
+              role: 'isProperty'
             }
           },
           {
@@ -93,7 +111,8 @@ const routers = [
               })
             },
             meta: {
-              title: '购物中心'
+              title: '购物中心',
+              role: 'isProperty'
             }
           }
         ],
@@ -121,7 +140,8 @@ const routers = [
               })
             },
             meta: {
-              title: '资管产品'
+              title: '资管产品',
+              role: 'isAssets'
             }
           },
           {
@@ -134,7 +154,8 @@ const routers = [
               })
             },
             meta: {
-              title: '资管产品'
+              title: '资管产品',
+              role: 'isAssets'
             }
           },
           {
@@ -147,7 +168,8 @@ const routers = [
               })
             },
             meta: {
-              title: '资管产品'
+              title: '资管产品',
+              role: 'isAssets'
             }
           },
           {
@@ -160,7 +182,8 @@ const routers = [
               })
             },
             meta: {
-              title: '资管产品'
+              title: '资管产品',
+              role: 'isAssets'
             }
           },
           {
@@ -173,7 +196,8 @@ const routers = [
               })
             },
             meta: {
-              title: '海外REITs'
+              title: '海外REITs',
+              role: 'isAssets'
             }
           }
         ],
@@ -200,7 +224,8 @@ const routers = [
               })
             },
             meta: {
-              title: '企业信息'
+              title: '企业信息',
+              role: 'isEnterprise'
             }
           },
           {
@@ -213,7 +238,8 @@ const routers = [
               })
             },
             meta: {
-              title: '企业信息'
+              title: '企业信息',
+              role: 'isEnterprise'
             }
           },
           {
@@ -226,7 +252,8 @@ const routers = [
               })
             },
             meta: {
-              title: '企业信息'
+              title: '企业信息',
+              role: 'isEnterprise'
             }
           }
         ]

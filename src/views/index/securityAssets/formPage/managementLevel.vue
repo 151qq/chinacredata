@@ -12,11 +12,10 @@
           </section>
           <section class="formBox">
               <span>比例(%)</span>
-              <el-input  class="input-box"
-                                size="small"
-                                :min="0"
+              <my-el-input  class="input-box"
+                                type="float"
                                 :max="100"
-                                v-my-float="barrieData.fundLevelRatio"></el-input>
+                                v-model="barrieData.fundLevelRatio"></my-el-input>
           </section>
           <section class="formBox">
               <span>编码</span>
@@ -27,26 +26,22 @@
               </el-input>
           </section>
           <section class="formBox">
-              <span>发行规模(万元)</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="barrieData.fundLevelMoney"></el-input>
+              <span>发行规模(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.fundLevelMoney"></my-el-input>
           </section>
           <section class="formBox">
               <span>最低利率</span>
-              <el-input  class="input-box"
-                                size="small"
-                                :min="0"
-                                :max="100"
-                                v-my-float="barrieData.fundLevelInterestMinRate"></el-input>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.fundLevelInterestMinRate"></my-el-input>
           </section>
           <section class="formBox">
               <span>最高利率</span>
-              <el-input  class="input-box"
-                                size="small"
-                                :min="0"
-                                :max="100"
-                                v-my-float="barrieData.fundLevelInterestMaxRate"></el-input>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.fundLevelInterestMaxRate"></my-el-input>
           </section>
           <section class="formBox">
               <span>类型</span>
@@ -88,9 +83,9 @@
           </section>
           <section class="formBox">
               <span>期限</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="barrieData.fundLevelRepaymentDuration"></el-input>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="barrieData.fundLevelRepaymentDuration"></my-el-input>
           </section>
           <section class="formBox">
               <span>评级</span>

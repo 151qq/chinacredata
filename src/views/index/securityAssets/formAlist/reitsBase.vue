@@ -17,14 +17,6 @@
                 v-model="base.foreignReitsId">
               </el-input>
           </section>
-          <!-- <section class="formBox">
-              <span>产品状态</span>
-              <el-input
-                class="input-box"
-                placeholder="请输入内容"
-                v-model="base.stockStatus">
-              </el-input>
-          </section> -->
           <section class="formBox">
               <span>上市时间</span>
               <el-date-picker class="input-box"
@@ -52,16 +44,16 @@
                               :s-name="'enterpriseNameReg'"></search-input>
           </section>
           <section class="formBox">
-              <span>发行价格(万元)</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-float="base.issuePrice"></el-input>
+              <span>发行价格(元)</span>
+              <my-el-input  class="input-box"
+                                type="float"
+                                v-model="base.issuePrice"></my-el-input>
           </section>
           <section class="formBox">
               <span>发行股份数</span>
-              <el-input  class="input-box"
-                                size="small"
-                                v-my-integer="base.fundShares"></el-input>
+              <my-el-input  class="input-box"
+                                type="integer"
+                                v-model="base.fundShares"></my-el-input>
           </section>
           <section class="formBox">
               <span>相关链接</span>
@@ -82,7 +74,7 @@
                               :s-name="'enterpriseNameReg'"></search-input>
           </section>
           <section class="formBox">
-              <span>评级机构一</span>
+              <span>评估机构一</span>
               <search-input class="input-box"
                               :search-data="base"
                               :fetch-suggestions="getEnterpriseList"
@@ -92,7 +84,7 @@
                               :s-name="'enterpriseNameReg'"></search-input>
           </section>
           <section class="formBox">
-              <span>评级机构二</span>
+              <span>评估机构二</span>
               <search-input class="input-box"
                               :search-data="base"
                               :fetch-suggestions="getEnterpriseList"
@@ -102,7 +94,7 @@
                               :s-name="'enterpriseNameReg'"></search-input>
           </section>
           <section class="formBox">
-              <span>评级机构三</span>
+              <span>评估机构三</span>
               <search-input class="input-box"
                               :search-data="base"
                               :fetch-suggestions="getEnterpriseList"
@@ -112,7 +104,7 @@
                               :s-name="'enterpriseNameReg'"></search-input>
           </section>
           <section class="formBox">
-              <span>评级机构四</span>
+              <span>评估机构四</span>
               <search-input class="input-box"
                               :search-data="base"
                               :fetch-suggestions="getEnterpriseList"
@@ -122,7 +114,7 @@
                               :s-name="'enterpriseNameReg'"></search-input>
           </section>
           <section class="formBox">
-              <span>评级机构五</span>
+              <span>评估机构五</span>
               <search-input class="input-box"
                               :search-data="base"
                               :fetch-suggestions="getEnterpriseList"
@@ -282,6 +274,23 @@ export default {
               return false
           }
 
+          // 验证多机构不能重复
+          var evaluationAgencyMap = {
+            evaluationAgency1: this.base.evaluationAgency1,
+            evaluationAgency2: this.base.evaluationAgency2,
+            evaluaitonAgency3: this.base.evaluaitonAgency3,
+            evaluaitonAgency4: this.base.evaluaitonAgency4,
+            evaluationAgency5: this.base.evaluationAgency5,
+          }
+
+          if (!this.checkMutKey(this.base, evaluationAgencyMap)) {
+            this.$message({
+                message: '评估机构不能重复！',
+                type: 'warning'
+            })
+            return false
+          }
+
           if (this.base.createdDate) {
             this.base.createdDate = new Date(this.base.createdDate)
           }
@@ -292,7 +301,7 @@ export default {
 
           util.request({
               method: 'post',
-              interface: 'foreignReitsInfoUpdate',
+              interface: 'foreignReitsInfoSave',
               data: this.base
           }).then(res => {
               if (res.result.success == '1') {
@@ -305,6 +314,29 @@ export default {
                 this.$message.error(res.result.message)
               }
           })
+        },
+        // 多个字段不能重复
+        checkMutKey (data, obj) {
+          var valueList = []
+          var keyMap = {}
+          var mapLen = 0
+          var result = true
+          for (var key in obj) {
+            if (data[key]) {
+              valueList.push(data[key])
+              keyMap[data[key]] = null
+            }
+          }
+
+          for (var key in keyMap) {
+            mapLen++
+          }
+
+          if (mapLen && mapLen != valueList.length) {
+            result = false
+          }
+
+          return result
         }
     },
     components: {

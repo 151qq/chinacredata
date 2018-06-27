@@ -215,7 +215,6 @@ export default {
               method: 'get',
               interface: 'listPage',
               data: {
-                  enterpriseCode: this.$route.query.enterpriseCode,
                   docFolder: docCode,
                   pageNumber: 1,
                   pageSize: 1000
@@ -260,11 +259,11 @@ export default {
       },
       deleteImg (index) {
         util.request({
-            method: 'post',
+            method: 'get',
             interface: 'materialFolderDelete',
             data: {
                 docType: '2',
-                docCodes: [this.sourceData[index].docCode]
+                docCode: this.sourceData[index].docCode
             }
         }).then(res => {
             if (res.result.success == '1') {
