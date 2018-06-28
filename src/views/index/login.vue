@@ -15,19 +15,14 @@
                 </div>
             </div>
         </div>
-        <!-- <div class="message-box">
-            <div class="mess-title">营销精英云服务平台管理</div>
+        <div class="message-box">
+            <div class="mess-title">商房云</div>
             <div class="mess-content">
-                <span>入驻企业管理</span>
-                <span>平台产品管理</span>
-                <span>营销配置参数管理</span>
-                <span>平台自我宣传</span>
-                <span>平台营销活动</span>
-                <span>平台会员管理</span>
-                <span>平台调研管理</span>
-                <span>平台素材管理</span>
+                <span>商业地产的价值发现者</span>
+                <span>商业地产证券化的冲浪板</span>
+                <span>商业地产投资的预警机</span>
             </div>
-        </div> -->
+        </div>
         <el-dialog
             title="忘记密码"
             :visible.sync="dialogVisible"
