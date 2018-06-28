@@ -3,9 +3,8 @@
     <div class="mid-box">
       <router-link class="logo-box" to="/business"><img src="../../assets/images/logo.png"></router-link>
       <p>
-        营销精英 Copyright © 2017-2018  All Rights Reserved 上海竣钧科技信息有限公司<br>
-        <a href="http://socialmarketingcloud.com">socialmarketingcloud.com</a>
-        沪ICP备17053300号
+        2004-2017 © 商房云® chinacredata.com All rights reserved. 版本 1.0.0 京ICP备12003524号 京公网安备11010102001935 京ICP证140673号 营业执照。<br>
+        为金融投资机构、物业业主、物业评估机构提供公正、真实的物业基础数据
       </p>
     </div>
   </section>
@@ -30,20 +29,15 @@ export default {
         float: left;
         font-size: 12px;
         color: #ffffff;
-        line-height: 24px;
-        margin-top: 21px;
-
-        a {
-          color: #ffffff;
-        }
+        line-height: 25px;
+        margin-top: 20px;
       }
     }
 
     .logo-box {
       float: left;
-      width: 80px;
       height: 50px;
-      margin: 20px 0 0 0;
+      margin: 18px 60px 0 0;
 
       img {
         height: 50px;

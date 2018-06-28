@@ -5,7 +5,7 @@
             <div class="login-title">
                 密码登录
             </div>
-            <div class="login-mess">营销精英欢迎您</div>
+            <div class="login-mess">商房云欢迎您</div>
             <div class="login-box">
                 <el-input class="login-input" v-model="userLoginAccount" placeholder="用户名／手机"></el-input>
                 <el-input class="login-input" v-model="userPassword" type="password" placeholder="密码"></el-input>
@@ -15,7 +15,7 @@
                 </div>
             </div>
         </div>
-        <div class="message-box">
+        <!-- <div class="message-box">
             <div class="mess-title">营销精英云服务平台管理</div>
             <div class="mess-content">
                 <span>入驻企业管理</span>
@@ -27,7 +27,7 @@
                 <span>平台调研管理</span>
                 <span>平台素材管理</span>
             </div>
-        </div>
+        </div> -->
         <el-dialog
             title="忘记密码"
             :visible.sync="dialogVisible"
@@ -217,11 +217,7 @@
 
                         if (this.userLoginAccount != 'E2PlatformIniter') {
                             pathUrl = {
-                                name: 'organize-detail',
-                                query: {
-                                    enterpriseCode: datas.enterpriseCode,
-                                    departmentCode: datas.departmentCode
-                                }
+                                name: 'zone-list'
                             }
                         } else {
                             pathUrl = {

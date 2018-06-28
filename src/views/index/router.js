@@ -24,7 +24,6 @@ const routers = [
       {
         // 物业资产 - 商圈列表
         path: 'propertyAssets',
-        name: 'propertyAssets',
         component (resolve) {
           require.ensure(['./propertyAssets/main.vue'], () => {
             resolve(require('./propertyAssets/main.vue'))
